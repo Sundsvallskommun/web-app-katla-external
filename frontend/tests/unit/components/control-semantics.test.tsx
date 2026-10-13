@@ -24,6 +24,7 @@ const colorSchemeStoreMock = vi.hoisted(() => ({
 const i18n = createInstance();
 
 vi.mock('next/navigation', () => ({
+  useParams: () => ({ service: 'alkoholtillstand' }),
   useRouter: () => ({ push: routerPushMock }),
   usePathname: () => pathnameMock.value,
   useSearchParams: () => new URLSearchParams(searchParamsMock.value),

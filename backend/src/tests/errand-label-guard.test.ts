@@ -7,7 +7,7 @@ import { SupportManagementController } from '@/controllers/supportmanagement.con
 import { ErrandLabel, Label } from '@/data-contracts/support-management-alkt-sprint/data-contracts';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 
-import { mockCitizenPartyId, mockErrandId } from './helpers/mock-data';
+import { mockCitizenPartyId, mockErrandId, mockServiceKey } from './helpers/mock-data';
 
 const { get, patch, post } = vi.hoisted(() => ({ get: vi.fn(), patch: vi.fn(), post: vi.fn() }));
 
@@ -21,7 +21,7 @@ vi.mock('@/services/api.service', () => ({
   },
 }));
 
-const request = { user: { partyId: mockCitizenPartyId } } as RequestWithUser;
+const request = { user: { partyId: mockCitizenPartyId }, headers: { 'x-service-key': mockServiceKey } } as unknown as RequestWithUser;
 
 const node = (resourcePath: string, labels: Label[] = [], internal = false): Label => ({
   id: `id-${resourcePath}`,

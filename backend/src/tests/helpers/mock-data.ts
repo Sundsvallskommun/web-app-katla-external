@@ -59,3 +59,5 @@ export const mockMissingErrandNumber = 'AIA-25999999';
 // against them, so the two cannot drift.
 export const mockMunicipalityId = '2281';
 export const mockNamespace = 'test';
+// The service key SERVICE_NAMESPACES maps to mockNamespace; sent as the x-service-key header
+export const mockServiceKey = 'alkoholtillstand';

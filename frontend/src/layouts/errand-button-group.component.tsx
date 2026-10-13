@@ -7,8 +7,9 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { servicePath } from 'src/constants/services';
 import { useSaveErrand } from 'src/hooks/use-save-errand';
+import { useService } from 'src/hooks/use-service';
 
 import { CenterDiv } from './center-div.component';
 
@@ -18,6 +19,7 @@ interface ErrandButtonGroupProps {
 
 export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErrand }) => {
   const { t } = useTranslation();
+  const service = useService();
   const { watch } = useFormContext<ErrandFormDTO>();
   const { validate, saveDraft, register } = useSaveErrand();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -81,7 +83,7 @@ export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErran
           setIsCancelOpen(false);
         }}
         onConfirm={() => {
-          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${ALCOHOL_PERMIT_SERVICE_PATH}`));
+          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
       <Dialog show={isOpen}>

@@ -12,6 +12,10 @@ type ErrandTableData = Pick<ReturnType<typeof useOverviewErrands>, 'rows' | 'isL
 const useOverviewErrandsMock = vi.fn<() => ErrandTableData>();
 const i18n = createInstance();
 
+vi.mock('next/navigation', () => ({
+  useParams: () => ({ service: 'alkoholtillstand' }),
+}));
+
 vi.mock('src/hooks/use-overview-errands', () => ({
   useOverviewErrands: () => useOverviewErrandsMock(),
 }));

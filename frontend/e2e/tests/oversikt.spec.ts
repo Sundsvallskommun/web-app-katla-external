@@ -2,6 +2,7 @@ import { mockCountDraftErrands, mockCountNewErrands, mockCountSolvedErrands } fr
 import { mockErrands } from '../fixtures/mockErrands';
 import { mockMetadata } from '../fixtures/mockMetadata';
 import { jsonRoute } from '../utils/routes';
+import { OVERVIEW_PATH, SERVICE_PATH } from '../utils/service';
 import { expect, test } from '../utils/test';
 
 test.describe('Overview page', () => {
@@ -23,7 +24,7 @@ test.describe('Overview page', () => {
       jsonRoute(mockCountSolvedErrands)
     );
     await page.route('**/supportmanagement/metadata', jsonRoute(mockMetadata));
-    await page.goto(appUrl('/oversikt'));
+    await page.goto(appUrl(OVERVIEW_PATH));
   });
 
   test('Show sidebar filter buttons with errand count', async ({ page }) => {
@@ -60,10 +61,7 @@ test.describe('Overview page', () => {
     const appBaseUrl = new URL(baseURL ?? 'http://localhost:3000');
     const basePath = appBaseUrl.pathname.replace(/\/$/, '');
 
-    await expect(page.getByTestId('register-new-errand-button')).toHaveAttribute(
-      'href',
-      `${basePath}/alkoholtillstand`
-    );
+    await expect(page.getByTestId('register-new-errand-button')).toHaveAttribute('href', `${basePath}${SERVICE_PATH}`);
   });
 
   // TODO: Add test for search field when frontend functionality is ready

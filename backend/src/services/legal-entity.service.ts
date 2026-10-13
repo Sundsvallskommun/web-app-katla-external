@@ -1,5 +1,6 @@
-import { MUNICIPALITY_ID, NAMESPACE } from '@/config';
+import { MUNICIPALITY_ID } from '@/config';
 import { getApiBase } from '@/config/api-config';
+import { serviceNamespaces } from '@/config/service-namespaces';
 import { LegalEntity2, PersonEngagement } from '@/data-contracts/legalentity/data-contracts';
 import { GrantorDetails, MandateDetails, Mandates } from '@/data-contracts/myrepresentatives/data-contracts';
 import { HttpException } from '@/exceptions/HttpException';
@@ -59,11 +60,16 @@ export const getPersonEngagements = async (personNumber: string, req: Sender, ap
 };
 
 /**
- * Organisations that granted the citizen a mandate. These do not appear among the person's own
- * engagements, but they carry the same right to act for the organisation.
+ * Organisations that granted the citizen a mandate in one namespace. These do not appear among the
+ * person's own engagements, but they carry the same right to act for the organisation there.
  */
-export const getMandateEngagements = async (partyId: string, req: Sender, api: LegalEntityApi = defaultApi): Promise<PersonEngagement[]> => {
-  const url = `${myRepresentativesBase}/${MUNICIPALITY_ID}/${NAMESPACE}/mandates`;
+export const getMandateEngagements = async (
+  partyId: string,
+  namespace: string,
+  req: Sender,
+  api: LegalEntityApi = defaultApi,
+): Promise<PersonEngagement[]> => {
+  const url = `${myRepresentativesBase}/${MUNICIPALITY_ID}/${namespace}/mandates`;
   const res = await api.get<Mandates>({ url, params: { granteePartyId: partyId } }, req);
 
   const mandates = (res.data?.mandateDetailsList ?? []).filter((mandate): mandate is MandateDetails & { grantorDetails: GrantorDetails } =>
@@ -106,34 +112,10 @@ const dedupeByOrganizationNumber = (engagements: PersonEngagement[]): PersonEnga
   });
 };
 
-/**
- * Every organisation the citizen may act for — their own engagements plus any granted by mandate —
- * each resolved to the party id that errands are scoped by.
- *
- * An organisation whose party id cannot be resolved is dropped rather than failing the whole call:
- * one unresolvable engagement must not lock the citizen out of the others. Dropping narrows the
- * scope and never widens it, but it is logged, because it silently hides that organisation's
- * errands.
- */
-export const getMyOrganizations = async (
-  personNumber: string,
-  partyId: string,
-  req: Sender,
-  api: LegalEntityApi = defaultApi,
-): Promise<OrganizationDTO[]> => {
-  const [personEngagements, mandateEngagements] = await Promise.all([
-    getPersonEngagements(personNumber, req, api).catch((error: unknown) => {
-      logger.error('Could not read the citizen engagements', error);
-      return [] as PersonEngagement[];
-    }),
-    getMandateEngagements(partyId, req, api).catch((error: unknown) => {
-      logger.error('Could not read the mandate engagements', error);
-      return [] as PersonEngagement[];
-    }),
-  ]);
+/** Organisations per service key. */
+export type RepresentingOrganizations = Record<string, OrganizationDTO[]>;
 
-  const engagements = dedupeByOrganizationNumber([...personEngagements, ...mandateEngagements]);
-
+const toOrganizations = async (engagements: PersonEngagement[], req: Sender, api: LegalEntityApi): Promise<OrganizationDTO[]> => {
   const organizations = await Promise.all(
     engagements.map(async (engagement): Promise<OrganizationDTO | undefined> => {
       const organizationNumber = engagement.organizationNumber ?? '';
@@ -154,4 +136,45 @@ export const getMyOrganizations = async (
   );
 
   return organizations.filter((organization): organization is OrganizationDTO => organization !== undefined);
+};
+
+/**
+ * Every organisation the citizen may act for, per form — their own engagements plus any granted by
+ * mandate in that form's namespace — each resolved to the party id that errands are scoped by.
+ *
+ * An organisation whose party id cannot be resolved is dropped rather than failing the whole call:
+ * one unresolvable engagement must not lock the citizen out of the others. Dropping narrows the
+ * scope and never widens it, but it is logged, because it silently hides that organisation's
+ * errands.
+ */
+export const getMyOrganizations = async (
+  personNumber: string,
+  partyId: string,
+  req: Sender,
+  api: LegalEntityApi = defaultApi,
+  services: ReadonlyMap<string, string> = serviceNamespaces,
+): Promise<RepresentingOrganizations> => {
+  const personEngagements = await getPersonEngagements(personNumber, req, api).catch((error: unknown) => {
+    logger.error('Could not read the citizen engagements', error);
+    return [] as PersonEngagement[];
+  });
+  // Own engagements apply to every form, so they are resolved once.
+  const own = await toOrganizations(dedupeByOrganizationNumber(personEngagements), req, api);
+
+  const entries = await Promise.all(
+    [...services].map(async ([serviceKey, namespace]): Promise<[string, OrganizationDTO[]]> => {
+      const mandateEngagements = await getMandateEngagements(partyId, namespace, req, api).catch((error: unknown) => {
+        logger.error(`Could not read the mandate engagements in namespace ${namespace}`, error);
+        return [] as PersonEngagement[];
+      });
+      // The own engagement wins over its mandate copy; it carries the signatory flag.
+      const granted = dedupeByOrganizationNumber(mandateEngagements).filter(
+        engagement => !own.some(organization => organization.organizationNumber === engagement.organizationNumber),
+      );
+
+      return [serviceKey, [...own, ...(await toOrganizations(granted, req, api))]];
+    }),
+  );
+
+  return Object.fromEntries(entries);
 };

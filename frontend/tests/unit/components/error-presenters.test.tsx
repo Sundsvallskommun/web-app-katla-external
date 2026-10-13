@@ -10,6 +10,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
+  useParams: () => ({ service: 'alkoholtillstand' }),
   useRouter: () => ({ push: vi.fn() }),
 }));
 

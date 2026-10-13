@@ -7,6 +7,7 @@ import authMiddleware from '@/middlewares/auth.middleware';
 import { MyOrganizationsDTO } from '@/responses/legal-entity.response';
 import { StakeholderDTO } from '@/responses/supportmanagement.response';
 import { completePrimaryStakeholders, primaryStakeholderFor } from '@/utils/primary-stakeholder';
+import { requireServiceKey } from '@/utils/service-context';
 import { mapStakeholderToStakeholderDTO } from '@/utils/stakeholder-mapping';
 
 @Controller()
@@ -22,7 +23,7 @@ export class LegalEntityController {
   @UseBefore(authMiddleware)
   @ResponseSchema(MyOrganizationsDTO)
   myOrganizations(@Req() req: RequestWithUser): MyOrganizationsDTO {
-    const organizations = req.session.representingBusinessChoices;
+    const organizations = req.session.representingBusinessChoices?.[requireServiceKey(req)];
 
     // Resolved at login. Absent means the lookup failed, which must read as a failure rather than
     // as "belongs to nothing" — the same fail-closed rule the errand endpoints apply.
@@ -39,7 +40,9 @@ export class LegalEntityController {
   @UseBefore(authMiddleware)
   @ResponseSchema(StakeholderDTO)
   async ownerStakeholder(@Req() req: RequestWithUser, @Param('partyId') partyId: string): Promise<StakeholderDTO> {
-    const organization = req.session.representingBusinessChoices?.find(candidate => candidate.partyId.toLowerCase() === partyId.toLowerCase());
+    const organization = req.session.representingBusinessChoices?.[requireServiceKey(req)]?.find(
+      candidate => candidate.partyId.toLowerCase() === partyId.toLowerCase(),
+    );
 
     if (!organization) {
       throw new HttpException(404, 'Organization not found');

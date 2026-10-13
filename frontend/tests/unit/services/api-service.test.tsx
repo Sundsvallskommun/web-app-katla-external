@@ -1,4 +1,4 @@
-import { ApiResponse, handleError } from '@services/api-service';
+import { ApiResponse, handleError, requestOptions } from '@services/api-service';
 import type { AxiosError } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -115,5 +115,25 @@ describe('Api service route guard', () => {
     const { loginRedirectUrl } = await import('@services/api-service');
 
     expect(loginRedirectUrl(unauthorized, '/registrering/aot/oversikt', origin)).toBeUndefined();
+  });
+});
+
+describe('Api service request options', () => {
+  it('names the form of the current page so the backend can pick its namespace', () => {
+    expect(requestOptions(undefined, '/alkoholtillstand/arende/AOT-26090002/grundinformation').headers).toMatchObject({
+      'x-service-key': 'alkoholtillstand',
+      'Content-Type': 'application/json',
+    });
+  });
+
+  it('sends no form header outside a form', () => {
+    expect(requestOptions(undefined, '/login').headers).not.toHaveProperty('x-service-key');
+  });
+
+  it('keeps caller headers replacing the defaults, as an upload relies on', () => {
+    const headers = requestOptions({ headers: {} }, '/en/alkoholtillstand').headers;
+
+    expect(headers).toMatchObject({ 'x-service-key': 'alkoholtillstand' });
+    expect(headers).not.toHaveProperty('Content-Type');
   });
 });

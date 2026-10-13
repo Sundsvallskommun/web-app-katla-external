@@ -16,6 +16,7 @@ import { aboutErrandSection, selectCategorization } from '../utils/categorizatio
 import { MOCK_COUNTRY_CODE_PHONE_NUMBER, MOCK_EMAIL, MOCK_HYPHEN_PERSON_NUMBER } from '../utils/constants';
 import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
 import { emptyRoute, jsonRoute } from '../utils/routes';
+import { SERVICE_PATH } from '../utils/service';
 import {
   addSelfAsStakeholder,
   addStakeholder,
@@ -87,7 +88,7 @@ test.describe('Register new errand page', () => {
     await page.route('**/supportmanagement/metadata', jsonRoute(mockMetadata));
     // 404 is the errand type having no form yet, not a failure.
     await page.route('**/schemas/**', emptyRoute(404));
-    await page.goto(appUrl('/alkoholtillstand'));
+    await page.goto(appUrl(SERVICE_PATH));
 
     // Visible sections do not prove the server-rendered page has hydrated.
     // The client enables the register button, so it is the flow's readiness boundary.

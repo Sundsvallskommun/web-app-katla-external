@@ -14,6 +14,7 @@ import {
   mockMissingErrandNumber,
   mockOrganizationPartyId,
   mockSecondaryOrganizationPartyId,
+  mockServiceKey,
 } from './helpers/mock-data';
 
 const { get } = vi.hoisted(() => ({ get: vi.fn<(config: { url: string }) => Promise<{ data: unknown }>>() }));
@@ -31,7 +32,11 @@ vi.mock('@/services/api.service', () => ({
 const representing = (partyId: string) => ({ partyId, organizationNumber: `nr-${partyId}`, organizationName: `Org ${partyId}` });
 
 const requestWithOrganizations = (organizationPartyIds?: string[]) =>
-  ({ user: { partyId: mockCitizenPartyId }, session: { representingBusinessChoices: organizationPartyIds?.map(representing) } }) as never;
+  ({
+    user: { partyId: mockCitizenPartyId },
+    headers: { 'x-service-key': mockServiceKey },
+    session: { representingBusinessChoices: organizationPartyIds && { [mockServiceKey]: organizationPartyIds.map(representing) } },
+  }) as never;
 
 const asQuery = (query: Record<string, unknown>): ErrandsQueryDTO => query;
 // Read the param back rather than decoding the raw URL: URLSearchParams encodes the spaces in

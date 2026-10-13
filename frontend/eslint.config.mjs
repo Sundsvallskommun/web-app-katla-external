@@ -28,6 +28,7 @@ export default tseslint.config(
       '*.config.mts',
       '*.config.ts',
       'middleware-envs-generator.mjs',
+      'middleware-envs.js',
     ],
   },
   // Next.js (React + react-hooks + @next/next + core-web-vitals + @typescript-eslint-bas).

@@ -8,9 +8,11 @@ import { ListFilter } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { servicePath } from 'src/constants/services';
+import { useService } from 'src/hooks/use-service';
 
 export const ErrandFilter: React.FC = () => {
+  const service = useService();
   const { t } = useTranslation();
   const [show, setShow] = useState<boolean>(false);
 
@@ -34,12 +36,7 @@ export const ErrandFilter: React.FC = () => {
             {show ? t('filtering:hide_filter') : t('filtering:show_filter')}
           </Button>
         )}
-        <LinkButton
-          href={ALCOHOL_PERMIT_SERVICE_PATH}
-          data-cy="register-new-errand-button"
-          color="vattjom"
-          variant="primary"
-        >
+        <LinkButton href={servicePath(service)} data-cy="register-new-errand-button" color="vattjom" variant="primary">
           {t('filtering:new_errand')}
         </LinkButton>
       </div>

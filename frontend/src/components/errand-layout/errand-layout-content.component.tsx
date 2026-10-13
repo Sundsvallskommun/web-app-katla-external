@@ -3,7 +3,7 @@
 import { pathWithoutLocale } from '@app/locale-path';
 import { jsonParametersToErrandFormData } from '@components/json/utils/schema-utils';
 import { ErrorAlertList } from '@components/misc/error-alert.component';
-import { VisibleTabs } from '@components/tabs/tabs';
+import { visibleTabsFor } from '@components/tabs/tabs';
 import { MobileWizard } from '@components/wizard/mobile-wizard.component';
 import { FormValidationProvider } from '@contexts/form-validation-provider';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,8 +20,10 @@ import { useEffect, useRef, useState } from 'react';
 import { FormProvider, Resolver, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { MOBILE_BREAKPOINT } from 'src/constants/responsive';
+import { servicePath } from 'src/constants/services';
 import { useLoadMetadata } from 'src/hooks/use-load-metadata';
 import { useMediaQuery } from 'src/hooks/use-media-query';
+import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { useWizardStore } from 'src/stores/wizard-store';
 import * as yup from 'yup';
@@ -29,7 +31,6 @@ import * as yup from 'yup';
 const FormSchema = yup.object({}).required();
 const REGISTER_ROUTE_IDENTITY = 'new-errand';
 const INVALID_ROUTE_IDENTITY = 'invalid-errand-route';
-const REGISTER_ROUTE_PATTERN = /\/alkoholtillstand\/?$/;
 
 type ErrandRoute =
   | { identity: typeof REGISTER_ROUTE_IDENTITY; kind: 'register' }
@@ -61,6 +62,7 @@ const createLinkTabProps = (href: string) => ({ as: NextLink, href });
 
 const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route }) => {
   const { t } = useTranslation();
+  const service = useService();
   const registerNewErrand = route.kind === 'register';
   const requestedErrandNumber = route.kind === 'existing' ? route.errandNumber : null;
   const initialFocus = useRef<HTMLBodyElement>(null);
@@ -216,18 +218,20 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
                       panelsClassName="border-t-1"
                       size="sm"
                     >
-                      {VisibleTabs.filter((tab) => tab.visible).map((tab) => {
-                        return (
-                          <Tabs.Item key={tab.path}>
-                            <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
-                              {t(tab.labelKey)}
-                            </Tabs.Button>
-                            <Tabs.Content>
-                              <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
-                            </Tabs.Content>
-                          </Tabs.Item>
-                        );
-                      })}
+                      {visibleTabsFor(service)
+                        .filter((tab) => tab.visible)
+                        .map((tab) => {
+                          return (
+                            <Tabs.Item key={tab.path}>
+                              <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
+                                {t(tab.labelKey)}
+                              </Tabs.Button>
+                              <Tabs.Content>
+                                <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
+                              </Tabs.Content>
+                            </Tabs.Item>
+                          );
+                        })}
                     </Tabs>
                   </Main>
                 </div>
@@ -242,10 +246,11 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
 
 export const ErrandLayoutContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathName = usePathname();
+  const service = useService();
   const { errandnumber } = useParams<{ errandnumber?: string }>();
 
   let route: ErrandRoute;
-  if (REGISTER_ROUTE_PATTERN.test(pathName)) {
+  if (pathWithoutLocale(pathName).replace(/\/$/, '') === servicePath(service)) {
     route = { identity: REGISTER_ROUTE_IDENTITY, kind: 'register' };
   } else if (errandnumber) {
     route = { errandNumber: errandnumber, identity: `existing:${errandnumber}`, kind: 'existing' };

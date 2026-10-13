@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   jsonParametersToErrandFormData: vi.fn(() => []),
   metadataLoadState: { value: 'ready' },
   pathname: { value: '/alkoholtillstand/arende/ERRAND-A/grundinformation' },
-  params: { value: { errandnumber: undefined as string | undefined } },
+  params: { value: { service: 'alkoholtillstand', errandnumber: undefined as string | undefined } },
   register: vi.fn(),
   save: vi.fn(),
   wizardReset: vi.fn(),
@@ -55,7 +55,7 @@ vi.mock('src/stores/wizard-store', () => ({
 }));
 
 vi.mock('@components/tabs/tabs', () => ({
-  VisibleTabs: [{ labelKey: 'common:tabs.basic_information', path: '/grundinformation', visible: true }],
+  visibleTabsFor: () => [{ labelKey: 'common:tabs.basic_information', path: '/grundinformation', visible: true }],
 }));
 vi.mock('@components/wizard/mobile-wizard.component', () => ({ MobileWizard: () => <div>mobile-wizard</div> }));
 vi.mock('@contexts/form-validation-provider', () => ({
@@ -155,7 +155,7 @@ const createDeferred = <T,>() => {
 
 const setExistingRoute = (errandNumber: string): void => {
   mocks.pathname.value = `/alkoholtillstand/arende/${errandNumber}/grundinformation`;
-  mocks.params.value = { errandnumber: errandNumber };
+  mocks.params.value = { service: 'alkoholtillstand', errandnumber: errandNumber };
 };
 
 const FormIdentityProbe = () => {

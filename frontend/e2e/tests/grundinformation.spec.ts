@@ -5,6 +5,7 @@ import { mockMetadata } from '../fixtures/mockMetadata';
 import { mockReporterStakeholder } from '../fixtures/mockStakeholder';
 import { MOCK_COUNTRY_CODE_PHONE_NUMBER } from '../utils/constants';
 import { jsonRoute } from '../utils/routes';
+import { errandPagePath } from '../utils/service';
 import { expect, test } from '../utils/test';
 
 const MOBILE_VIEWPORT = { width: 431, height: 932 };
@@ -24,7 +25,7 @@ const longContact = {
   phoneNumbers: [MOCK_COUNTRY_CODE_PHONE_NUMBER],
 };
 
-const errandPath = `/alkoholtillstand/arende/${mockErrand.errandNumber}/grundinformation`;
+const errandPath = errandPagePath(mockErrand.errandNumber);
 
 // boundingBox() returns null for elements that are not visible. Without this check an
 // unmeasurable element would quietly reduce the comparisons below to 0 <= 0 instead of failing.

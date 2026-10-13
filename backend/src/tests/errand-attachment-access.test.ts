@@ -13,6 +13,7 @@ import {
   mockForeignOrganizationPartyId,
   mockOrganizationPartyId,
   mockOtherCitizenPartyId,
+  mockServiceKey,
 } from './helpers/mock-data';
 
 const { get, post, patch, deleteRequest } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), patch: vi.fn(), deleteRequest: vi.fn() }));
@@ -32,7 +33,8 @@ const representing = (partyId: string) => ({ partyId, organizationNumber: `nr-${
 const requestAs = (partyId: string, organizationPartyIds: string[] = [mockOrganizationPartyId]) =>
   ({
     user: { partyId },
-    session: { representingBusinessChoices: organizationPartyIds.map(representing) },
+    headers: { 'x-service-key': mockServiceKey },
+    session: { representingBusinessChoices: { [mockServiceKey]: organizationPartyIds.map(representing) } },
   }) as never;
 
 const upstreamErrand = (reporterUserId: string, organizationPartyId: string, lifecycle = 'DRAFT') => {

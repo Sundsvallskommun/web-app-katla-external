@@ -14,9 +14,10 @@ import { prepareErrandForApi } from '@utils/prepare-errand';
 import { useRouter } from 'next/navigation';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { errandPath } from 'src/constants/routes';
+import { errandPath } from 'src/constants/services';
 import { useAttachmentUpload } from 'src/hooks/use-attachment-upload';
 import { useReportValidationError } from 'src/hooks/use-report-validation-error';
+import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
 
 /**
@@ -27,6 +28,7 @@ import { useMetadataStore } from 'src/stores/metadata-store';
  */
 export const useSaveErrand = () => {
   const { t } = useTranslation();
+  const service = useService();
   const { t: tForms, i18n } = useTranslation('forms');
   const locale = i18n.resolvedLanguage ?? i18nConfig.defaultLocale;
   const toastMessage = useSnackbar();
@@ -69,12 +71,12 @@ export const useSaveErrand = () => {
     if (!(await validate('draft'))) return;
 
     const errand = await save('DRAFT', t('errand-information:save_message.draft'));
-    if (errand && navigate) router.push(errandPath(errand.errandNumber));
+    if (errand && navigate) router.push(errandPath(service, errand.errandNumber));
   };
 
   const register = async ({ logout = false }: { logout?: boolean } = {}): Promise<void> => {
     const errand = await save('ACTIVE', t('errand-information:save_message.register'));
-    if (errand) router.push(logout ? '/logout' : errandPath(errand.errandNumber));
+    if (errand) router.push(logout ? '/logout' : errandPath(service, errand.errandNumber));
   };
 
   return { validate, saveDraft, register };

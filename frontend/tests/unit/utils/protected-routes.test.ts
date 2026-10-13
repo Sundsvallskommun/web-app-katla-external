@@ -1,7 +1,7 @@
 import { isProtectedRoute, parseProtectedRoutes, routePath } from '@utils/protected-routes';
 import { describe, expect, it } from 'vitest';
 
-const routes = parseProtectedRoutes('/oversikt,/alkoholtillstand');
+const routes = parseProtectedRoutes('/alkoholtillstand');
 
 describe('parseProtectedRoutes', () => {
   it('drops the empty entries an unset env var would otherwise produce', () => {
@@ -13,7 +13,7 @@ describe('parseProtectedRoutes', () => {
 
 describe('isProtectedRoute', () => {
   it('guards the listed pages and everything nested under them', () => {
-    expect(isProtectedRoute('/oversikt', routes)).toBe(true);
+    expect(isProtectedRoute('/alkoholtillstand/oversikt', routes)).toBe(true);
     expect(isProtectedRoute('/alkoholtillstand', routes)).toBe(true);
     expect(isProtectedRoute('/alkoholtillstand/arende/AOT-26090002/grundinformation', routes)).toBe(true);
   });
@@ -25,7 +25,7 @@ describe('isProtectedRoute', () => {
   });
 
   it('does not match a route that merely starts with the same characters', () => {
-    expect(isProtectedRoute('/oversikten', routes)).toBe(false);
+    expect(isProtectedRoute('/alkoholtillstandet', routes)).toBe(false);
   });
 
   it('guards nothing when the list is empty', () => {
