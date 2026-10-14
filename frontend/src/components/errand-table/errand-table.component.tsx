@@ -8,8 +8,9 @@ import { getTypeDisplayName } from '@utils/errand-helpers';
 import dayjs from 'dayjs';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { errandPath } from 'src/constants/routes';
+import { errandPath } from 'src/constants/services';
 import { useOverviewErrands } from 'src/hooks/use-overview-errands';
+import { useService } from 'src/hooks/use-service';
 import { useSortStore } from 'src/stores/sort-store';
 
 import { ErrandTableFooter } from './errand-table-footer.component';
@@ -17,6 +18,7 @@ import { ErrandTableHeader } from './errand-table-header.component';
 
 export const ErrandTable: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const { rowHeight } = useSortStore();
   const { rows, isLoading, totalPages, errandsError, metadataError } = useOverviewErrands();
 
@@ -51,7 +53,7 @@ export const ErrandTable: React.FC = () => {
                 <Table.Column>
                   <Link
                     as={NextLink}
-                    href={errandPath(errand.errandNumber)}
+                    href={errandPath(service, errand.errandNumber)}
                     aria-label={t('common:errand-table.open_errand', { errandNumber: errand.errandNumber })}
                   >
                     {errand.errandNumber}

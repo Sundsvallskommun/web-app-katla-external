@@ -4,6 +4,7 @@ import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
 import { selectCategorization } from '../utils/categorization';
 import { jsonRoute } from '../utils/routes';
+import { SERVICE_PATH } from '../utils/service';
 import { addStakeholder, disclosureByTitle } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
 
@@ -24,7 +25,7 @@ test.describe('Language switching', () => {
   test.beforeEach(async ({ appUrl, page }) => {
     await page.route('**/supportmanagement/errand/create', jsonRoute(mockErrand));
     await page.route('**/supportmanagement/metadata', jsonRoute(mockMetadata));
-    await page.goto(appUrl('/alkoholtillstand'));
+    await page.goto(appUrl(SERVICE_PATH));
   });
 
   test('keeps the entered registration form when the language changes', async ({ page }) => {

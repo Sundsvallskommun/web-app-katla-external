@@ -1,4 +1,4 @@
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { ServiceKey, servicePath } from 'src/constants/services';
 
 interface TabItem {
   labelKey: string;
@@ -6,8 +6,8 @@ interface TabItem {
   visible: boolean;
 }
 
-export const VisibleTabs: TabItem[] = [
-  { labelKey: 'common:tabs.basic_information', path: ALCOHOL_PERMIT_SERVICE_PATH, visible: true },
+export const visibleTabsFor = (service: ServiceKey): TabItem[] => [
+  { labelKey: 'common:tabs.basic_information', path: servicePath(service), visible: true },
   // { labelKey: 'common:tabs.messages', path: `/arende/${errandnumber}/meddelanden`, visible: true },
   // { labelKey: 'common:tabs.attachments', path: `/arende/${errandnumber}/bilagor`, visible: true },
 ];

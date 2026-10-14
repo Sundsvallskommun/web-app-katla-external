@@ -5,6 +5,7 @@ import { mockMetadata } from '../fixtures/mockMetadata';
 import { selectCategorization } from '../utils/categorization';
 import { selectErrandOwner } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
+import { SERVICE_PATH } from '../utils/service';
 import { disclosureByTitle } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
 
@@ -29,7 +30,7 @@ test.describe('Bilagor', () => {
     // The namespace is what maps the errand type to its schema.
     await page.route('**/supportmanagement/metadata', jsonRoute({ ...mockMetadata, namespace: 'AOT' }));
     await page.route('**/schemas/**', jsonRoute(schemaWithPowerOfAttorney));
-    await page.goto(appUrl('/alkoholtillstand'));
+    await page.goto(appUrl(SERVICE_PATH));
     await expect(page.getByTestId('register-errand')).toBeEnabled();
   });
 

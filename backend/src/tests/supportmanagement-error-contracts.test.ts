@@ -6,6 +6,7 @@ import App from '@/app';
 import { SupportManagementController } from '@/controllers/supportmanagement.controller';
 import { HttpException } from '@/exceptions/HttpException';
 import ApiService from '@/services/api.service';
+import { SERVICE_KEY_HEADER } from '@/utils/service-context';
 
 import {
   mockCitizenPartyId,
@@ -16,6 +17,7 @@ import {
   mockOrganizationPartyId,
   mockPersonNumber,
   mockPhoneNumber,
+  mockServiceKey,
 } from './helpers/mock-data';
 
 vi.mock('@/middlewares/auth.middleware', () => ({
@@ -31,15 +33,18 @@ vi.mock('@/middlewares/auth.middleware', () => ({
     });
     // Errand queries are scoped to the session's organisations and 403 without them.
     // errand-organization-scope.test.ts covers that rule; here it just has to be satisfied.
-    req.session.representingBusinessChoices = [
-      { partyId: mockOrganizationPartyId, organizationNumber: mockOrganizationNumber, organizationName: mockOrganizationName },
-    ];
+    req.session.representingBusinessChoices = {
+      [mockServiceKey]: [{ partyId: mockOrganizationPartyId, organizationNumber: mockOrganizationNumber, organizationName: mockOrganizationName }],
+    };
     next();
   },
 }));
 
 const createApp = () => new App([SupportManagementController]).getServer();
 const app = createApp();
+
+// Every call names the form it acts for, as the frontend does.
+const forService = (req: request.Test) => req.set(SERVICE_KEY_HEADER, mockServiceKey);
 
 // updateErrand reads the errand first to check the reporter against the session user. These
 // tests are about the update itself, so they hand it an errand the mocked user owns.
@@ -51,13 +56,20 @@ afterEach(() => {
 });
 
 describe('SupportManagement HTTP error contracts', () => {
+  it('rejects a request that names no form or an unknown one', async () => {
+    vi.spyOn(ApiService.prototype, 'get').mockResolvedValue({ data: {}, message: 'success' });
+
+    await request(app).get('/api/supportmanagement/metadata').expect(400);
+    await request(app).get('/api/supportmanagement/metadata').set(SERVICE_KEY_HEADER, 'okand-tjanst').expect(400);
+  });
+
   it('preserves the successful create response contract', async () => {
     const postSpy = vi.spyOn(ApiService.prototype, 'post').mockResolvedValue({
       data: { id: 'errand-id', errandNumber: 'ERRAND-1', stakeholders: [] },
       message: 'success',
     });
 
-    const response = await request(app).post('/api/supportmanagement/errand/create').send({}).expect(200);
+    const response = await forService(request(app).post('/api/supportmanagement/errand/create')).send({}).expect(200);
 
     expect(response.body).toEqual({ id: 'errand-id', errandNumber: 'ERRAND-1', stakeholders: [] });
     expect(postSpy).toHaveBeenCalledWith(expect.objectContaining({ propagateClientError: true }), expect.anything());
@@ -66,7 +78,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('propagates a typed upstream error when creating an errand', async () => {
     vi.spyOn(ApiService.prototype, 'post').mockRejectedValue(new HttpException(500, 'SupportManagement unavailable'));
 
-    const response = await request(app).post('/api/supportmanagement/errand/create').send({}).expect(500);
+    const response = await forService(request(app).post('/api/supportmanagement/errand/create')).send({}).expect(500);
 
     expect(response.body).toEqual({ message: 'SupportManagement unavailable' });
   });
@@ -74,7 +86,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('returns 502 when create receives a malformed successful response', async () => {
     vi.spyOn(ApiService.prototype, 'post').mockResolvedValue({ data: {}, message: 'success' });
 
-    const response = await request(app).post('/api/supportmanagement/errand/create').send({}).expect(502);
+    const response = await forService(request(app).post('/api/supportmanagement/errand/create')).send({}).expect(502);
 
     expect(response.body).toEqual({ message: 'No stakeholders in response when creating errand' });
   });
@@ -83,7 +95,7 @@ describe('SupportManagement HTTP error contracts', () => {
     stubOwnershipLookup();
     const patchSpy = vi.spyOn(ApiService.prototype, 'patch').mockRejectedValue(new HttpException(409, 'Errand was modified elsewhere'));
 
-    const response = await request(app).patch('/api/supportmanagement/errand/errand-id').send({ title: 'Changed' }).expect(409);
+    const response = await forService(request(app).patch('/api/supportmanagement/errand/errand-id')).send({ title: 'Changed' }).expect(409);
 
     expect(response.body).toEqual({ message: 'Errand was modified elsewhere' });
     expect(patchSpy).toHaveBeenCalledWith(expect.objectContaining({ propagateClientError: true }), expect.anything());
@@ -92,7 +104,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('fails explicitly when update is given a blank errand id', async () => {
     const patchSpy = vi.spyOn(ApiService.prototype, 'patch');
 
-    const response = await request(app).patch('/api/supportmanagement/errand/%20').send({ title: 'Changed' }).expect(400);
+    const response = await forService(request(app).patch('/api/supportmanagement/errand/%20')).send({ title: 'Changed' }).expect(400);
 
     expect(response.body).toEqual({ message: 'Errand id is required when updating an errand' });
     expect(patchSpy).not.toHaveBeenCalled();
@@ -102,7 +114,7 @@ describe('SupportManagement HTTP error contracts', () => {
     stubOwnershipLookup();
     vi.spyOn(ApiService.prototype, 'patch').mockResolvedValue({ data: undefined, message: 'success' });
 
-    const response = await request(app).patch('/api/supportmanagement/errand/errand-id').send({ title: 'Changed' }).expect(502);
+    const response = await forService(request(app).patch('/api/supportmanagement/errand/errand-id')).send({ title: 'Changed' }).expect(502);
 
     expect(response.body).toEqual({ message: 'Invalid response when updating errand' });
   });
@@ -113,8 +125,7 @@ describe('SupportManagement HTTP error contracts', () => {
     stubOwnershipLookup();
     const patchSpy = vi.spyOn(ApiService.prototype, 'patch').mockResolvedValue({ data: { stakeholders: [] }, message: 'success' });
 
-    await request(app)
-      .patch('/api/supportmanagement/errand/errand-id')
+    await forService(request(app).patch('/api/supportmanagement/errand/errand-id'))
       .send({
         stakeholders: [
           {
@@ -151,8 +162,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('drops a client-supplied id and errandNumber when creating an errand', async () => {
     const postSpy = vi.spyOn(ApiService.prototype, 'post').mockResolvedValue({ data: { stakeholders: [] }, message: 'success' });
 
-    await request(app)
-      .post('/api/supportmanagement/errand/create')
+    await forService(request(app).post('/api/supportmanagement/errand/create'))
       .send({ id: 'attacker-chosen', errandNumber: mockErrandNumber, title: 'Nytt ärende' })
       .expect(200);
 
@@ -169,7 +179,7 @@ describe('SupportManagement HTTP error contracts', () => {
     const paths = ['/api/supportmanagement/errands', '/api/supportmanagement/count', '/api/supportmanagement/metadata'];
 
     for (const path of paths) {
-      const response = await request(app).get(path).expect(503);
+      const response = await forService(request(app).get(path)).expect(503);
       expect(response.body).toEqual({ message: 'Upstream unavailable' });
     }
 
@@ -179,7 +189,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('returns 502 when a read endpoint receives an empty successful response', async () => {
     vi.spyOn(ApiService.prototype, 'get').mockResolvedValue({ data: undefined, message: 'success' });
 
-    const response = await request(app).get('/api/supportmanagement/metadata').expect(502);
+    const response = await forService(request(app).get('/api/supportmanagement/metadata')).expect(502);
 
     expect(response.body).toEqual({ message: 'Invalid response when reading metadata' });
   });
@@ -187,7 +197,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('returns 502 when count receives a malformed successful response', async () => {
     vi.spyOn(ApiService.prototype, 'get').mockResolvedValue({ data: {}, message: 'success' });
 
-    const response = await request(app).get('/api/supportmanagement/count').expect(502);
+    const response = await forService(request(app).get('/api/supportmanagement/count')).expect(502);
 
     expect(response.body).toEqual({ message: 'Invalid response when counting errands' });
   });
@@ -195,7 +205,7 @@ describe('SupportManagement HTTP error contracts', () => {
   it('serializes sort exactly once before calling SupportManagement', async () => {
     const getSpy = vi.spyOn(ApiService.prototype, 'get').mockResolvedValue({ data: { content: [] }, message: 'success' });
 
-    const response = await request(app).get('/api/supportmanagement/errands?sort=created%2Cdesc').expect(200);
+    const response = await forService(request(app).get('/api/supportmanagement/errands?sort=created%2Cdesc')).expect(200);
 
     const requestConfig = getSpy.mock.calls[0]?.[0];
     if (!requestConfig?.url) throw new Error('Expected SupportManagement request URL');

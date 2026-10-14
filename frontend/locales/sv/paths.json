@@ -6,6 +6,9 @@
     "title": "Nytt ärende",
     "description": "Ansök om serveringstillstånd eller anmäl försäljning av tobak och nikotinprodukter."
   },
+  "/alkoholtillstand/oversikt": {
+    "title": "Översikt"
+  },
   "/login": {
     "title": "Inloggningssida",
     "description": "Beskrivning utav inloggningssidan"

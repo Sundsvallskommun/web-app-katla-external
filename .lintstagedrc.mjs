@@ -15,7 +15,7 @@ const tasksFor =
     return [
       ...setup,
       `yarn --cwd ${pkg} prettier --write ${joined}`,
-      `yarn --cwd ${pkg} eslint --no-error-on-unmatched-pattern --fix --max-warnings=0 ${joined}`,
+      `yarn --cwd ${pkg} eslint --no-error-on-unmatched-pattern --no-warn-ignored --fix --max-warnings=0 ${joined}`,
     ];
   };
 

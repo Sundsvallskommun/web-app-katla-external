@@ -28,5 +28,5 @@ Object.assign(process.env, {
   SESSION_MEMORY: 'true',
   SWAGGER_ENABLED: 'false',
   MUNICIPALITY_ID: '2281',
-  NAMESPACE: 'test',
+  SERVICE_NAMESPACES: 'alkoholtillstand=test',
 });

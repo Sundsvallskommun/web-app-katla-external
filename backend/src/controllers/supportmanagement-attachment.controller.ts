@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, Res, UploadedFiles, UseBefore } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 
-import { MUNICIPALITY_ID, NAMESPACE } from '@/config';
+import { MUNICIPALITY_ID } from '@/config';
 import { getApiBase } from '@/config/api-config';
 import {
   AttachmentPurpose,
@@ -20,6 +20,7 @@ import { attachmentIdFromLocation, resolveAttachmentPurpose } from '@/utils/atta
 import { assertDraftOwnedByUser, assertErrandOwnedByUser, assertErrandReadableByUser } from '@/utils/errand-access';
 import { fetchMetadata } from '@/utils/fetch-metadata';
 import { fileUploadOptions } from '@/utils/file-upload-options';
+import { requireNamespace } from '@/utils/service-context';
 import { apiURL } from '@/utils/util';
 
 @Controller()
@@ -27,8 +28,8 @@ export class SupportManagementAttachmentController {
   private apiService = new ApiService();
   private apiBase = getApiBase('supportmanagement');
 
-  private attachmentsUrl(id: string): string {
-    return `${MUNICIPALITY_ID}/${NAMESPACE}/errands/${id}/attachments`;
+  private attachmentsUrl(id: string, req: RequestWithUser): string {
+    return `${MUNICIPALITY_ID}/${requireNamespace(req)}/errands/${id}/attachments`;
   }
 
   @Get('/supportmanagement/errand/:id/attachments')
@@ -38,7 +39,7 @@ export class SupportManagementAttachmentController {
   async getAttachments(@Req() req: RequestWithUser, @Param('id') id: string): Promise<ErrandAttachment[]> {
     await assertErrandReadableByUser(this.apiService, this.apiBase, id, req);
 
-    const res = await this.apiService.get<ErrandAttachment[]>({ baseURL: apiURL(this.apiBase), url: this.attachmentsUrl(id) }, req);
+    const res = await this.apiService.get<ErrandAttachment[]>({ baseURL: apiURL(this.apiBase), url: this.attachmentsUrl(id, req) }, req);
 
     return res.data ?? [];
   }
@@ -55,7 +56,7 @@ export class SupportManagementAttachmentController {
     await assertErrandReadableByUser(this.apiService, this.apiBase, id, req);
 
     const res = await this.apiService.get<Buffer>(
-      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id)}/${attachmentId}`, responseType: 'arraybuffer' },
+      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id, req)}/${attachmentId}`, responseType: 'arraybuffer' },
       req,
     );
 
@@ -90,7 +91,7 @@ export class SupportManagementAttachmentController {
     const res = await this.apiService.post(
       {
         baseURL: apiURL(this.apiBase),
-        url: this.attachmentsUrl(id),
+        url: this.attachmentsUrl(id, req),
         data,
         headers: { 'Content-Type': data.getHeaders()['content-type'] as string },
         propagateClientError: true,
@@ -133,7 +134,7 @@ export class SupportManagementAttachmentController {
     const data: UpdateErrandAttachmentRequest = { purpose: { id: purpose.id } };
 
     await this.apiService.patch(
-      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id)}/${attachmentId}`, data, propagateClientError: true },
+      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id, req)}/${attachmentId}`, data, propagateClientError: true },
       req,
     );
   }
@@ -149,7 +150,7 @@ export class SupportManagementAttachmentController {
     await assertDraftOwnedByUser(this.apiService, this.apiBase, id, req);
 
     await this.apiService.delete(
-      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id)}/${attachmentId}`, propagateClientError: true },
+      { baseURL: apiURL(this.apiBase), url: `${this.attachmentsUrl(id, req)}/${attachmentId}`, propagateClientError: true },
       req,
     );
 

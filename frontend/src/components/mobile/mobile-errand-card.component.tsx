@@ -7,7 +7,8 @@ import { getTypeDisplayName } from '@utils/errand-helpers';
 import dayjs from 'dayjs';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { errandPath } from 'src/constants/routes';
+import { errandPath } from 'src/constants/services';
+import { useService } from 'src/hooks/use-service';
 
 interface MobileErrandCardProps {
   errand: ErrandDTO;
@@ -15,7 +16,8 @@ interface MobileErrandCardProps {
 
 export const MobileErrandCard: React.FC<MobileErrandCardProps> = ({ errand }) => {
   const { t } = useTranslation();
-  const url = errandPath(errand.errandNumber);
+  const service = useService();
+  const url = errandPath(service, errand.errandNumber);
 
   return (
     <div className="py-4">

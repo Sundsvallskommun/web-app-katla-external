@@ -8,7 +8,13 @@ import { LegalEntityController } from '@/controllers/legal-entity.controller';
 import { HttpException } from '@/exceptions/HttpException';
 import { OrganizationDTO } from '@/responses/legal-entity.response';
 
-import { mockCitizenPartyId, mockForeignOrganizationPartyId, mockOrganizationPartyId, mockSecondaryOrganizationPartyId } from './helpers/mock-data';
+import {
+  mockCitizenPartyId,
+  mockForeignOrganizationPartyId,
+  mockOrganizationPartyId,
+  mockSecondaryOrganizationPartyId,
+  mockServiceKey,
+} from './helpers/mock-data';
 
 const { get } = vi.hoisted(() => ({ get: vi.fn<(config: { url: string }) => Promise<{ data: unknown }>>() }));
 
@@ -26,7 +32,11 @@ const organization = (partyId: string): OrganizationDTO => ({
 });
 
 const requestWithOrganizations = (organizations?: OrganizationDTO[]) =>
-  ({ user: { partyId: mockCitizenPartyId, personNumber: '199001011234' }, session: { representingBusinessChoices: organizations } }) as never;
+  ({
+    user: { partyId: mockCitizenPartyId, personNumber: '199001011234' },
+    headers: { 'x-service-key': mockServiceKey },
+    session: { representingBusinessChoices: organizations && { [mockServiceKey]: organizations } },
+  }) as never;
 
 describe('my organizations', () => {
   it('returns the organizations the session was resolved with', () => {

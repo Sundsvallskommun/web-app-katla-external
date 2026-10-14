@@ -20,11 +20,12 @@ import {
   mockOrganizationPartyId,
   mockPersonNumber,
   mockPersonNumberShort,
+  mockServiceKey,
 } from './helpers/mock-data';
 
 const { getCitizenPartyId, getMyOrganizations } = vi.hoisted(() => ({
   getCitizenPartyId: vi.fn<() => Promise<string>>(),
-  getMyOrganizations: vi.fn<() => Promise<unknown[]>>(),
+  getMyOrganizations: vi.fn<() => Promise<Record<string, unknown[]>>>(),
 }));
 
 vi.mock('@/services/citizen.service', () => ({ getCitizenPartyId }));
@@ -164,17 +165,17 @@ describe('organizations resolved at login', () => {
   });
 
   it('puts the citizen organizations in the session', async () => {
-    getMyOrganizations.mockResolvedValue([mockOrganization]);
+    getMyOrganizations.mockResolvedValue({ [mockServiceKey]: [mockOrganization] });
     const req = loggedInRequest();
 
     await loadRepresentingOrganizations(req);
 
     expect(getMyOrganizations).toHaveBeenCalledWith(mockPersonNumber, mockCitizenPartyId, expect.anything());
-    expect(req.session.representingBusinessChoices).toEqual([mockOrganization]);
+    expect(req.session.representingBusinessChoices).toEqual({ [mockServiceKey]: [mockOrganization] });
   });
 
   it('persists the session so the scope survives the redirect', async () => {
-    getMyOrganizations.mockResolvedValue([mockOrganization]);
+    getMyOrganizations.mockResolvedValue({ [mockServiceKey]: [mockOrganization] });
     const req = loggedInRequest();
 
     await loadRepresentingOrganizations(req);

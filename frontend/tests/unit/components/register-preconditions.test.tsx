@@ -33,6 +33,7 @@ vi.mock('@services/errand-service/errand-service', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
+  useParams: () => ({ service: 'alkoholtillstand' }),
   useRouter: () => ({ push: routerPushMock }),
 }));
 

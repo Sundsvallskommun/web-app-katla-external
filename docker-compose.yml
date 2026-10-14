@@ -29,7 +29,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:?err}
       ORIGIN: ${ORIGIN:?err}
       MUNICIPALITY_ID: ${MUNICIPALITY_ID:?err}
-      NAMESPACE: ${NAMESPACE:?err}
+      SERVICE_NAMESPACES: ${SERVICE_NAMESPACES:?err}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED-false}
       LOG_FORMAT: ${LOG_FORMAT-combined}
       LOG_DIR: ${LOG_DIR-../../data/logs}

@@ -8,7 +8,7 @@ import { ErrandLifecycleEnum } from '@/data-contracts/support-management-alkt-sp
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 
-import { mockCitizenPartyId, mockErrandId, mockOtherCitizenPartyId } from './helpers/mock-data';
+import { mockCitizenPartyId, mockErrandId, mockOtherCitizenPartyId, mockServiceKey } from './helpers/mock-data';
 
 const { get, patch } = vi.hoisted(() => ({ get: vi.fn(), patch: vi.fn() }));
 
@@ -22,7 +22,8 @@ vi.mock('@/services/api.service', () => ({
   },
 }));
 
-const requestAs = (partyId: string): RequestWithUser => ({ user: { partyId } }) as RequestWithUser;
+const requestAs = (partyId: string): RequestWithUser =>
+  ({ user: { partyId }, headers: { 'x-service-key': mockServiceKey } }) as unknown as RequestWithUser;
 
 const upstreamReturnsReporter = (reporterUserId: string | undefined, lifecycle = 'DRAFT') => {
   get.mockResolvedValue({ data: { id: mockErrandId, reporterUserId, lifecycle } });

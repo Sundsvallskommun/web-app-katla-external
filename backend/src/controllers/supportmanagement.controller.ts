@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, QueryParams, Req, UseBefore } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 
-import { MUNICIPALITY_ID, NAMESPACE } from '@/config';
+import { MUNICIPALITY_ID } from '@/config';
 import { getApiBase } from '@/config/api-config';
 import { Errand, ErrandLifecycleEnum, Label, PageErrand } from '@/data-contracts/support-management-alkt-sprint/data-contracts';
 import { HttpException } from '@/exceptions/HttpException';
@@ -15,6 +15,7 @@ import { assertDraftOwnedByUser, ownedWithinScope, requireOwnerPartyIds } from '
 import { fetchMetadata } from '@/utils/fetch-metadata';
 import { assertLabelsOffered, labelsChanged } from '@/utils/internal-labels';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
+import { requireNamespace } from '@/utils/service-context';
 import { mapStakeholderDTOToStakeholder, mapStakeholderToStakeholderDTO } from '@/utils/stakeholder-mapping';
 import { apiURL } from '@/utils/util';
 
@@ -67,7 +68,7 @@ export class SupportManagementController {
   @UseBefore(authMiddleware)
   @ResponseSchema(ErrandDTO)
   async createErrand(@Req() req: RequestWithUser, @Body() errand: ErrandDTO): Promise<ErrandDTO> {
-    const url = `${MUNICIPALITY_ID}/${NAMESPACE}/errands`;
+    const url = `${MUNICIPALITY_ID}/${requireNamespace(req)}/errands`;
     const baseURL = apiURL(this.apiBase);
 
     // routing-controllers binds body fields the DTO declares even when the client should never
@@ -108,7 +109,7 @@ export class SupportManagementController {
       assertLabelsOffered(errand.labels, await this.fetchOfferedLabels(req));
     }
 
-    const url = `${MUNICIPALITY_ID}/${NAMESPACE}/errands/${id}`;
+    const url = `${MUNICIPALITY_ID}/${requireNamespace(req)}/errands/${id}`;
     const baseURL = apiURL(this.apiBase);
     // Read-only upstream: sending them, even empty, fails validation with "must be null"
     const {
@@ -173,7 +174,7 @@ export class SupportManagementController {
 
   private async findErrand(filterParts: string[], req: RequestWithUser): Promise<Errand | undefined> {
     const params = new URLSearchParams({ filter: filterParts.join(FILTER_AND) });
-    const url = `${this.apiBase}/${MUNICIPALITY_ID}/${NAMESPACE}/errands?${params.toString()}`;
+    const url = `${this.apiBase}/${MUNICIPALITY_ID}/${requireNamespace(req)}/errands?${params.toString()}`;
 
     const res = await this.apiService.get<PageErrand>({ url }, req);
     if (!res.data) throw new HttpException(502, 'Invalid response when reading errand');
@@ -187,7 +188,7 @@ export class SupportManagementController {
   @ResponseSchema(PageErrandDTO)
   async getErrands(@Req() req: RequestWithUser, @QueryParams() query: ErrandsQueryDTO): Promise<PageErrand> {
     const ownerPartyIds = requireOwnerPartyIds(req);
-    const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${NAMESPACE}/errands`;
+    const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${requireNamespace(req)}/errands`;
     const params = new URLSearchParams();
 
     if (query.page !== undefined) params.append('page', String(query.page));
@@ -223,7 +224,7 @@ export class SupportManagementController {
   @ResponseSchema(ErrandCountDTO)
   async getNumberOfErrands(@Req() req: RequestWithUser, @QueryParams() query: ErrandsQueryDTO): Promise<{ count: number }> {
     const ownerPartyIds = requireOwnerPartyIds(req);
-    const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${NAMESPACE}/errands/count`;
+    const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${requireNamespace(req)}/errands/count`;
     const params = new URLSearchParams();
 
     const filterParts = [toFilterOrGroup(OWNER_FILTER_KEY, ownerPartyIds)];
@@ -249,11 +250,11 @@ export class SupportManagementController {
   }
 
   @Get('/supportmanagement/metadata')
-  @OpenAPI({ summary: 'Get all metadata for provided namespace and municipality' })
+  @OpenAPI({ summary: 'Get all metadata for the namespace of the requested service' })
   @UseBefore(authMiddleware)
   @ResponseSchema(MetadataResponseDTO)
   async getMetadata(@Req() req: RequestWithUser): Promise<MetadataResponseDTO> {
-    return { ...withCategorizationSubtree(await fetchMetadata(this.apiService, this.apiBase, req)), namespace: NAMESPACE };
+    return { ...withCategorizationSubtree(await fetchMetadata(this.apiService, this.apiBase, req)), namespace: requireNamespace(req) };
   }
 
   private async fetchOfferedLabels(req: RequestWithUser): Promise<Label[]> {

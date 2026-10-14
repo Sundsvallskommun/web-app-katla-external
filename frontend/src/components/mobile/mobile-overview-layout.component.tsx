@@ -6,8 +6,9 @@ import { capitalize } from 'lodash';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { servicePath } from 'src/constants/services';
 import { useOverviewErrands } from 'src/hooks/use-overview-errands';
+import { useService } from 'src/hooks/use-service';
 import { useFilterStore } from 'src/stores/filter-store';
 
 import { MainPageMobileHeader } from './main-page-mobile-header.component';
@@ -18,6 +19,7 @@ type OverlayType = 'menu' | null;
 
 export const MobileOverviewLayout: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const [overlay, setOverlay] = useState<OverlayType>(null);
   const { activeStatus } = useFilterStore();
   const { rows, isLoading, hasMore, loadMore, totalElements, errandsError, metadataError } = useOverviewErrands({
@@ -46,7 +48,7 @@ export const MobileOverviewLayout: React.FC = () => {
         }
       >
         <div className="px-24 py-12">
-          <LinkButton href={ALCOHOL_PERMIT_SERVICE_PATH} color="vattjom" variant="primary" className="w-full">
+          <LinkButton href={servicePath(service)} color="vattjom" variant="primary" className="w-full">
             {t('filtering:new_errand_mobile')}
           </LinkButton>
         </div>

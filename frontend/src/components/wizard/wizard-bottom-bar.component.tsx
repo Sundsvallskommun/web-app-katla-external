@@ -10,10 +10,11 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { servicePath } from 'src/constants/services';
 import { useActiveWizardSteps } from 'src/hooks/use-active-wizard-steps';
 import { useReportValidationError } from 'src/hooks/use-report-validation-error';
 import { useSaveErrand } from 'src/hooks/use-save-errand';
+import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { useWizardStore } from 'src/stores/wizard-store';
 
@@ -21,6 +22,7 @@ import { validateStep } from './wizard-step-validator';
 
 export const WizardBottomBar: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const { t: tForms, i18n } = useTranslation('forms');
   const locale = i18n.resolvedLanguage ?? i18nConfig.defaultLocale;
   const { getValues } = useFormContext<ErrandFormDTO>();
@@ -135,7 +137,7 @@ export const WizardBottomBar: React.FC = () => {
           setIsCancelOpen(false);
         }}
         onConfirm={() => {
-          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${ALCOHOL_PERMIT_SERVICE_PATH}`));
+          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
 

@@ -4,7 +4,7 @@ import { Stakeholder } from '@/data-contracts/support-management-alkt-sprint/dat
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
 
-import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId } from './helpers/mock-data';
+import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId, mockServiceKey } from './helpers/mock-data';
 
 vi.mock('@/utils/logger', () => ({ logger: { warn: vi.fn(), debug: vi.fn() } }));
 
@@ -13,8 +13,11 @@ const api = { get } as never;
 
 const req = {
   user: { partyId: mockCitizenPartyId },
+  headers: { 'x-service-key': mockServiceKey },
   session: {
-    representingBusinessChoices: [{ partyId: mockOrganizationPartyId, organizationNumber: '1111112222', organizationName: mockOrganizationName }],
+    representingBusinessChoices: {
+      [mockServiceKey]: [{ partyId: mockOrganizationPartyId, organizationNumber: '1111112222', organizationName: mockOrganizationName }],
+    },
   },
 } as unknown as RequestWithUser;
 

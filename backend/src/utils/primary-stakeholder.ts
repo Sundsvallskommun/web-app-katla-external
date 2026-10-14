@@ -4,6 +4,7 @@ import { OrganizationDTO } from '@/responses/legal-entity.response';
 import ApiService from '@/services/api.service';
 import { getOrganizationAddress } from '@/services/legal-entity.service';
 import { logger } from '@/utils/logger';
+import { requireServiceKey } from '@/utils/service-context';
 import { ORGANIZATION_NUMBER_PARAMETER } from '@/utils/stakeholder-mapping';
 
 const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
@@ -40,7 +41,9 @@ const hasAddress = (stakeholder: Stakeholder): boolean =>
 
 const completePrimaryStakeholder = async (stakeholder: Stakeholder, req: RequestWithUser, api?: AddressLookup): Promise<Stakeholder> => {
   const partyId = stakeholder.externalId?.toLowerCase();
-  const organization = req.session.representingBusinessChoices?.find(candidate => candidate.partyId.toLowerCase() === partyId);
+  const organization = req.session.representingBusinessChoices?.[requireServiceKey(req)]?.find(
+    candidate => candidate.partyId.toLowerCase() === partyId,
+  );
 
   const completed: Stakeholder = {
     ...stakeholder,

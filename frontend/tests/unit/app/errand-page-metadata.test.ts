@@ -1,4 +1,4 @@
-import { generateMetadata } from '@app/[locale]/alkoholtillstand/arende/[errandnumber]/grundinformation/page';
+import { generateMetadata } from '@app/[locale]/[service]/(errand)/arende/[errandnumber]/grundinformation/page';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@components/errand-pages/created-errand.component', () => ({ CreatedErrand: () => null }));

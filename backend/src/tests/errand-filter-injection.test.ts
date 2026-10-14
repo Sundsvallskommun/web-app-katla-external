@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SupportManagementController } from '@/controllers/supportmanagement.controller';
 import { ErrandsQueryDTO } from '@/responses/supportmanagement.response';
 
-import { mockCitizenPartyId, mockOrganizationName, mockOrganizationNumber, mockOrganizationPartyId } from './helpers/mock-data';
+import { mockCitizenPartyId, mockOrganizationName, mockOrganizationNumber, mockOrganizationPartyId, mockServiceKey } from './helpers/mock-data';
 
 const { get } = vi.hoisted(() => ({ get: vi.fn<(config: { url: string }) => Promise<{ data: unknown }>>() }));
 
@@ -23,10 +23,11 @@ vi.mock('@/services/api.service', () => ({
 // Errand queries are scoped to the session's organisations, so every request needs one.
 const req = {
   user: { partyId: mockCitizenPartyId },
+  headers: { 'x-service-key': mockServiceKey },
   session: {
-    representingBusinessChoices: [
-      { partyId: mockOrganizationPartyId, organizationNumber: mockOrganizationNumber, organizationName: mockOrganizationName },
-    ],
+    representingBusinessChoices: {
+      [mockServiceKey]: [{ partyId: mockOrganizationPartyId, organizationNumber: mockOrganizationNumber, organizationName: mockOrganizationName }],
+    },
   },
 } as never;
 // Mirrors what routing-controllers hands the handler: declared fields plus whatever else the

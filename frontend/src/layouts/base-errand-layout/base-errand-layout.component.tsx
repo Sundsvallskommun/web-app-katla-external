@@ -16,7 +16,8 @@ import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-import { ALCOHOL_PERMIT_SERVICE_PATH } from 'src/constants/routes';
+import { servicePath } from 'src/constants/services';
+import { useService } from 'src/hooks/use-service';
 import { useWizardStore } from 'src/stores/wizard-store';
 
 interface BaseErrandLayoutProps {
@@ -28,6 +29,7 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
   const user = useUserStore((s) => s.user);
   const { getValues, watch } = useFormContext<ErrandFormDTO>();
   const { t } = useTranslation();
+  const service = useService();
   const pathname = usePathname();
 
   // The header is the only place that both owns the language choice and sees the form, so the
@@ -90,7 +92,7 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
                   <>
                     <Divider orientation="vertical" className="mx-24" />
                     <LinkButton
-                      href={ALCOHOL_PERMIT_SERVICE_PATH}
+                      href={servicePath(service)}
                       data-cy="register-new-errand-button"
                       color="primary"
                       variant="tertiary"
@@ -117,7 +119,7 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
                         <PopupMenu.Items>
                           <PopupMenu.Group>
                             <PopupMenu.Item>
-                              <Link href={`${process.env.NEXT_PUBLIC_BASE_PATH}${ALCOHOL_PERMIT_SERVICE_PATH}`}>
+                              <Link href={`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`}>
                                 {t('filtering:new_errand')}
                               </Link>
                             </PopupMenu.Item>

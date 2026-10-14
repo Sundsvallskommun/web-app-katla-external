@@ -18,10 +18,15 @@ import {
   mockSecondaryOrganizationName,
   mockSecondaryOrganizationNumber,
   mockSecondaryOrganizationPartyId,
+  mockServiceKey,
   mockUnresolvableOrganizationNumber,
 } from './helpers/mock-data';
 
 const req = { user: { partyId: mockCitizenPartyId } } as never;
+
+/** The organisations resolved for the one configured form. */
+const organizationsFor = async (api: Pick<ApiService, 'get'>) =>
+  (await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api))[mockServiceKey] ?? [];
 
 /** Routes a request to a canned response by URL fragment, so order of calls does not matter. */
 const apiReturning = (routes: { match: string; response: { data: unknown } | Error }[]) =>
@@ -60,7 +65,7 @@ describe('getMyOrganizations', () => {
       guidFor(mockOrganizationNumber, mockOrganizationPartyId),
     ]);
 
-    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api);
+    const organizations = await organizationsFor(api);
 
     expect(organizations).toEqual([
       {
@@ -80,7 +85,7 @@ describe('getMyOrganizations', () => {
       guidFor(mockSecondaryOrganizationNumber, mockSecondaryOrganizationPartyId),
     ]);
 
-    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api);
+    const organizations = await organizationsFor(api);
 
     expect(organizations).toEqual([
       {
@@ -103,7 +108,7 @@ describe('getMyOrganizations', () => {
       guidFor(mockOrganizationNumber, mockOrganizationPartyId),
     ]);
 
-    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api);
+    const organizations = await organizationsFor(api);
 
     expect(organizations).toHaveLength(1);
     // The citizen's own engagement wins, so the signatory flag is not lost to the mandate copy.
@@ -126,7 +131,7 @@ describe('getMyOrganizations', () => {
       guidFor(mockOrganizationNumber, mockOrganizationPartyId),
     ]);
 
-    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api);
+    const organizations = await organizationsFor(api);
 
     expect(organizations.map(organization => organization.organizationNumber)).toEqual([mockOrganizationNumber]);
   });
@@ -139,7 +144,7 @@ describe('getMyOrganizations', () => {
       guidFor(mockSecondaryOrganizationNumber, mockSecondaryOrganizationPartyId),
     ]);
 
-    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api);
+    const organizations = await organizationsFor(api);
 
     expect(organizations.map(organization => organization.organizationNumber)).toEqual([mockSecondaryOrganizationNumber]);
   });
@@ -150,12 +155,35 @@ describe('getMyOrganizations', () => {
       { match: '/mandates', response: new Error('MyRepresentatives down') },
     ]);
 
-    await expect(getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api)).resolves.toEqual([]);
+    await expect(organizationsFor(api)).resolves.toEqual([]);
+  });
+
+  it('scopes mandates to the form whose namespace granted them, while engagements apply to every form', async () => {
+    const api = apiReturning([
+      {
+        match: 'engagements/person',
+        response: { data: [{ organizationNumber: mockOrganizationNumber, name: mockOrganizationName, isAuthorizedSignatory: true }] },
+      },
+      { match: '/first-namespace/mandates', response: { data: { mandateDetailsList: [] } } },
+      { match: '/second-namespace/mandates', response: mandateFromGrantor.response },
+      grantorIsOrganization(mockSecondaryOrganizationNumber, mockSecondaryOrganizationName),
+      guidFor(mockOrganizationNumber, mockOrganizationPartyId),
+      guidFor(mockSecondaryOrganizationNumber, mockSecondaryOrganizationPartyId),
+    ]);
+    const services = new Map([
+      ['first', 'first-namespace'],
+      ['second', 'second-namespace'],
+    ]);
+
+    const organizations = await getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api, services);
+
+    expect(organizations.first?.map(organization => organization.partyId)).toEqual([mockOrganizationPartyId]);
+    expect(organizations.second?.map(organization => organization.partyId)).toEqual([mockOrganizationPartyId, mockSecondaryOrganizationPartyId]);
   });
 
   it('skips an engagement with no organisation number', async () => {
     const api = apiReturning([{ match: 'engagements/person', response: { data: [{ name: mockOrganizationName }] } }, noMandates]);
 
-    await expect(getMyOrganizations(mockPersonNumber, mockCitizenPartyId, req, api)).resolves.toEqual([]);
+    await expect(organizationsFor(api)).resolves.toEqual([]);
   });
 });
