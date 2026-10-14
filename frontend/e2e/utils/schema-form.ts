@@ -37,7 +37,7 @@ export const loadSchemaPair = (name: string): SchemaPair => ({
 
 /**
  * One answer in a form, addressed by the schema property. Nested object members use a dotted path.
- * Rich text is compared without markup, since the editor wraps what is typed in its own tags. A time
+ * Rich text is compared by containment, since the editor wraps what is typed in its own tags. A time
  * is stored as RFC 3339 full-time with the browser's offset, so only the clock part is compared.
  */
 export type Step =
@@ -52,7 +52,7 @@ export type Answers = Record<string, unknown>;
 
 // RJSF ids: root_<property>, root_<object>_<member>, root_<array>_<row>_<column>, and
 // root_<property>-<index> for each radio or checkbox option.
-const fieldId = (fieldPath: string): string => `root_${fieldPath.split('.').join('_')}`;
+const fieldId = (fieldPath: string): string => `root_${fieldPath.replaceAll('.', '_')}`;
 
 const optionIndex = (schema: FormSchema, field: string, value: string): number => {
   const property = schema.properties[field];
@@ -83,44 +83,63 @@ const setAnswer = (answers: Answers, fieldPath: string, value: unknown): void =>
  * Fills the form in the given order and returns the answers the errand should carry. Conditional
  * fields mount only after their controlling answer, so a step that depends on another comes after it.
  */
+const option = (page: Page, schema: FormSchema, field: string, value: string): Locator =>
+  page.locator(`#${fieldId(field)}-${String(optionIndex(schema, field, value))}`);
+
+const checkOptions = async (page: Page, schema: FormSchema, field: string, values: string[]) => {
+  for (const value of values) {
+    const input = option(page, schema, field, value);
+    // The design system's checkbox input sits under an overlay; its label takes the click.
+    await page.locator('label').filter({ has: input }).click();
+    await expect(input).toBeChecked();
+  }
+};
+
+const fillRow = async (page: Page, field: string, values: Record<string, string>) => {
+  const rowId = `${fieldId(field)}_0`;
+  const [firstColumn] = Object.keys(values);
+  // A required array already renders its first row.
+  if ((await page.locator(`#${rowId}_${firstColumn ?? ''}`).count()) === 0) {
+    await page.locator(`#${fieldId(field)} button`).click();
+  }
+  for (const [column, value] of Object.entries(values)) {
+    await page.locator(`#${rowId}_${column}`).fill(value);
+  }
+};
+
+const clockOf = (time: string) => expect.stringMatching(new RegExp(String.raw`^${time}:00[+-]\d{2}:\d{2}$`));
+
+const applyStep = async (page: Page, schema: FormSchema, answers: Answers, step: Step) => {
+  if ('radio' in step) {
+    await option(page, schema, step.radio, step.value).check();
+    setAnswer(answers, step.radio, step.value);
+  } else if ('check' in step) {
+    await checkOptions(page, schema, step.check, step.values);
+    setAnswer(answers, step.check, step.values);
+  } else if ('text' in step) {
+    await page.locator(`#${fieldId(step.text)}`).fill(step.value);
+    setAnswer(answers, step.text, step.value);
+  } else if ('time' in step) {
+    await page.locator(`#${fieldId(step.time)}`).fill(step.value);
+    setAnswer(answers, step.time, clockOf(step.value));
+  } else if ('rich' in step) {
+    await page.locator(`#${fieldId(step.rich)}`).fill(step.value);
+    setAnswer(answers, step.rich, expect.stringContaining(step.value));
+  } else {
+    await fillRow(page, step.row, step.values);
+    setAnswer(answers, step.row, [step.values]);
+  }
+};
+
+/**
+ * Fills the form in the given order and returns the answers the errand should carry. Conditional
+ * fields mount only after their controlling answer, so a step that depends on another comes after it.
+ */
 export const fillSchemaForm = async (page: Page, schema: FormSchema, steps: Step[]): Promise<Answers> => {
   const answers: Answers = {};
-
   for (const step of steps) {
-    if ('radio' in step) {
-      await page.locator(`#${fieldId(step.radio)}-${String(optionIndex(schema, step.radio, step.value))}`).check();
-      setAnswer(answers, step.radio, step.value);
-    } else if ('check' in step) {
-      for (const value of step.values) {
-        const input = page.locator(`#${fieldId(step.check)}-${String(optionIndex(schema, step.check, value))}`);
-        // The design system's checkbox input sits under an overlay; its label takes the click.
-        await page.locator('label').filter({ has: input }).click();
-        await expect(input).toBeChecked();
-      }
-      setAnswer(answers, step.check, step.values);
-    } else if ('text' in step) {
-      await page.locator(`#${fieldId(step.text)}`).fill(step.value);
-      setAnswer(answers, step.text, step.value);
-    } else if ('time' in step) {
-      await page.locator(`#${fieldId(step.time)}`).fill(step.value);
-      setAnswer(answers, step.time, expect.stringMatching(new RegExp(`^${step.value}:00[+-]\\d{2}:\\d{2}$`)));
-    } else if ('rich' in step) {
-      await page.locator(`#${fieldId(step.rich)}`).fill(step.value);
-      setAnswer(answers, step.rich, step.value);
-    } else {
-      const rowId = `${fieldId(step.row)}_0`;
-      const [firstColumn] = Object.keys(step.values);
-      // A required array already renders its first row.
-      if ((await page.locator(`#${rowId}_${firstColumn ?? ''}`).count()) === 0) {
-        await page.locator(`#${fieldId(step.row)} button`).click();
-      }
-      for (const [column, value] of Object.entries(step.values)) {
-        await page.locator(`#${rowId}_${column}`).fill(value);
-      }
-      setAnswer(answers, step.row, [step.values]);
-    }
+    await applyStep(page, schema, answers, step);
   }
-
   return answers;
 };
 
@@ -154,15 +173,4 @@ export const uploadRequiredAttachments = async (page: Page, schema: FormSchema, 
 
   // The list is not rendered at all when nothing is required, so look for the marker page-wide.
   await expect(page.getByText('(saknas)')).toHaveCount(0);
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
-
-/** Drops the editor markup around rich text answers so they compare as what was typed. */
-export const withoutMarkup = (value: unknown): unknown => {
-  if (typeof value === 'string') return value.replace(/<[^>]+>/g, '');
-  if (Array.isArray(value)) return value.map(withoutMarkup);
-  if (isRecord(value))
-    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, withoutMarkup(child)]));
-  return value;
 };

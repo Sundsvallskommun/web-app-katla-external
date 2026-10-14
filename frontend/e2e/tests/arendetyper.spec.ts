@@ -6,13 +6,7 @@ import { branches, happyPaths, type SchemaCase } from '../fixtures/schemaCases';
 import { selectCategorization } from '../utils/categorization';
 import { selectErrandOwner } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
-import {
-  fillSchemaForm,
-  loadSchemaPair,
-  type SchemaPair,
-  uploadRequiredAttachments,
-  withoutMarkup,
-} from '../utils/schema-form';
+import { fillSchemaForm, loadSchemaPair, type SchemaPair, uploadRequiredAttachments } from '../utils/schema-form';
 import { SERVICE_PATH } from '../utils/service';
 import { expect, test } from '../utils/test';
 
@@ -73,7 +67,7 @@ const registersWithSchema =
     expect(body.jsonParameters).toHaveLength(1);
     const [filed] = body.jsonParameters ?? [];
     expect(filed?.schemaId).toBe(pair.schemaId);
-    const answers = withoutMarkup(filed?.value) as Record<string, unknown>;
+    const answers = filed?.value as Record<string, unknown>;
     expect(answers).toMatchObject(expected);
     for (const property of schemaCase.absent ?? []) {
       expect(answers).not.toHaveProperty(property);
