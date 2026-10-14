@@ -11,7 +11,7 @@ import { ErrandCountDTO, ErrandDTO, ErrandsQueryDTO, PageErrandDTO } from '@/res
 import { MetadataResponseDTO } from '@/responses/supportmanagement-metadata.response';
 import ApiService from '@/services/api.service';
 import { selectCategorizationSubtree, withCategorizationSubtree } from '@/utils/categorization-root';
-import { assertDraftOwnedByUser, belongsToOrganizations, requireOrganizationPartyIds } from '@/utils/errand-access';
+import { assertDraftOwnedByUser, ownedWithinScope, requireOwnerPartyIds } from '@/utils/errand-access';
 import { fetchMetadata } from '@/utils/fetch-metadata';
 import { assertLabelsOffered, labelsChanged } from '@/utils/internal-labels';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
@@ -35,8 +35,8 @@ const SAFE_FILTER_VALUE_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} ._-]*$/u;
 // quote or comma, which is what it would take to close the literal and add a condition.
 const SAFE_FILTER_KEY_PATTERN = /^[A-Za-z][A-Za-z0-9_.]*$/;
 
-// A stakeholder's externalId holds the organisation's party id.
-const ORGANIZATION_FILTER_KEY = 'stakeholders.externalId';
+// A stakeholder's externalId holds the owner's party id: the organisation's, or the citizen's own.
+const OWNER_FILTER_KEY = 'stakeholders.externalId';
 
 // Upstream leaves drafts out of a search unless the filter names lifecycle.
 const DRAFT_FILTER_TERM = `lifecycle:'${ErrandLifecycleEnum.DRAFT}'`;
@@ -148,18 +148,18 @@ export class SupportManagementController {
   }
 
   @Get('/supportmanagement/errand/:errandNumber')
-  @OpenAPI({ summary: 'Read one errand belonging to the session organisations' })
+  @OpenAPI({ summary: 'Read one errand owned by the citizen or a session organisation' })
   @UseBefore(authMiddleware)
   @ResponseSchema(ErrandDTO)
   async getErrand(@Req() req: RequestWithUser, @Param('errandNumber') errandNumber: string): Promise<ErrandDTO> {
-    const organizationPartyIds = requireOrganizationPartyIds(req);
+    const ownerPartyIds = requireOwnerPartyIds(req);
 
-    const scope = [toFilterTerm('errandNumber', errandNumber), toFilterOrGroup(ORGANIZATION_FILTER_KEY, organizationPartyIds)];
+    const scope = [toFilterTerm('errandNumber', errandNumber), toFilterOrGroup(OWNER_FILTER_KEY, ownerPartyIds)];
     const matchedErrand = (await this.findErrand(scope, req)) ?? (await this.findErrand([...scope, DRAFT_FILTER_TERM], req));
 
-    // 404, not 403: errand numbers are enumerable, so another organisation's errand must be
+    // 404, not 403: errand numbers are enumerable, so someone else's errand must be
     // indistinguishable from one that does not exist.
-    if (!matchedErrand || !belongsToOrganizations(matchedErrand, organizationPartyIds)) {
+    if (!matchedErrand || !ownedWithinScope(matchedErrand, ownerPartyIds)) {
       throw new HttpException(404, 'Errand not found');
     }
 
@@ -186,7 +186,7 @@ export class SupportManagementController {
   @UseBefore(authMiddleware)
   @ResponseSchema(PageErrandDTO)
   async getErrands(@Req() req: RequestWithUser, @QueryParams() query: ErrandsQueryDTO): Promise<PageErrand> {
-    const organizationPartyIds = requireOrganizationPartyIds(req);
+    const ownerPartyIds = requireOwnerPartyIds(req);
     const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${NAMESPACE}/errands`;
     const params = new URLSearchParams();
 
@@ -194,12 +194,12 @@ export class SupportManagementController {
     if (query.size !== undefined) params.append('size', String(query.size));
     if (query.sort !== undefined) params.append('sort', query.sort);
 
-    const filterParts = [toFilterOrGroup(ORGANIZATION_FILTER_KEY, organizationPartyIds)];
+    const filterParts = [toFilterOrGroup(OWNER_FILTER_KEY, ownerPartyIds)];
     const queryEntries = query as unknown as Record<string, unknown>;
 
     for (const key of Object.keys(queryEntries)) {
       if (['page', 'size', 'sort'].includes(key)) continue;
-      if (key === ORGANIZATION_FILTER_KEY) throw new HttpException(400, 'Organization scope is set by the server');
+      if (key === OWNER_FILTER_KEY) throw new HttpException(400, 'Owner scope is set by the server');
       const value = toFilterValue(queryEntries[key]);
 
       if (value !== undefined) {
@@ -214,7 +214,7 @@ export class SupportManagementController {
     const res = await this.apiService.get<PageErrand>({ url: finalUrl }, req);
     if (!res.data) throw new HttpException(502, 'Invalid response when reading errands');
 
-    return res.data;
+    return { ...res.data, content: res.data.content?.filter(errand => ownedWithinScope(errand, ownerPartyIds)) };
   }
 
   @Get('/supportmanagement/count')
@@ -222,15 +222,15 @@ export class SupportManagementController {
   @UseBefore(authMiddleware)
   @ResponseSchema(ErrandCountDTO)
   async getNumberOfErrands(@Req() req: RequestWithUser, @QueryParams() query: ErrandsQueryDTO): Promise<{ count: number }> {
-    const organizationPartyIds = requireOrganizationPartyIds(req);
+    const ownerPartyIds = requireOwnerPartyIds(req);
     const baseUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${NAMESPACE}/errands/count`;
     const params = new URLSearchParams();
 
-    const filterParts = [toFilterOrGroup(ORGANIZATION_FILTER_KEY, organizationPartyIds)];
+    const filterParts = [toFilterOrGroup(OWNER_FILTER_KEY, ownerPartyIds)];
     const queryEntries = query as unknown as Record<string, unknown>;
 
     for (const key of Object.keys(queryEntries)) {
-      if (key === ORGANIZATION_FILTER_KEY) throw new HttpException(400, 'Organization scope is set by the server');
+      if (key === OWNER_FILTER_KEY) throw new HttpException(400, 'Owner scope is set by the server');
       const value = toFilterValue(queryEntries[key]);
 
       if (value !== undefined) {

@@ -2,7 +2,7 @@
 
 import { StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, Modal } from '@sk-web-gui/react';
-import { createStakeholderSchema, phoneNumberFormatter } from '@utils/stakeholder';
+import { createStakeholderSchema, isOrganizationStakeholder, phoneNumberFormatter } from '@utils/stakeholder';
 import { Plus, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -156,18 +156,28 @@ export const ErrandOwnerModal: React.FC<{
       className="max-sm:!m-8 max-sm:!max-h-[calc(100vh-4rem)] max-sm:!w-[calc(100%-2rem)] max-sm:!overflow-y-auto"
     >
       <Modal.Content>
-        {/* Identity comes from the citizen's engagement in LegalEntity, so it is shown for
-            recognition but never edited here. */}
-        <div className="flex gap-8">
-          <FormControl className="min-w-0 flex-1" disabled>
-            <FormLabel>{t('errand-information:owner.modal.organization_number')}</FormLabel>
-            <Input data-cy="owner-organizationNumber" readOnly value={organizationNumber ?? ''} />
-          </FormControl>
-          <FormControl className="min-w-0 flex-1" disabled>
-            <FormLabel>{t('errand-information:owner.modal.organization_name')}</FormLabel>
-            <Input data-cy="owner-organizationName" readOnly value={owner.organizationName ?? ''} />
-          </FormControl>
-        </div>
+        {isOrganizationStakeholder(owner) ?
+          <div className="flex gap-8">
+            <FormControl className="min-w-0 flex-1" disabled>
+              <FormLabel>{t('errand-information:owner.modal.organization_number')}</FormLabel>
+              <Input data-cy="owner-organizationNumber" readOnly value={organizationNumber ?? ''} />
+            </FormControl>
+            <FormControl className="min-w-0 flex-1" disabled>
+              <FormLabel>{t('errand-information:owner.modal.organization_name')}</FormLabel>
+              <Input data-cy="owner-organizationName" readOnly value={owner.organizationName ?? ''} />
+            </FormControl>
+          </div>
+        : <div className="flex gap-8">
+            <FormControl className="min-w-0 flex-1" disabled>
+              <FormLabel>{t('errand-information:owner.modal.person_number')}</FormLabel>
+              <Input data-cy="owner-personNumber" readOnly value={owner.personNumber ?? ''} />
+            </FormControl>
+            <FormControl className="min-w-0 flex-1" disabled>
+              <FormLabel>{t('errand-information:owner.modal.name')}</FormLabel>
+              <Input data-cy="owner-name" readOnly value={`${owner.firstName ?? ''} ${owner.lastName ?? ''}`.trim()} />
+            </FormControl>
+          </div>
+        }
 
         <FormControl className="w-full">
           <FormLabel htmlFor="owner-serveringsstalle">{t('errand-information:owner.serveringsstalle')}</FormLabel>

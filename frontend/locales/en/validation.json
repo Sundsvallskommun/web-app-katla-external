@@ -22,7 +22,7 @@
     "phone_invalid": "Enter a valid mobile number, for example 0731234567, +46731234567 or 0046731234567."
   },
   "owner": {
-    "required": "Select the company or organisation the case concerns."
+    "required": "Select the company or organisation the case concerns, or add yourself as a private person."
   },
   "categorization": {
     "category_required": "Select the category the case concerns.",

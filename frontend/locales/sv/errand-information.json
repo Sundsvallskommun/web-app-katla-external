@@ -95,9 +95,9 @@
   "owner": {
     "title": "Kontaktuppgifter",
     "role_label": "Ärendeägare",
-    "description": "Ärendeägaren är det företag eller den organisation som ansöker och är vår primära kontakt när ärendet handläggs.",
+    "description": "Ärendeägaren är det företag, den organisation eller den privatperson som ansöker och är vår primära kontakt när ärendet handläggs.",
     "select_label": "Välj företag du representerar",
-    "no_organizations": "Du har inga företag eller organisationer att registrera ärendet för.",
+    "no_organizations": "Du har inga företag eller organisationer att registrera ärendet för. Du kan ansöka som privatperson.",
     "select_placeholder": "Välj företag eller organisation",
     "serveringsstalle": "Serveringsställe",
     "modal": {
@@ -107,8 +107,11 @@
       "add": "Lägg till",
       "already_added": "Uppgiften är redan tillagd.",
       "remove_value": "Ta bort {{value}}",
-      "save": "Ändra uppgifter"
-    }
+      "save": "Ändra uppgifter",
+      "person_number": "Personnummer",
+      "name": "Namn"
+    },
+    "self_lookup_failed": "Dina uppgifter kunde inte hämtas. Försök igen."
   },
   "errand_details": {
     "title": "Ärendeuppgifter",

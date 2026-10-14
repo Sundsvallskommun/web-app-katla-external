@@ -14,8 +14,7 @@ export const mockSecondOrganization: OrganizationDTO = {
   isAuthorizedSignatory: false,
 };
 
-// Two organisations so the registration flow has a choice to make; a single one is preselected
-// and would never exercise the picker.
+// Two organisations so the picker has a choice to make.
 export const getMyOrganizations: MyOrganizationsDTO = {
   organizations: [mockOrganization, mockSecondOrganization],
 };

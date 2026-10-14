@@ -27,4 +27,10 @@ describe('wizard owner step', () => {
 
     await expect(validateStep(ownerStep, formValues(owner), context)).resolves.toEqual([]);
   });
+
+  it('accepts the step once the citizen themself is the primary stakeholder', async () => {
+    const owner = [{ role: 'PRIMARY', externalIdType: 'PRIVATE', externalId: 'f1e2d3c4-0000-4000-8000-000000000009' }];
+
+    await expect(validateStep(ownerStep, formValues(owner), context)).resolves.toEqual([]);
+  });
 });

@@ -68,6 +68,8 @@ describe('errand filter injection', () => {
   it('forwards the lifecycle to the filter', async () => {
     await new SupportManagementController().getErrands(req, asQuery({ status: 'NEW', lifecycle: 'DRAFT' }));
 
-    expect(requestedFilter()).toBe(`(stakeholders.externalId:'${mockOrganizationPartyId}') and status:'NEW' and lifecycle:'DRAFT'`);
+    expect(requestedFilter()).toBe(
+      `(stakeholders.externalId:'${mockCitizenPartyId}' or stakeholders.externalId:'${mockOrganizationPartyId}') and status:'NEW' and lifecycle:'DRAFT'`,
+    );
   });
 });

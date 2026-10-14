@@ -2,7 +2,12 @@ import { StakeholderFormModal } from '@components/misc/stakeholder-modal.compone
 import { useIsContentLocked } from '@contexts/errand-content-lock-context';
 import { StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { Button } from '@sk-web-gui/react';
-import { getStakeholderRoleDisplayName, isOrganizationStakeholder, shouldShowContactDetails } from '@utils/stakeholder';
+import {
+  getStakeholderRoleDisplayName,
+  isOrganizationStakeholder,
+  PRIMARY_STAKEHOLDER_ROLE,
+  shouldShowContactDetails,
+} from '@utils/stakeholder';
 import { Pen, X } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +44,7 @@ export const StakeholderCard: React.FC<{
   const { metadata } = useMetadataStore();
   const isLocked = useIsContentLocked();
   const isOrganization = isOrganizationStakeholder(stakeholder);
+  const isPrivateOwner = !isOrganization && (roles?.includes(PRIMARY_STAKEHOLDER_ROLE) ?? false);
 
   return (
     <>
@@ -94,8 +100,6 @@ export const StakeholderCard: React.FC<{
           )}
 
           {!isOrganization && shouldShowContactDetails(roles) && (
-            // The columns stack on narrow screens; break-words is inherited so long email
-            // addresses wrap instead of forcing page width.
             <div className="flex text-md mb-10 flex-col sm:flex-row gap-y-4 gap-x-15 break-words">
               <div className="flex flex-col min-w-0">
                 {stakeholder.title && (
@@ -108,14 +112,28 @@ export const StakeholderCard: React.FC<{
                     {stakeholder.personNumber}
                   </div>
                 )}
-                {stakeholder.department ?
+                {isPrivateOwner && (stakeholder.address ?? stakeholder.city) && (
+                  <div data-cy="stakeholder-address">
+                    {[stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
+                      .filter(Boolean)
+                      .join(' ')}
+                  </div>
+                )}
+                {isPrivateOwner && stakeholder.serveringsstalle && (
+                  <div data-cy="stakeholder-serveringsstalle">
+                    <strong>{t('errand-information:owner.serveringsstalle')}:</strong> {stakeholder.serveringsstalle}
+                  </div>
+                )}
+                {stakeholder.department && (
                   <div data-cy="stakeholder-department" className="">
                     {stakeholder.department}
                   </div>
-                : <div data-cy="stakeholder-address">
+                )}
+                {!stakeholder.department && !isPrivateOwner && (
+                  <div data-cy="stakeholder-address">
                     {stakeholder.address} {stakeholder.city}
                   </div>
-                }
+                )}
               </div>
               <div className="flex flex-col min-w-0">
                 <div data-cy="stakeholder-email">

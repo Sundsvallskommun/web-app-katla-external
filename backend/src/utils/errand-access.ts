@@ -9,32 +9,23 @@ const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
 
 const isPrimaryStakeholder = (stakeholder: Stakeholder): boolean => stakeholder.role === PRIMARY_STAKEHOLDER_ROLE;
 
-/**
- * Party ids of the organisations the logged-in citizen may see errands for.
- *
- * Read from the session only — never from the request — so a client cannot widen its own scope.
- * Fails closed: no organisations in the session means no errand query at all.
- */
-export const requireOrganizationPartyIds = (req: RequestWithUser): string[] => {
-  const partyIds = (req.session.representingBusinessChoices ?? []).map(organization => organization.partyId);
+/** Owner scope: the citizen and their organisations. Session only, so a client cannot widen it. */
+export const requireOwnerPartyIds = (req: RequestWithUser): string[] => {
+  const organizations = req.session.representingBusinessChoices;
 
-  if (partyIds.length === 0) {
-    throw new HttpException(403, 'No organization in session to scope the errand query to');
+  // Undefined means the lookup failed; fail closed.
+  if (organizations === undefined) {
+    throw new HttpException(403, 'No organizations in session to scope the errand query to');
   }
 
-  return partyIds;
+  return [req.user.partyId, ...organizations.map(organization => organization.partyId)];
 };
 
-/**
- * Whether the errand's primary stakeholder is one of the session's organisations.
- *
- * The upstream filter is the belt and this is the braces: a filter that is wrong, dropped or
- * loosened upstream would otherwise hand back another organisation's errand silently.
- */
-export const belongsToOrganizations = (errand: Errand, organizationPartyIds: string[]): boolean => {
+/** Upstream filters on any stakeholder; only the primary one decides ownership. */
+export const ownedWithinScope = (errand: Errand, ownerPartyIds: string[]): boolean => {
   const primaryExternalId = errand.stakeholders?.find(isPrimaryStakeholder)?.externalId;
 
-  return primaryExternalId !== undefined && organizationPartyIds.includes(primaryExternalId);
+  return primaryExternalId !== undefined && ownerPartyIds.includes(primaryExternalId);
 };
 
 const fetchErrandById = (apiService: ApiService, apiBase: string, id: string, req: RequestWithUser): Promise<Partial<Errand> | undefined> => {
@@ -44,19 +35,11 @@ const fetchErrandById = (apiService: ApiService, apiBase: string, id: string, re
   return apiService.get<Partial<Errand>>({ baseURL, url, propagateClientError: true }, req).then(res => res.data);
 };
 
-/**
- * Upstream accepts any errand id in the namespace, so knowing an id is enough to change someone
- * else's errand. Ownership is enforced here: only the citizen who registered the errand, named
- * by their party id in reporterUserId, may change it.
- *
- * An errand with no reporterUserId (not registered through this app) is owned by nobody and
- * cannot be edited here.
- */
+/** Only the reporter may change an errand; upstream does not check. No reporter, no editor. */
 export async function assertErrandOwnedByUser(apiService: ApiService, apiBase: string, id: string, req: RequestWithUser): Promise<Partial<Errand>> {
   const errand = await fetchErrandById(apiService, apiBase, id, req);
 
-  // Party ids are guids; a casing difference between sources must not lock a citizen out of
-  // their own errand.
+  // Guid casing differs between sources.
   if (errand?.reporterUserId?.toLowerCase() !== req.user.partyId.toLowerCase()) {
     throw new HttpException(403, 'Errand belongs to another user');
   }
@@ -64,10 +47,7 @@ export async function assertErrandOwnedByUser(apiService: ApiService, apiBase: s
   return errand;
 }
 
-/**
- * Only a draft may be changed. An active errand is locked in the client, and the same lock here
- * keeps a crafted request from reopening or editing a submitted errand.
- */
+/** Only drafts may change; the client lock alone would not stop a crafted request. */
 export async function assertDraftOwnedByUser(apiService: ApiService, apiBase: string, id: string, req: RequestWithUser): Promise<Partial<Errand>> {
   const errand = await assertErrandOwnedByUser(apiService, apiBase, id, req);
 
@@ -78,17 +58,12 @@ export async function assertDraftOwnedByUser(apiService: ApiService, apiBase: st
   return errand;
 }
 
-/**
- * Reading is scoped by organisation rather than by reporter, the same rule the errand list uses:
- * a colleague in the same organisation sees the errand, and so must see what is attached to it.
- *
- * 404, not 403: ids are opaque but the distinction would still confirm that an errand exists.
- */
+/** Scoped by owner, as the list is. 404 rather than 403, so the id confirms nothing. */
 export async function assertErrandReadableByUser(apiService: ApiService, apiBase: string, id: string, req: RequestWithUser): Promise<void> {
-  const organizationPartyIds = requireOrganizationPartyIds(req);
+  const ownerPartyIds = requireOwnerPartyIds(req);
   const errand = await fetchErrandById(apiService, apiBase, id, req);
 
-  if (!errand || !belongsToOrganizations(errand, organizationPartyIds)) {
+  if (!errand || !ownedWithinScope(errand, ownerPartyIds)) {
     throw new HttpException(404, 'Errand not found');
   }
 }

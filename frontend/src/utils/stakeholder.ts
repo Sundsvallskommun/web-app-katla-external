@@ -22,7 +22,7 @@ export const isOrganizationStakeholder = (stakeholder: StakeholderDTO): boolean 
 export const shouldShowContactDetails = (roles?: string[]) =>
   !(roles?.includes(PRIMARY_STAKEHOLDER_ROLE) && appConfig.features.reducedStakeholderInfo);
 
-/** The errand owner: the organisation the errand is registered for. */
+/** The errand owner: the organisation or private person the errand is registered for. */
 export const getPrimaryStakeholder: (stakeholders: StakeholderDTO[] | undefined) => StakeholderDTO | undefined = (
   stakeholders
 ) => stakeholders?.find((s) => s.role === PRIMARY_STAKEHOLDER_ROLE);
@@ -36,6 +36,13 @@ export const organizationAsPrimaryStakeholder = (organization: OrganizationDTO):
   organizationName: organization.organizationName,
 });
 
+/** The logged in citizen as owner: a private applicant. externalId is their party id, as above. */
+export const citizenAsPrimaryStakeholder = (self: StakeholderDTO): StakeholderDTO => ({
+  ...self,
+  role: PRIMARY_STAKEHOLDER_ROLE,
+  externalIdType: PERSON_EXTERNAL_ID_TYPE,
+});
+
 /** Drops the errand owner, leaving the other stakeholders untouched. */
 export const withoutPrimaryStakeholder = (stakeholders: StakeholderDTO[] | undefined): StakeholderDTO[] =>
   (stakeholders ?? []).filter((s) => s.role !== PRIMARY_STAKEHOLDER_ROLE);
@@ -43,8 +50,8 @@ export const withoutPrimaryStakeholder = (stakeholders: StakeholderDTO[] | undef
 /** Sets the errand owner, leaving the other stakeholders untouched. An errand has one owner. */
 export const withPrimaryStakeholder = (
   stakeholders: StakeholderDTO[] | undefined,
-  organization: OrganizationDTO
-): StakeholderDTO[] => [...withoutPrimaryStakeholder(stakeholders), organizationAsPrimaryStakeholder(organization)];
+  owner: StakeholderDTO
+): StakeholderDTO[] => [...withoutPrimaryStakeholder(stakeholders), owner];
 
 export const emptyStakeholder: StakeholderDTO = {
   externalIdType: PERSON_EXTERNAL_ID_TYPE,

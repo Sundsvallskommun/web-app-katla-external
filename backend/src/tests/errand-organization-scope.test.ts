@@ -1,5 +1,6 @@
-// Errands may only ever be fetched for the organisations the session belongs to. The scope comes
-// from the session, so these tests drive the controller directly with the session they want.
+// Errands may only ever be fetched for the citizen themself and the organisations the session
+// belongs to. The scope comes from the session, so these tests drive the controller directly
+// with the session they want.
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -49,6 +50,29 @@ describe('errand organization scope', () => {
     expect(requestedFilter()).toContain(`stakeholders.externalId:'${mockOrganizationPartyId}'`);
   });
 
+  // A citizen may apply as a private person, with themself as the owner.
+  it('scopes the listing to the citizen themself as well', async () => {
+    await new SupportManagementController().getErrands(requestWithOrganizations([mockOrganizationPartyId]), asQuery({}));
+
+    expect(requestedFilter()).toContain(`stakeholders.externalId:'${mockCitizenPartyId}'`);
+  });
+
+  it('drops an errand the citizen is only a contact on, even though the filter matched it', async () => {
+    const own = { errandNumber: 'own', stakeholders: [{ role: 'PRIMARY', externalId: mockCitizenPartyId }] };
+    const contactOnly = {
+      errandNumber: 'contact',
+      stakeholders: [
+        { role: 'PRIMARY', externalId: mockForeignOrganizationPartyId },
+        { role: 'CONTACT', externalId: mockCitizenPartyId },
+      ],
+    };
+    get.mockResolvedValue({ data: { content: [own, contactOnly], totalElements: 2 } });
+
+    const page = await new SupportManagementController().getErrands(requestWithOrganizations([mockOrganizationPartyId]), asQuery({}));
+
+    expect(page.content).toEqual([own]);
+  });
+
   it('keeps the organisation scope alongside a client filter', async () => {
     await new SupportManagementController().getErrands(requestWithOrganizations([mockOrganizationPartyId]), asQuery({ status: 'NEW' }));
 
@@ -66,7 +90,7 @@ describe('errand organization scope', () => {
     );
 
     expect(requestedFilter()).toContain(
-      `(stakeholders.externalId:'${mockOrganizationPartyId}' or stakeholders.externalId:'${mockSecondaryOrganizationPartyId}')`,
+      `(stakeholders.externalId:'${mockCitizenPartyId}' or stakeholders.externalId:'${mockOrganizationPartyId}' or stakeholders.externalId:'${mockSecondaryOrganizationPartyId}')`,
     );
   });
 
@@ -77,7 +101,7 @@ describe('errand organization scope', () => {
     );
 
     expect(requestedFilter()).toBe(
-      `(stakeholders.externalId:'${mockOrganizationPartyId}' or stakeholders.externalId:'${mockSecondaryOrganizationPartyId}') and status:'NEW'`,
+      `(stakeholders.externalId:'${mockCitizenPartyId}' or stakeholders.externalId:'${mockOrganizationPartyId}' or stakeholders.externalId:'${mockSecondaryOrganizationPartyId}') and status:'NEW'`,
     );
   });
 
@@ -89,10 +113,10 @@ describe('errand organization scope', () => {
     expect(get).not.toHaveBeenCalled();
   });
 
-  it('refuses an empty organisation list rather than fetching everything', async () => {
-    await expect(new SupportManagementController().getErrands(requestWithOrganizations([]), asQuery({}))).rejects.toMatchObject({ status: 403 });
+  it('scopes a citizen without organisations to themself alone', async () => {
+    await new SupportManagementController().getErrands(requestWithOrganizations([]), asQuery({}));
 
-    expect(get).not.toHaveBeenCalled();
+    expect(requestedFilter()).toBe(`(stakeholders.externalId:'${mockCitizenPartyId}')`);
   });
 
   it('rejects a client attempt to set the organisation scope itself', async () => {
@@ -123,7 +147,9 @@ describe('errand organization scope', () => {
 
       await new SupportManagementController().getErrand(requestWithOrganizations([mockOrganizationPartyId]), mockErrandNumber);
 
-      expect(requestedFilter()).toContain(`errandNumber:'${mockErrandNumber}' and (stakeholders.externalId:'${mockOrganizationPartyId}')`);
+      expect(requestedFilter()).toContain(
+        `errandNumber:'${mockErrandNumber}' and (stakeholders.externalId:'${mockCitizenPartyId}' or stakeholders.externalId:'${mockOrganizationPartyId}')`,
+      );
     });
 
     // Upstream leaves drafts out of a search unless the filter asks for lifecycle DRAFT itself.
@@ -136,7 +162,7 @@ describe('errand organization scope', () => {
       expect(get).toHaveBeenCalledTimes(2);
       expect(requestedFilter(0)).not.toContain('lifecycle');
       expect(requestedFilter(1)).toBe(
-        `errandNumber:'${mockErrandNumber}' and (stakeholders.externalId:'${mockOrganizationPartyId}') and lifecycle:'DRAFT'`,
+        `errandNumber:'${mockErrandNumber}' and (stakeholders.externalId:'${mockCitizenPartyId}' or stakeholders.externalId:'${mockOrganizationPartyId}') and lifecycle:'DRAFT'`,
       );
     });
 
@@ -166,6 +192,34 @@ describe('errand organization scope', () => {
       ).rejects.toMatchObject({
         status: 404,
       });
+    });
+
+    it('returns an errand the citizen owns as a private person', async () => {
+      get.mockResolvedValue(errandOwnedBy(mockCitizenPartyId));
+
+      const errand = await new SupportManagementController().getErrand(requestWithOrganizations([]), mockErrandNumber);
+
+      expect(errand.errandNumber).toBe(mockErrandNumber);
+    });
+
+    it('hides an errand the citizen is only a contact on', async () => {
+      get.mockResolvedValue({
+        data: {
+          content: [
+            {
+              errandNumber: mockErrandNumber,
+              stakeholders: [
+                { role: 'PRIMARY', externalId: mockForeignOrganizationPartyId },
+                { role: 'CONTACT', externalId: mockCitizenPartyId },
+              ],
+            },
+          ],
+        },
+      });
+
+      await expect(
+        new SupportManagementController().getErrand(requestWithOrganizations([mockOrganizationPartyId]), mockErrandNumber),
+      ).rejects.toMatchObject({ status: 404 });
     });
 
     it('hides an errand that has no primary stakeholder at all', async () => {

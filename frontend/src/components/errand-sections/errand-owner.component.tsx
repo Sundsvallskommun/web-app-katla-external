@@ -8,17 +8,21 @@ import { useIsContentLocked } from '@contexts/errand-content-lock-context';
 import { useFormValidation } from '@contexts/form-validation-context';
 import { OrganizationDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { ErrandFormDTO } from '@interfaces/errand-form';
+import { getMyStakeholder } from '@services/citizen/citizen-service';
 import { getOwnerStakeholder } from '@services/organization-service/organization-service';
 import { Button, FormControl, FormErrorMessage, FormLabel, Select, Spinner } from '@sk-web-gui/react';
 import { INVALID_FIELD_ATTRIBUTE } from '@utils/focus-first-error';
 import {
+  citizenAsPrimaryStakeholder,
   getPrimaryStakeholder,
+  isOrganizationStakeholder,
+  organizationAsPrimaryStakeholder,
   PRIMARY_STAKEHOLDER_ROLE,
   withoutPrimaryStakeholder,
   withPrimaryStakeholder,
 } from '@utils/stakeholder';
-import { Building2 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Building2, UserRound } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useMyOrganizations } from 'src/hooks/use-my-organizations';
@@ -32,9 +36,11 @@ export const ErrandOwnerContent: React.FC = () => {
   const isLocked = useIsContentLocked();
   const { getValues, setValue, watch } = useFormContext<ErrandFormDTO>();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selfLookupFailed, setSelfLookupFailed] = useState(false);
 
   const stakeholders = watch('stakeholders');
   const owner = getPrimaryStakeholder(stakeholders);
+  const ownerIsPerson = owner !== undefined && !isOrganizationStakeholder(owner);
   const selectedPartyId = owner?.externalId;
   // Owners filed before the number was written carry none.
   const selectedOrganization = organizations.find((organization) => organization.partyId === selectedPartyId);
@@ -55,13 +61,16 @@ export const ErrandOwnerContent: React.FC = () => {
     [getValues, setValue]
   );
 
-  const selectOrganization = useCallback(
-    (organization: OrganizationDTO) => {
-      setValue('stakeholders', withPrimaryStakeholder(getValues('stakeholders'), organization), { shouldDirty: true });
-      void loadOwnerDetails(organization.partyId);
-    },
-    [getValues, loadOwnerDetails, setValue]
-  );
+  const selectOrganization = (organization: OrganizationDTO) => {
+    setValue(
+      'stakeholders',
+      withPrimaryStakeholder(getValues('stakeholders'), organizationAsPrimaryStakeholder(organization)),
+      {
+        shouldDirty: true,
+      }
+    );
+    void loadOwnerDetails(organization.partyId);
+  };
 
   const selectPartyId = (partyId: string) => {
     const organization = organizations.find((candidate) => candidate.partyId === partyId);
@@ -70,20 +79,26 @@ export const ErrandOwnerContent: React.FC = () => {
     else setValue('stakeholders', withoutPrimaryStakeholder(stakeholders), { shouldDirty: true });
   };
 
-  // A citizen with a single engagement has nothing to choose between, so the one option is
-  // preselected rather than left as a required click. Never on a locked errand, whose owner is
-  // whatever was filed.
-  useEffect(() => {
-    if (isLocked || selectedPartyId !== undefined || organizations.length !== 1) return;
-    selectOrganization(organizations[0]);
-  }, [isLocked, organizations, selectedPartyId, selectOrganization]);
+  const addSelf = async () => {
+    setSelfLookupFailed(false);
+    try {
+      const { data: self } = await getMyStakeholder();
+      setValue('stakeholders', withPrimaryStakeholder(getValues('stakeholders'), citizenAsPrimaryStakeholder(self)), {
+        shouldDirty: true,
+      });
+    } catch {
+      setSelfLookupFailed(true);
+    }
+  };
 
   const replaceOwner = (updated: StakeholderDTO) => {
     setValue('stakeholders', [...withoutPrimaryStakeholder(stakeholders), updated], { shouldDirty: true });
   };
 
-  const hasError = showValidation && selectedPartyId === undefined;
+  const hasError = showValidation && owner === undefined;
   const invalidFieldProps = hasError ? { [INVALID_FIELD_ATTRIBUTE]: OWNER_FIELD_ID } : {};
+  const showSelect = !isLocked && !ownerIsPerson && organizations.length > 0;
+  const showAddSelf = !isLocked && owner === undefined;
 
   return (
     <div className="flex flex-col gap-[2.4rem] pb-[2.4rem]">
@@ -93,17 +108,9 @@ export const ErrandOwnerContent: React.FC = () => {
 
       {organizationsError && <ErrorAlert message={organizationsError} />}
 
-      {organizationsLoadState === 'ready' && organizations.length === 0 && (
-        <span data-cy="no-organizations" className="text-dark-secondary">
-          {t('errand-information:owner.no_organizations')}
-        </span>
-      )}
-
-      {organizationsLoadState === 'ready' && organizations.length > 0 && (
+      {organizationsLoadState === 'ready' && (
         <div>
-          {/* The card carries the choice once made, so the select is hidden on a locked errand
-              rather than shown as a dead control. */}
-          {!isLocked && (
+          {showSelect && (
             <FormControl required invalid={hasError} className="w-full sm:w-[calc(50%-10px)]" {...invalidFieldProps}>
               <FormLabel htmlFor={OWNER_FIELD_ID}>{t('errand-information:owner.select_label')}</FormLabel>
               <Select
@@ -129,6 +136,41 @@ export const ErrandOwnerContent: React.FC = () => {
                 </FormErrorMessage>
               )}
             </FormControl>
+          )}
+
+          {!isLocked && organizations.length === 0 && (
+            <span data-cy="no-organizations" className="text-dark-secondary">
+              {t('errand-information:owner.no_organizations')}
+            </span>
+          )}
+
+          {showAddSelf && (
+            <div className="mt-16 flex flex-col gap-8" {...(showSelect ? {} : invalidFieldProps)}>
+              <Button
+                data-cy="add-self-owner-button"
+                variant="primary"
+                size="sm"
+                color="vattjom"
+                inverted={true}
+                className="w-fit"
+                leftIcon={<UserRound />}
+                onClick={() => {
+                  void addSelf();
+                }}
+              >
+                {t('errand-information:stakeholder.add_self')}
+              </Button>
+              {selfLookupFailed && (
+                <FormErrorMessage data-cy="add-self-owner-error">
+                  {t('errand-information:owner.self_lookup_failed')}
+                </FormErrorMessage>
+              )}
+              {hasError && !showSelect && (
+                <FormErrorMessage data-cy="errand-owner-error" className="text-error">
+                  {t('validation:owner.required')}
+                </FormErrorMessage>
+              )}
+            </div>
           )}
 
           {owner && (

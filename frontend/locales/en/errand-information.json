@@ -95,9 +95,9 @@
   "owner": {
     "title": "Contact details",
     "role_label": "Case owner",
-    "description": "The case owner is the company or organisation that is applying and our primary contact while the case is processed.",
+    "description": "The case owner is the company, organisation or private person that is applying and our primary contact while the case is processed.",
     "select_label": "Select the company you represent",
-    "no_organizations": "You have no companies or organisations to register the case for.",
+    "no_organizations": "You have no companies or organisations to register the case for. You can apply as a private person.",
     "select_placeholder": "Select a company or organisation",
     "serveringsstalle": "Serving location",
     "modal": {
@@ -107,8 +107,11 @@
       "add": "Add",
       "already_added": "That detail has already been added.",
       "remove_value": "Remove {{value}}",
-      "save": "Save changes"
-    }
+      "save": "Save changes",
+      "person_number": "Personal identity number",
+      "name": "Name"
+    },
+    "self_lookup_failed": "Your details could not be retrieved. Try again."
   },
   "errand_details": {
     "title": "Case details",

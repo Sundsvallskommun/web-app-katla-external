@@ -14,7 +14,7 @@ import {
 import { mockManualEditStakeholder, mockSelfStakeholder, mockStakeholder } from '../fixtures/mockStakeholder';
 import { aboutErrandSection, selectCategorization } from '../utils/categorization';
 import { MOCK_COUNTRY_CODE_PHONE_NUMBER, MOCK_EMAIL, MOCK_HYPHEN_PERSON_NUMBER } from '../utils/constants';
-import { errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
+import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
 import { emptyRoute, jsonRoute } from '../utils/routes';
 import {
   addSelfAsStakeholder,
@@ -25,7 +25,8 @@ import {
 } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
 
-const OWNER_REQUIRED_MESSAGE = 'Välj vilket företag eller vilken organisation ärendet gäller.';
+const OWNER_REQUIRED_MESSAGE =
+  'Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson.';
 const CATEGORY_REQUIRED_MESSAGE = 'Välj vilken kategori ärendet gäller.';
 
 /** A metadata label as the errand stores it, without the subtree. */
@@ -300,6 +301,52 @@ test.describe('Register new errand page', () => {
     const body = (await createRequest).postDataJSON() as CreateErrandRequestBody;
 
     expect(body.stakeholders).toEqual([ownerStakeholderFor(mockSecondOrganization)]);
+  });
+
+  test('Files the logged in citizen as a private errand owner', async ({ page }) => {
+    const owner = errandOwnerSection(page);
+    await selectCategorization(page);
+    await addSelfAsErrandOwner(page);
+
+    await expect(owner.getByTestId('stakeholder-role')).toHaveText('Ärendeägare');
+    await expect(owner.getByTestId('stakeholder-personNumber')).toHaveText(MOCK_HYPHEN_PERSON_NUMBER);
+    await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 85230 Sundsvall');
+
+    // Identity comes from the login and is not theirs to change; the serving location is.
+    await owner.getByTestId('edit-owner-button').click();
+    await expect(page.getByTestId('owner-personNumber')).toHaveValue(MOCK_HYPHEN_PERSON_NUMBER);
+    await expect(page.getByTestId('owner-personNumber')).toHaveAttribute('readonly', '');
+    await page.getByTestId('owner-serveringsstalle-input').fill('Festlokalen');
+    await page.getByTestId('owner-modal-save').click();
+    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toContainText('Festlokalen');
+
+    const submitButton = await openRegistrationConfirmation(page);
+    const createRequest = page.waitForRequest(
+      (request) => request.url().includes('/supportmanagement/errand/create') && request.method() === 'POST'
+    );
+    await submitButton.click();
+    const body = (await createRequest).postDataJSON() as CreateErrandRequestBody;
+
+    expect(body.stakeholders).toEqual([
+      expect.objectContaining({
+        role: 'PRIMARY',
+        externalIdType: 'PRIVATE',
+        externalId: mockSelfStakeholder.externalId,
+        firstName: mockSelfStakeholder.firstName,
+        serveringsstalle: 'Festlokalen',
+      }),
+    ]);
+  });
+
+  test('Removing the private owner offers the organizations and the citizen again', async ({ page }) => {
+    const owner = errandOwnerSection(page);
+    await addSelfAsErrandOwner(page);
+
+    await owner.getByTestId('remove-owner-button').click();
+
+    await expect(owner.getByTestId('stakeholder-card')).toHaveCount(0);
+    await expect(owner.getByTestId('errand-owner-select')).toHaveValue('');
+    await expect(owner.getByTestId('add-self-owner-button')).toBeVisible();
   });
 
   test('Adds a stakeholder using personnumber and registers the errand', async ({ page }) => {

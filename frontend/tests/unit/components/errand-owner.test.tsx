@@ -8,14 +8,20 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getMyOrganizationsMock, getOwnerStakeholderMock } = vi.hoisted(() => ({
+const { getMyOrganizationsMock, getMyStakeholderMock, getOwnerStakeholderMock } = vi.hoisted(() => ({
   getMyOrganizationsMock: vi.fn(),
+  getMyStakeholderMock: vi.fn(),
   getOwnerStakeholderMock: vi.fn(),
 }));
 
 vi.mock('@services/organization-service/organization-service', () => ({
   getMyOrganizations: getMyOrganizationsMock,
   getOwnerStakeholder: getOwnerStakeholderMock,
+}));
+
+vi.mock('@services/citizen/citizen-service', () => ({
+  getMyStakeholder: getMyStakeholderMock,
+  getStakeholderUsingPersonNumber: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -37,6 +43,19 @@ const BOLAGET: OrganizationDTO = {
   organizationNumber: '2222223333',
   organizationName: 'Bolaget Krog HB',
 };
+
+// Party id and person number are test values: the number is Skatteverket's, the id is arbitrary.
+const SELF: StakeholderDTO = {
+  externalId: 'f1e2d3c4-0000-4000-8000-000000000009',
+  personNumber: '19900101-2385',
+  firstName: 'Anna',
+  lastName: 'Andersson',
+  address: 'Storgatan 1',
+  zipCode: '85230',
+  city: 'Sundsvall',
+};
+
+const SELF_AS_OWNER: StakeholderDTO = { ...SELF, role: 'PRIMARY', externalIdType: 'PRIVATE' };
 
 const ownerDetails = (organization: OrganizationDTO): StakeholderDTO => ({
   role: 'PRIMARY',
@@ -96,6 +115,7 @@ describe('ErrandOwner', () => {
     getMyOrganizationsMock.mockReset();
     // Details unavailable unless a test says otherwise.
     getOwnerStakeholderMock.mockReset().mockRejectedValue(new Error('unavailable'));
+    getMyStakeholderMock.mockReset().mockResolvedValue({ data: SELF });
     // The owner card labels itself rather than looking the role up in metadata, which does not
     // name PRIMARY in this namespace. Seeded with a wrong label so a regression to the lookup shows.
     useMetadataStore.setState({ metadata: { roles: [{ name: 'PRIMARY', displayName: 'Fel etikett' }] } });
@@ -187,14 +207,14 @@ describe('ErrandOwner', () => {
     });
   });
 
-  it('preselects the only organization, since there is nothing to choose between', async () => {
+  // Applying as a private person is the other choice, so a sole organisation is not preselected.
+  it('offers the only organization without preselecting it', async () => {
     getMyOrganizationsMock.mockResolvedValue([ACME]);
     renderOwner();
 
-    await waitFor(() => {
-      expect(currentStakeholders()).toEqual([expect.objectContaining({ externalId: ACME.partyId })]);
-    });
-    expect(await screen.findByRole('combobox')).toHaveValue(ACME.partyId);
+    expect(await screen.findByRole('combobox')).toHaveValue('');
+    expect(queryCy('add-self-owner-button')).toBeInTheDocument();
+    expect(currentStakeholders()).toBeUndefined();
   });
 
   it('leaves a submitted errand alone rather than preselecting into it', async () => {
@@ -264,6 +284,7 @@ describe('ErrandOwner', () => {
     getMyOrganizationsMock.mockResolvedValue([ACME]);
     renderOwner();
 
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: ACME.partyId } });
     await waitFor(() => {
       expect(queryCy('stakeholder-card')).toBeInTheDocument();
     });
@@ -299,6 +320,7 @@ describe('ErrandOwner', () => {
     getMyOrganizationsMock.mockResolvedValue([ACME]);
     renderOwner();
 
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: ACME.partyId } });
     await waitFor(() => {
       expect(queryCy('stakeholder-card')).toBeInTheDocument();
     });
@@ -338,11 +360,126 @@ describe('ErrandOwner', () => {
     expect(screen.queryByText('errand-information:owner.no_organizations')).not.toBeInTheDocument();
   });
 
-  it('says so when the citizen has no organizations to file for', async () => {
+  it('says so when the citizen has no organizations to file for, and still offers themself', async () => {
     getMyOrganizationsMock.mockResolvedValue([]);
     renderOwner();
 
     expect(await screen.findByText('errand-information:owner.no_organizations')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(queryCy('add-self-owner-button')).toBeInTheDocument();
+  });
+
+  describe('as a private person', () => {
+    it('files the citizen as the primary stakeholder, resolved from the session', async () => {
+      getMyOrganizationsMock.mockResolvedValue([ACME, BOLAGET]);
+      renderOwner();
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+
+      await waitFor(() => {
+        expect(currentStakeholders()).toEqual([SELF_AS_OWNER]);
+      });
+      expect(getOwnerStakeholderMock).not.toHaveBeenCalled();
+    });
+
+    it('shows the citizen as the owner card and hides the organization picker meanwhile', async () => {
+      getMyOrganizationsMock.mockResolvedValue([ACME, BOLAGET]);
+      renderOwner();
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+
+      await waitFor(() => {
+        expect(queryCy('stakeholder-card')).toBeInTheDocument();
+      });
+      expect(queryCy('stakeholder-name')).toHaveTextContent('Anna Andersson');
+      expect(queryCy('stakeholder-personNumber')).toHaveTextContent('19900101-2385');
+      expect(queryCy('stakeholder-address')).toHaveTextContent('Storgatan 1 85230 Sundsvall');
+      expect(queryCy('stakeholder-role')).toHaveTextContent('errand-information:owner.role_label');
+      expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+      expect(queryCy('add-self-owner-button')).toBeNull();
+    });
+
+    it('offers the organizations and the citizen again once the owner is removed', async () => {
+      getMyOrganizationsMock.mockResolvedValue([ACME, BOLAGET]);
+      renderOwner();
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+      await waitFor(() => {
+        expect(queryCy('stakeholder-card')).toBeInTheDocument();
+      });
+      fireEvent.click(getCy('remove-owner-button'));
+
+      await waitFor(() => {
+        expect(currentStakeholders()).toEqual([]);
+      });
+      expect(await screen.findByRole('combobox')).toHaveValue('');
+      expect(queryCy('add-self-owner-button')).toBeInTheDocument();
+    });
+
+    it('replaces an organization owner rather than adding a second owner', async () => {
+      const contact = { role: 'CONTACT', firstName: 'Bo', lastName: 'Berg' };
+      getMyOrganizationsMock.mockResolvedValue([ACME, BOLAGET]);
+      renderOwner({ stakeholders: [contact] });
+
+      fireEvent.change(await screen.findByRole('combobox'), { target: { value: ACME.partyId } });
+      await waitFor(() => {
+        expect(queryCy('stakeholder-card')).toBeInTheDocument();
+      });
+      // The picker is only replaced by the button once the owner is removed.
+      expect(queryCy('add-self-owner-button')).toBeNull();
+      fireEvent.click(getCy('remove-owner-button'));
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+
+      await waitFor(() => {
+        expect(currentStakeholders()).toEqual([contact, SELF_AS_OWNER]);
+      });
+    });
+
+    it('reports a failed lookup and leaves the errand without an owner', async () => {
+      getMyOrganizationsMock.mockResolvedValue([]);
+      getMyStakeholderMock.mockRejectedValue(new Error('boom'));
+      renderOwner();
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+
+      expect(await screen.findByText('errand-information:owner.self_lookup_failed')).toBeInTheDocument();
+      expect(currentStakeholders()).toBeUndefined();
+      expect(queryCy('add-self-owner-button')).toBeInTheDocument();
+    });
+
+    it('shows the identity read-only and keeps the serving location entered for a private owner', async () => {
+      getMyOrganizationsMock.mockResolvedValue([]);
+      renderOwner();
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+      await waitFor(() => {
+        expect(queryCy('stakeholder-card')).toBeInTheDocument();
+      });
+      fireEvent.click(getCy('edit-owner-button'));
+
+      expect(queryCy('owner-personNumber')).toHaveValue('19900101-2385');
+      expect(queryCy('owner-personNumber')).toHaveAttribute('readonly');
+      expect(queryCy('owner-name')).toHaveValue('Anna Andersson');
+      expect(queryCy('owner-organizationNumber')).toBeNull();
+
+      fireEvent.change(getCy('owner-serveringsstalle-input'), { target: { value: 'Festlokalen' } });
+      fireEvent.click(getCy('owner-modal-save'));
+
+      await waitFor(() => {
+        expect(currentStakeholders()).toEqual([{ ...SELF_AS_OWNER, careOf: '', serveringsstalle: 'Festlokalen' }]);
+      });
+      expect(queryCy('stakeholder-serveringsstalle')).toHaveTextContent('Festlokalen');
+    });
+
+    it('shows a filed private owner on a loaded errand', async () => {
+      getMyOrganizationsMock.mockResolvedValue([ACME]);
+      renderOwner({ stakeholders: [SELF_AS_OWNER] });
+
+      await waitFor(() => {
+        expect(queryCy('stakeholder-card')).toBeInTheDocument();
+      });
+      expect(queryCy('stakeholder-name')).toHaveTextContent('Anna Andersson');
+      expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    });
   });
 });
