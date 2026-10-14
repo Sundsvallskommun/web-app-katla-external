@@ -30,6 +30,7 @@
   },
   "attachments": {
     "required": "The attachment \"{{label}}\" is missing.",
+    "required_several": "The attachments {{labels}} are missing.",
     "check_failed": "The attachments could not be checked. Please try again."
   },
   "stops": {

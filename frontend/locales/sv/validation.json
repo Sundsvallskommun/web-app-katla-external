@@ -30,6 +30,7 @@
   },
   "attachments": {
     "required": "Bilagan \"{{label}}\" saknas.",
+    "required_several": "Bilagorna {{labels}} saknas.",
     "check_failed": "Bilagorna kunde inte kontrolleras. Försök igen."
   },
   "stops": {

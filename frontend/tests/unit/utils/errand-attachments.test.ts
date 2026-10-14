@@ -158,6 +158,25 @@ describe('errand attachments', () => {
       expect(await validateErrandAttachments(values, t, 'sv', 'aot')).toEqual(['validation:attachments.required']);
     });
 
+    it('names every missing bilaga when several are required', async () => {
+      loadFormSchemaMock.mockResolvedValue({ schema, schemaId: 'id' });
+      const spyT = vi.fn((key: string) => key) as unknown as TFunction;
+
+      const values: ErrandFormDTO = {
+        labels,
+        errandFormData: [
+          { schemaName, schemaId: 'id', data: '{"arDuFirmatecknare":"NEJ","foretagsform":"AKTIEBOLAG"}' },
+        ],
+      };
+
+      expect(await validateErrandAttachments(values, spyT, 'sv', 'aot')).toEqual([
+        'validation:attachments.required_several',
+      ]);
+      expect(spyT).toHaveBeenCalledWith('validation:attachments.required_several', {
+        labels: '"Fullmakt", "Registerutdrag från Skatteverket"',
+      });
+    });
+
     it('lets an errand type without a schema through', async () => {
       loadFormSchemaMock.mockRejectedValue(new SchemaNotFoundError(schemaName));
 

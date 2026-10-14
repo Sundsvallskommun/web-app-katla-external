@@ -928,7 +928,17 @@
     },
     {
       "key": "BUSINESS_DESCRIPTION",
-      "label": "Verksamhetsbeskrivning"
+      "label": "Verksamhetsbeskrivning",
+      "requiredWhen": {
+        "properties": {
+          "verksamhetsbeskrivningsval": {
+            "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM"
+          }
+        },
+        "required": [
+          "verksamhetsbeskrivningsval"
+        ]
+      }
     },
     {
       "key": "INDEPENDENCE_CERTIFICATE",

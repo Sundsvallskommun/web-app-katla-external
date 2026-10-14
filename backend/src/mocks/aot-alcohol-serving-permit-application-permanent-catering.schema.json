@@ -354,7 +354,7 @@
           }
         ]
       },
-      "title": "godkänna cateringtillfälle"
+      "title": "Anmälan av cateringtillfällen"
     }
   },
   "required": [
@@ -616,174 +616,6 @@
         ]
       },
       "then": {
-        "properties": {
-          "anmalPersonerTillKunskapsprovet": true
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "anmalPersonerTillKunskapsprovet": {
-            "const": "VILL_ANMALA_NU"
-          }
-        },
-        "required": [
-          "anmalPersonerTillKunskapsprovet"
-        ]
-      },
-      "then": {
-        "properties": {
-          "personerTillKunskapsprovet": true
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "EGNA_MEDEL"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "egnaMedel"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "BANKLAN"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "banklan"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "PRIVATLAN"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "privatlan"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "annanFinansiering"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "enum": [
-                "EGNA_MEDEL",
-                "BANKLAN",
-                "PRIVATLAN",
-                "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
-              ]
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "properties": {
-          "ovrigaUpplysningarFinansiering": true
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "kunskapOmAlkohollagen": {
-            "const": "HAR_GODKANT_KUNSKAPSPROV"
-          }
-        },
-        "required": [
-          "kunskapOmAlkohollagen"
-        ]
-      },
-      "then": {
-        "required": [
-          "personnummer"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "kunskapOmAlkohollagen": {
-            "const": "DRIVER_ANNAT_FORETAG_MED_TILLSTAND"
-          }
-        },
-        "required": [
-          "kunskapOmAlkohollagen"
-        ]
-      },
-      "then": {
-        "required": [
-          "organisationsnummer"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "kunskapOmAlkohollagen": {
-            "const": "BEHOVER_SKRIVA_KUNSKAPSPROV"
-          }
-        },
-        "required": [
-          "kunskapOmAlkohollagen"
-        ]
-      },
-      "then": {
         "required": [
           "anmalPersonerTillKunskapsprovet"
         ]
@@ -803,44 +635,6 @@
       "then": {
         "required": [
           "personerTillKunskapsprovet"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "EGNA_MEDEL"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "egnaMedel"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "const": "BANKLAN"
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "required": [
-          "banklan"
         ]
       }
     },
@@ -881,30 +675,6 @@
           "annanFinansiering": true
         }
       }
-    },
-    {
-      "if": {
-        "properties": {
-          "finansiering": {
-            "contains": {
-              "enum": [
-                "EGNA_MEDEL",
-                "BANKLAN",
-                "PRIVATLAN",
-                "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
-              ]
-            }
-          }
-        },
-        "required": [
-          "finansiering"
-        ]
-      },
-      "then": {
-        "properties": {
-          "ovrigaUpplysningarFinansiering": true
-        }
-      }
     }
   ],
   "x-attachments": [
@@ -939,7 +709,17 @@
     },
     {
       "key": "BUSINESS_DESCRIPTION",
-      "label": "Verksamhetsbeskrivning"
+      "label": "Verksamhetsbeskrivning",
+      "requiredWhen": {
+        "properties": {
+          "verksamhetsbeskrivningsval": {
+            "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM"
+          }
+        },
+        "required": [
+          "verksamhetsbeskrivningsval"
+        ]
+      }
     },
     {
       "key": "BANK_STATEMENT",

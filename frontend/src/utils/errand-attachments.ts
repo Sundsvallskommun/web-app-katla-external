@@ -91,7 +91,11 @@ export async function validateErrandAttachments(
       answersOfErrand(values, schemaName),
       values.attachments
     );
-    if (missing.length > 0) return [t('validation:attachments.required', { label: missing[0].label })];
+    if (missing.length === 1) return [t('validation:attachments.required', { label: missing[0].label })];
+    if (missing.length > 1) {
+      const labels = missing.map((type) => `"${type.label}"`).join(', ');
+      return [t('validation:attachments.required_several', { labels })];
+    }
   }
 
   return [];

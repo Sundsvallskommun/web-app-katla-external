@@ -281,7 +281,7 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
         {props.title && (
           <legend className="max-w-full whitespace-normal break-words text-label-medium font-bold">
             {props.title}
-            {props.required ? ' *' : ''}
+            {props.required ? '*' : ''}
           </legend>
         )}
         {/* The description is FieldTemplate's: RJSF hands it over as the raw ui:description
