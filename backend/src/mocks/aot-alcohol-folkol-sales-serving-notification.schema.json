@@ -299,7 +299,17 @@
     },
     {
       "key": "SELF_MONITORING_PROGRAM",
-      "label": "Egenkontrollprogram"
+      "label": "Egenkontrollprogram",
+      "requiredWhen": {
+        "properties": {
+          "egenkontrollprogramFolkol": {
+            "const": "JA"
+          }
+        },
+        "required": [
+          "egenkontrollprogramFolkol"
+        ]
+      }
     },
     {
       "key": "FOOD_BUSINESS_REGISTRATION",

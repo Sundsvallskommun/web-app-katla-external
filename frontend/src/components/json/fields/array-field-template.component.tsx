@@ -35,7 +35,7 @@ export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
           className="max-w-full whitespace-normal break-words text-label-medium font-bold"
         >
           {title}
-          {required ? ' *' : ''}
+          {required ? '*' : ''}
         </legend>
       )}
 
