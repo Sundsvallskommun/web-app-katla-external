@@ -273,12 +273,12 @@
       "type": "string",
       "oneOf": [
         {
-          "const": "JAG_VILL_LADDA_UPP_BESKRIVNING",
-          "title": "Jag vill ladda upp beskrivning på besöksarrangemanget"
-        },
-        {
           "const": "JAG_VILL_BESKRIVA_BESOKSARRANGEMANGET",
           "title": "Jag vill beskriva besöksarrangemanget"
+        },
+        {
+          "const": "JAG_VILL_LADDA_UPP_BESKRIVNING",
+          "title": "Jag vill ladda upp beskrivning på besöksarrangemanget"
         }
       ],
       "title": "Besöksarrangemang"
