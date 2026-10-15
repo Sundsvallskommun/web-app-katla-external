@@ -4,6 +4,12 @@
 
 ## Open
 
+- Felsammanfattning vid inskick (GARD-10, test 2026-10-15): `useReportValidationError` visar bara
+  det första felet som toast och fokuserar fältet. Visa i stället alla valideringsfel i en
+  sammanfattning med länk till respektive fält, även för fält i nästlade objekt och villkorade
+  fält. Fälten markerar redan sina egna fel (`FieldTemplate`), så listan behöver bara samla
+  `data-invalid-field`-posterna och `transformErrors`-meddelandena.
+
 - Bilagekategori uppströms: SupportManagements `ErrandAttachment` har ingen kategori, så
   bilagetypen väljs och valideras i klienten och följer med ner i BFF:en men släpps i det uppströms
   anropet. När fältet finns räcker det att namnge det i `UPSTREAM_CATEGORY_FIELD`

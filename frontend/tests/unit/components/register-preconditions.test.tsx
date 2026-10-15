@@ -194,6 +194,29 @@ describe('What registration requires before it will submit', () => {
     expect(snackbarMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'success' }));
   });
 
+  describe('when the backend refuses the save', () => {
+    const rejectWith = (status: number) =>
+      createErrandMock.mockRejectedValue({ isAxiosError: true, response: { status } });
+
+    it('names the status so the citizen can say what went wrong', async () => {
+      rejectWith(502);
+      renderButtons({ stakeholders: WITH_CITIZEN });
+
+      clickSaveDraft();
+
+      await expectReported('errand-information:save_message.error_with_status');
+    });
+
+    it('asks the citizen to wait when the limit on writes is hit', async () => {
+      rejectWith(429);
+      renderButtons({ stakeholders: WITH_CITIZEN });
+
+      clickSaveDraft();
+
+      await expectReported('errand-information:save_message.too_many_requests');
+    });
+  });
+
   // Every errand lists the citizen; the prompt is the only way to put them back on an errand
   // where they are neither owner nor contact person.
   describe('when the citizen is missing from the stakeholders', () => {

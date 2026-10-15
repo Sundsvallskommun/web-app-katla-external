@@ -17,7 +17,9 @@
   "save_message": {
     "draft": "Draft saved",
     "register": "The case was submitted",
-    "error": "Something went wrong while saving the case"
+    "error": "Something went wrong while saving the case",
+    "error_with_status": "Something went wrong while saving the case (error code {{status}})",
+    "too_many_requests": "Too many attempts in a short time. Wait a moment and try again."
   },
   "about": {
     "title": "What do you want to apply for or report?",

@@ -13,6 +13,7 @@ import { useSnackbar } from '@sk-web-gui/react';
 import { SaveIntent, validateErrandForSave } from '@utils/errand-preconditions';
 import { prepareErrandForApi } from '@utils/prepare-errand';
 import { hasCitizen, withCitizenAsContact } from '@utils/stakeholder';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -70,6 +71,18 @@ export const useSaveErrand = () => {
     return ensureCitizenIncluded();
   };
 
+  // The backend answers a refused save with a status but no upstream body, so the status is the
+  // only clue the citizen gets about what went wrong; 429 is the one they can act on themselves.
+  const saveErrorMessage = (error: unknown): string => {
+    const contractMessage = errandFormDataContractErrorMessage(error, tForms);
+    if (contractMessage) return contractMessage;
+    const status = isAxiosError(error) ? error.response?.status : undefined;
+    if (status === 429) return t('errand-information:save_message.too_many_requests');
+    return status === undefined ?
+        t('errand-information:save_message.error')
+      : t('errand-information:save_message.error_with_status', { status });
+  };
+
   const save = async (lifecycle: ErrandLifecycle, successMessage: string): Promise<ErrandDTO | undefined> => {
     try {
       const errandData = prepareErrandForApi(getValues(), lifecycle, namespace);
@@ -80,11 +93,7 @@ export const useSaveErrand = () => {
       reset({ ...errand, errandFormData });
       return errand;
     } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
+      toastMessage({ position: 'bottom', status: 'error', message: saveErrorMessage(error) });
       return undefined;
     }
   };

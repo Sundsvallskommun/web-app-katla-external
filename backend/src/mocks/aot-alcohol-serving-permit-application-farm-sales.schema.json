@@ -157,22 +157,26 @@
     "literStarkol": {
       "type": "string",
       "title": "Hur många liter starköl tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literVin": {
       "type": "string",
       "title": "Hur många liter vin tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literSpritdrycker": {
       "type": "string",
       "title": "Hur många liter spritdrycker tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literCider": {
       "type": "string",
       "title": "Hur många liter cider eller andra jästa alkoholdrycker tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "produktionenStartade": {
       "type": "string",

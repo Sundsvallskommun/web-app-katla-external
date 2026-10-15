@@ -17,7 +17,9 @@
   "save_message": {
     "draft": "Utkast sparades",
     "register": "Ärendet skickades in",
-    "error": "Något gick fel när ärendet sparades"
+    "error": "Något gick fel när ärendet sparades",
+    "error_with_status": "Något gick fel när ärendet sparades (felkod {{status}})",
+    "too_many_requests": "För många försök på kort tid. Vänta en stund och försök igen."
   },
   "about": {
     "title": "Vad vill du ansöka/anmäla om?",
