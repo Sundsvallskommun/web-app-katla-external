@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   params: { value: { service: 'alkoholtillstand', errandnumber: undefined as string | undefined } },
   register: vi.fn(),
   save: vi.fn(),
+  self: { externalId: 'f1e2d3c4-0000-4000-8000-000000000009', firstName: 'Anna', lastName: 'Andersson' },
   wizardReset: vi.fn(),
 }));
 
@@ -48,6 +49,9 @@ vi.mock('src/hooks/use-media-query', () => ({ useMediaQuery: () => false }));
 // what this test covers, so its status is driven explicitly here.
 vi.mock('src/hooks/use-load-metadata', () => ({
   useLoadMetadata: () => ({ metadataError: null, metadataLoadState: mocks.metadataLoadState.value }),
+}));
+vi.mock('src/hooks/use-load-my-stakeholder', () => ({
+  useLoadMyStakeholder: () => ({ self: mocks.self, selfError: null, selfLoadState: 'ready' }),
 }));
 vi.mock('src/hooks/use-auto-init-reporter', () => ({ useAutoInitReporter: vi.fn() }));
 vi.mock('src/stores/wizard-store', () => ({
@@ -140,6 +144,8 @@ vi.mock('@sk-web-gui/react', () => {
     Tabs,
   };
 });
+
+const SELF_AS_CONTACT = { ...mocks.self, role: 'CONTACT', externalIdType: 'PRIVATE' };
 
 const getErrandMock = vi.mocked(getErrandUsingErrandNumber);
 
@@ -298,7 +304,7 @@ describe('errand layout route identity', () => {
     expect(mocks.jsonParametersToErrandFormData).not.toHaveBeenCalled();
   });
 
-  it('starts the registration route with fresh defaults instead of the previously loaded errand', async () => {
+  it('starts the registration route with fresh defaults and the citizen as contact, not the loaded errand', async () => {
     getErrandMock.mockResolvedValueOnce({ id: 'id-a', errandNumber: 'ERRAND-A', status: 'NEW', jsonParameters: [] });
 
     const view = render(
@@ -326,6 +332,7 @@ describe('errand layout route identity', () => {
       priority: 'MEDIUM',
       resolution: 'INFORMED',
       title: 'Empty errand',
+      stakeholders: [SELF_AS_CONTACT],
     };
     expect(mocks.save).toHaveBeenCalledWith(expectedDefaults);
     expect(mocks.register).toHaveBeenCalledWith(expectedDefaults);

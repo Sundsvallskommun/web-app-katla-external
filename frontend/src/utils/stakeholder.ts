@@ -4,6 +4,7 @@ import { appConfig } from 'src/config/appconfig';
 import * as yup from 'yup';
 
 export const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
+export const CONTACT_STAKEHOLDER_ROLE = 'CONTACT';
 
 /** SupportManagement's externalIdType for an organisation, as opposed to a private person. */
 export const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
@@ -42,6 +43,33 @@ export const citizenAsPrimaryStakeholder = (self: StakeholderDTO): StakeholderDT
   role: PRIMARY_STAKEHOLDER_ROLE,
   externalIdType: PERSON_EXTERNAL_ID_TYPE,
 });
+
+/** The logged in citizen as a contact person. */
+export const citizenAsContactStakeholder = (self: StakeholderDTO): StakeholderDTO =>
+  asPersonStakeholder({ ...self, role: CONTACT_STAKEHOLDER_ROLE });
+
+/** Manually added persons have an empty externalId, so they never match the citizen. */
+export const isCitizen = (stakeholder: StakeholderDTO, self: StakeholderDTO | undefined): boolean =>
+  Boolean(self?.externalId) && stakeholder.externalId === self?.externalId;
+
+/** True when the citizen is on the errand, as owner or as contact person. */
+export const hasCitizen = (stakeholders: StakeholderDTO[] | undefined, self: StakeholderDTO): boolean =>
+  (stakeholders ?? []).some(
+    (s) => isCitizen(s, self) && (s.role === PRIMARY_STAKEHOLDER_ROLE || s.role === CONTACT_STAKEHOLDER_ROLE)
+  );
+
+/** Adds the citizen as contact person unless they are already on the errand. */
+export const withCitizenAsContact = (
+  stakeholders: StakeholderDTO[] | undefined,
+  self: StakeholderDTO
+): StakeholderDTO[] =>
+  hasCitizen(stakeholders, self) ? (stakeholders ?? []) : [...(stakeholders ?? []), citizenAsContactStakeholder(self)];
+
+/** Drops the citizen's contact entry; the citizen is becoming the owner instead. */
+export const withoutCitizenContact = (
+  stakeholders: StakeholderDTO[] | undefined,
+  self: StakeholderDTO
+): StakeholderDTO[] => (stakeholders ?? []).filter((s) => !(isCitizen(s, self) && s.role === CONTACT_STAKEHOLDER_ROLE));
 
 /** Drops the errand owner, leaving the other stakeholders untouched. */
 export const withoutPrimaryStakeholder = (stakeholders: StakeholderDTO[] | undefined): StakeholderDTO[] =>

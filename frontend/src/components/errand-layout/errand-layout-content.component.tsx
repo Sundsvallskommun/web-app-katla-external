@@ -6,6 +6,7 @@ import { ErrorAlertList } from '@components/misc/error-alert.component';
 import { visibleTabsFor } from '@components/tabs/tabs';
 import { MobileWizard } from '@components/wizard/mobile-wizard.component';
 import { FormValidationProvider } from '@contexts/form-validation-provider';
+import { MyStakeholderContext } from '@contexts/my-stakeholder-context';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ErrandFormDTO } from '@interfaces/errand-form';
 import BaseErrandLayout from '@layouts/base-errand-layout/base-errand-layout.component';
@@ -14,6 +15,7 @@ import Main from '@layouts/main/main.component';
 import { getErrandUsingErrandNumber } from '@services/errand-service/errand-service';
 import { cx, Spinner, Tabs } from '@sk-web-gui/react';
 import { ErrandFormHandover, takeErrandFormHandover } from '@utils/errand-form-handover';
+import { withCitizenAsContact } from '@utils/stakeholder';
 import { default as NextLink } from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -22,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { MOBILE_BREAKPOINT } from 'src/constants/responsive';
 import { servicePath } from 'src/constants/services';
 import { useLoadMetadata } from 'src/hooks/use-load-metadata';
+import { useLoadMyStakeholder } from 'src/hooks/use-load-my-stakeholder';
 import { useMediaQuery } from 'src/hooks/use-media-query';
 import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
@@ -72,6 +75,7 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
   const pathname = usePathname();
   const handoverRef = useRef<{ handover: ErrandFormHandover | null; path: string } | null>(null);
   const { metadataError, metadataLoadState } = useLoadMetadata();
+  const { self, selfError, selfLoadState } = useLoadMyStakeholder();
   const metadata = useMetadataStore((state) => state.metadata);
   const [loadState, setLoadState] = useState<'error' | 'loading' | 'ready'>(
     route.kind === 'register' ? 'ready'
@@ -90,7 +94,7 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
     defaultValues: createDefaultErrand(),
     mode: 'onSubmit',
   });
-  const { reset } = methods;
+  const { reset, getValues, setValue } = methods;
 
   useEffect(() => {
     // A language switch is a navigation, and Next remounts the whole tree. The handover carries
@@ -147,6 +151,13 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
     };
   }, [pathname, registerNewErrand, requestedErrandNumber, reset, wizardGoToStep, wizardReset]);
 
+  // A new errand always lists the citizen; idempotent, so a re-run or a handover that already
+  // carries them changes nothing. Loaded drafts are completed on save instead.
+  useEffect(() => {
+    if (!registerNewErrand || !self) return;
+    setValue('stakeholders', withCitizenAsContact(getValues('stakeholders'), self));
+  }, [registerNewErrand, self, getValues, setValue]);
+
   const errandNumber = methods.watch('errandNumber');
   const isDraft = methods.watch('lifecycle') === 'DRAFT';
   // A draft is the same unfinished work whether just created or resumed, and the wizard is the
@@ -167,12 +178,19 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
   };
 
   // Role names come from metadata. Rendering the page before it exists leaves the roles empty,
-  // so metadata belongs to the same readiness boundary as the errand itself.
-  const loadErrors = [loadState === 'error' ? t('api_errors.errand') : null, metadataError].filter(
+  // so metadata belongs to the same readiness boundary as the errand itself. The citizen's own
+  // stakeholder is needed to tell their card apart, so it is part of the boundary too.
+  const loadErrors = [loadState === 'error' ? t('api_errors.errand') : null, metadataError, selfError].filter(
     (message): message is string => message !== null
   );
 
-  if (loadErrors.length > 0 || loadState !== 'ready' || metadataLoadState !== 'ready' || !metadata) {
+  if (
+    loadErrors.length > 0 ||
+    loadState !== 'ready' ||
+    metadataLoadState !== 'ready' ||
+    !metadata ||
+    selfLoadState !== 'ready'
+  ) {
     return (
       <FormProvider {...methods}>
         <div className="bg-background-100 h-screen min-h-screen flex items-center justify-center p-24">
@@ -186,60 +204,62 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
 
   return (
     <FormProvider {...methods}>
-      <FormValidationProvider>
-        <NextLink
-          href="#content"
-          passHref
-          onClick={() => {
-            setInitalFocus();
-          }}
-          className="sr-only focus:not-sr-only bg-primary-light border-2 border-black p-4 text-black inline-block focus:absolute focus:top-0 focus:left-0 focus:right-0 focus:m-auto focus:w-80 text-center"
-        >
-          {t('layout:header.goto_content')}
-        </NextLink>
-        <BaseErrandLayout registerNewErrand={registerNewErrand}>
-          {showMobileWizard ?
-            <MobileWizard />
-          : <div
-              className={cx('grow shrink overflow-y-auto', showSubmitBar && 'scroll-pt-[16rem] md:scroll-pt-[12rem]')}
-            >
-              <div className="bg-transparent">
-                <div className="mb-xl">
-                  <div className={cx(showSubmitBar && 'sticky top-0 z-10 bg-background-100')}>
-                    <div className="mx-auto max-w-[108rem] flex flex-col md:flex-row justify-between pt-16 md:pt-32 pb-12 px-16 md:px-0 gap-12">
-                      <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
-                      <ErrandButtonGroup isNewErrand={registerNewErrand} />
+      <MyStakeholderContext.Provider value={self}>
+        <FormValidationProvider>
+          <NextLink
+            href="#content"
+            passHref
+            onClick={() => {
+              setInitalFocus();
+            }}
+            className="sr-only focus:not-sr-only bg-primary-light border-2 border-black p-4 text-black inline-block focus:absolute focus:top-0 focus:left-0 focus:right-0 focus:m-auto focus:w-80 text-center"
+          >
+            {t('layout:header.goto_content')}
+          </NextLink>
+          <BaseErrandLayout registerNewErrand={registerNewErrand}>
+            {showMobileWizard ?
+              <MobileWizard />
+            : <div
+                className={cx('grow shrink overflow-y-auto', showSubmitBar && 'scroll-pt-[16rem] md:scroll-pt-[12rem]')}
+              >
+                <div className="bg-transparent">
+                  <div className="mb-xl">
+                    <div className={cx(showSubmitBar && 'sticky top-0 z-10 bg-background-100')}>
+                      <div className="mx-auto max-w-[108rem] flex flex-col md:flex-row justify-between pt-16 md:pt-32 pb-12 px-16 md:px-0 gap-12">
+                        <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
+                        <ErrandButtonGroup isNewErrand={registerNewErrand} />
+                      </div>
                     </div>
+                    <Main>
+                      <Tabs
+                        className="border-1 rounded-12 bg-background-content pt-22 pl-5 mx-auto max-w-[108rem]"
+                        tabslistClassName="border-0 -m-b-12 flex-wrap ml-10 overflow-x-auto"
+                        panelsClassName="border-t-1"
+                        size="sm"
+                      >
+                        {visibleTabsFor(service)
+                          .filter((tab) => tab.visible)
+                          .map((tab) => {
+                            return (
+                              <Tabs.Item key={tab.path}>
+                                <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
+                                  {t(tab.labelKey)}
+                                </Tabs.Button>
+                                <Tabs.Content>
+                                  <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
+                                </Tabs.Content>
+                              </Tabs.Item>
+                            );
+                          })}
+                      </Tabs>
+                    </Main>
                   </div>
-                  <Main>
-                    <Tabs
-                      className="border-1 rounded-12 bg-background-content pt-22 pl-5 mx-auto max-w-[108rem]"
-                      tabslistClassName="border-0 -m-b-12 flex-wrap ml-10 overflow-x-auto"
-                      panelsClassName="border-t-1"
-                      size="sm"
-                    >
-                      {visibleTabsFor(service)
-                        .filter((tab) => tab.visible)
-                        .map((tab) => {
-                          return (
-                            <Tabs.Item key={tab.path}>
-                              <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
-                                {t(tab.labelKey)}
-                              </Tabs.Button>
-                              <Tabs.Content>
-                                <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
-                              </Tabs.Content>
-                            </Tabs.Item>
-                          );
-                        })}
-                    </Tabs>
-                  </Main>
                 </div>
               </div>
-            </div>
-          }
-        </BaseErrandLayout>
-      </FormValidationProvider>
+            }
+          </BaseErrandLayout>
+        </FormValidationProvider>
+      </MyStakeholderContext.Provider>
     </FormProvider>
   );
 };

@@ -29,9 +29,15 @@
     "type_placeholder_no_category": "Select a category first",
     "type_search_placeholder": "Search case types"
   },
+  "citizen_contact": {
+    "title": "You will be added as a contact person",
+    "description": "You must be included in the case. Since you are not the case owner, you will be added as a contact person when the case is saved.",
+    "cancel": "Cancel",
+    "continue": "Continue"
+  },
   "other_parties": {
     "title": "Other parties",
-    "description": "Enter contact persons or other people who are relevant to the case."
+    "description": "You are already added as a contact person. Here you can add more contact persons who are relevant to the case."
   },
   "stakeholder": {
     "no_person_found": "No person was found",
@@ -47,7 +53,6 @@
     "add_person": "Add person",
     "add_manually": "Add manually",
     "add_self": "Add myself",
-    "self_lookup_failed": "Your details could not be retrieved. Try again or add yourself manually.",
     "edit_details": "Edit details",
     "remove": "Remove",
     "modal": {

@@ -379,6 +379,18 @@ describe('ErrandOwner', () => {
       expect(getOwnerStakeholderMock).not.toHaveBeenCalled();
     });
 
+    it('drops the citizen contact entry when they become the owner', async () => {
+      getMyOrganizationsMock.mockResolvedValue([ACME]);
+      const otherContact: StakeholderDTO = { externalId: '', firstName: 'Bo', lastName: 'Bengtsson', role: 'CONTACT' };
+      renderOwner({ stakeholders: [{ ...SELF, role: 'CONTACT', externalIdType: 'PRIVATE' }, otherContact] });
+
+      fireEvent.click(await screen.findByText('errand-information:stakeholder.add_self'));
+
+      await waitFor(() => {
+        expect(currentStakeholders()).toEqual([otherContact, SELF_AS_OWNER]);
+      });
+    });
+
     it('shows the citizen as the owner card and hides the organization picker meanwhile', async () => {
       getMyOrganizationsMock.mockResolvedValue([ACME, BOLAGET]);
       renderOwner();
@@ -444,7 +456,7 @@ describe('ErrandOwner', () => {
       expect(queryCy('add-self-owner-button')).toBeInTheDocument();
     });
 
-    it('shows the identity read-only and keeps the serving location entered for a private owner', async () => {
+    it('shows the identity read-only and keeps the address entered for a private owner', async () => {
       getMyOrganizationsMock.mockResolvedValue([]);
       renderOwner();
 

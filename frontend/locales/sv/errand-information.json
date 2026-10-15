@@ -29,9 +29,15 @@
     "type_placeholder_no_category": "Välj kategori först",
     "type_search_placeholder": "Sök ärendetyp"
   },
+  "citizen_contact": {
+    "title": "Du läggs till som kontaktperson",
+    "description": "Du måste finnas med i ärendet. Eftersom du inte är ärendeägare läggs du till som kontaktperson när ärendet sparas.",
+    "cancel": "Avbryt",
+    "continue": "Fortsätt"
+  },
   "other_parties": {
     "title": "Övriga parter",
-    "description": "Ange kontaktpersoner eller andra personer som är av vikt för ärendet."
+    "description": "Du är redan tillagd som kontaktperson. Här kan du lägga till fler kontaktpersoner som är relevanta för ärendet."
   },
   "stakeholder": {
     "no_person_found": "Ingen person hittades",
@@ -47,7 +53,6 @@
     "add_person": "Lägg till person",
     "add_manually": "Lägg till manuellt",
     "add_self": "Lägg till mig själv",
-    "self_lookup_failed": "Dina uppgifter kunde inte hämtas. Försök igen eller lägg till dig manuellt.",
     "edit_details": "Redigera uppgifter",
     "remove": "Ta bort",
     "modal": {
