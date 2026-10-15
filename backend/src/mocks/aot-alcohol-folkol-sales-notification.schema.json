@@ -171,7 +171,8 @@
         },
         "postnummer": {
           "type": "string",
-          "title": "Postnummer"
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
         },
         "postort": {
           "type": "string",
@@ -194,7 +195,8 @@
         },
         "ePostadress": {
           "type": "string",
-          "title": "E-postadress"
+          "title": "E-postadress",
+          "format": "email"
         },
         "hemsida": {
           "type": "string",
