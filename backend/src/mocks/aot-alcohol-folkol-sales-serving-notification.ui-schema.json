@@ -46,7 +46,8 @@
     }
   ],
   "arDuFirmatecknare": {
-    "ui:widget": "RadiobuttonWidget"
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
   "fakturaadressSammaSomForetaget": {
     "ui:widget": "RadiobuttonWidget",
@@ -93,7 +94,7 @@
   },
   "verksamhetsbeskrivningsval": {
     "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
   "verksamhetsbeskrivning": {
     "ui:widget": "TexteditorWidget",
@@ -103,7 +104,7 @@
   },
   "egenkontrollprogramFolkol": {
     "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig serveringsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>"
+    "ui:description": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig serveringsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p>Om du svarar Ja bifogar du filen under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>"
   },
   "serveringsstalletsNamn": {
     "ui:widget": "TextWidget",

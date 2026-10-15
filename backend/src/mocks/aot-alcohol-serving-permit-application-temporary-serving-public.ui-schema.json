@@ -92,7 +92,8 @@
     }
   ],
   "arDuFirmatecknare": {
-    "ui:widget": "RadiobuttonWidget"
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
   "fakturaadressSammaSomForetaget": {
     "ui:widget": "RadiobuttonWidget",
@@ -139,7 +140,7 @@
   },
   "verksamhetsbeskrivningsval": {
     "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
   "verksamhetsbeskrivning": {
     "ui:widget": "TexteditorWidget",
@@ -325,7 +326,8 @@
     "ui:widget": "RadiobuttonWidget"
   },
   "dryckesmenyval": {
-    "ui:widget": "RadiobuttonWidget"
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>"
   },
   "dryckesmeny": {
     "ui:widget": "TexteditorWidget",
@@ -337,7 +339,8 @@
     "ui:widget": "RadiobuttonWidget"
   },
   "menyval": {
-    "ui:widget": "RadiobuttonWidget"
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>"
   },
   "menyBeskrivning": {
     "ui:widget": "TexteditorWidget",
