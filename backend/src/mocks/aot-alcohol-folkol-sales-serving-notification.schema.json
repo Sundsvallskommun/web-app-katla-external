@@ -145,7 +145,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är servering/försäljningsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är servering/försäljningsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",

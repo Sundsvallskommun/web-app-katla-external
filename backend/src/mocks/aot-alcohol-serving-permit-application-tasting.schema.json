@@ -376,7 +376,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är serveringsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är serveringsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",

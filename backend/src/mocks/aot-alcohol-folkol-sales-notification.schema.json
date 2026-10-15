@@ -97,7 +97,7 @@
         }
       ],
       "title": "Kommer du att ha stadigvarande försäljning av livsmedel?",
-      "description": "Exempelvis mejerivaror, grönsaker och frukt. [TEXT SAKNAS: slutlig hjälptext]"
+      "description": "Exempelvis mejerivaror, grönsaker och frukt."
     },
     "tillverkarFolkolPaForsaljningsstallet": {
       "type": "string",
@@ -160,7 +160,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är försäljningsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är försäljningsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",
