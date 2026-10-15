@@ -295,7 +295,6 @@ describe('ErrandOwner', () => {
     expect(queryCy('owner-organizationNumber')).toHaveAttribute('readonly');
     expect(queryCy('owner-organizationName')).toHaveAttribute('readonly');
 
-    fireEvent.change(getCy('owner-serveringsstalle-input'), { target: { value: 'Acme Krogen' } });
     fireEvent.change(getCy('owner-address-input'), { target: { value: 'Storgatan 1' } });
     fireEvent.change(getCy('owner-email-input'), { target: { value: 'post@acme.se' } });
     fireEvent.click(getCy('owner-email-add'));
@@ -306,13 +305,11 @@ describe('ErrandOwner', () => {
         expect.objectContaining({
           role: 'PRIMARY',
           externalId: ACME.partyId,
-          serveringsstalle: 'Acme Krogen',
           address: 'Storgatan 1',
           emails: ['post@acme.se'],
         }),
       ]);
     });
-    expect(queryCy('stakeholder-serveringsstalle')).toHaveTextContent('Acme Krogen');
     expect(queryCy('stakeholder-email')).toHaveTextContent('post@acme.se');
   });
 
@@ -462,13 +459,13 @@ describe('ErrandOwner', () => {
       expect(queryCy('owner-name')).toHaveValue('Anna Andersson');
       expect(queryCy('owner-organizationNumber')).toBeNull();
 
-      fireEvent.change(getCy('owner-serveringsstalle-input'), { target: { value: 'Festlokalen' } });
+      fireEvent.change(getCy('owner-careOf-input'), { target: { value: 'c/o Festlokalen' } });
       fireEvent.click(getCy('owner-modal-save'));
 
       await waitFor(() => {
-        expect(currentStakeholders()).toEqual([{ ...SELF_AS_OWNER, careOf: '', serveringsstalle: 'Festlokalen' }]);
+        expect(currentStakeholders()).toEqual([{ ...SELF_AS_OWNER, careOf: 'c/o Festlokalen' }]);
       });
-      expect(queryCy('stakeholder-serveringsstalle')).toHaveTextContent('Festlokalen');
+      expect(queryCy('stakeholder-address')).toHaveTextContent('Storgatan 1 c/o Festlokalen 85230 Sundsvall');
     });
 
     it('shows a filed private owner on a loaded errand', async () => {

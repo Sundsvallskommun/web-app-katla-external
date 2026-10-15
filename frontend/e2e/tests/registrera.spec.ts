@@ -211,7 +211,6 @@ test.describe('Register new errand page', () => {
     );
     await expect(page.getByTestId('owner-organizationNumber')).toHaveAttribute('readonly', '');
 
-    await page.getByTestId('owner-serveringsstalle-input').fill('Acme Krogen');
     await page.getByTestId('owner-address-input').fill('Storgatan 1');
     await page.getByTestId('owner-zipCode-input').fill('852 31');
     await page.getByTestId('owner-city-input').fill('Sundsvall');
@@ -227,7 +226,6 @@ test.describe('Register new errand page', () => {
     await expect(page.getByTestId('owner-email-value')).toHaveText('post@acme.se');
     await page.getByTestId('owner-modal-save').click();
 
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toContainText('Acme Krogen');
     await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 852 31 Sundsvall');
     await expect(owner.getByTestId('stakeholder-email')).toHaveText('post@acme.se');
 
@@ -241,7 +239,6 @@ test.describe('Register new errand page', () => {
     expect(body.stakeholders?.[0]).toMatchObject({
       role: 'PRIMARY',
       externalId: mockOrganization.partyId,
-      serveringsstalle: 'Acme Krogen',
       address: 'Storgatan 1',
       emails: ['post@acme.se'],
     });
@@ -252,14 +249,14 @@ test.describe('Register new errand page', () => {
     await selectErrandOwner(page, mockOrganization);
 
     await owner.getByTestId('edit-owner-button').click();
-    await page.getByTestId('owner-serveringsstalle-input').fill('Ska inte sparas');
+    await page.getByTestId('owner-careOf-input').fill('Ska inte sparas');
     await page.getByTestId('owner-modal-cancel').click();
 
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toHaveCount(0);
+    await expect(owner.getByTestId('stakeholder-address')).not.toContainText('Ska inte sparas');
 
     // Reopening shows what was filed, not the abandoned edit.
     await owner.getByTestId('edit-owner-button').click();
-    await expect(page.getByTestId('owner-serveringsstalle-input')).toHaveValue('');
+    await expect(page.getByTestId('owner-careOf-input')).toHaveValue('');
   });
 
   test('Refuses to register an errand before it has been categorized', async ({ page }) => {
@@ -313,13 +310,13 @@ test.describe('Register new errand page', () => {
     await expect(owner.getByTestId('stakeholder-personNumber')).toHaveText(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 85230 Sundsvall');
 
-    // Identity comes from the login and is not theirs to change; the serving location is.
+    // Identity comes from the login and is not theirs to change; the address is.
     await owner.getByTestId('edit-owner-button').click();
     await expect(page.getByTestId('owner-personNumber')).toHaveValue(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(page.getByTestId('owner-personNumber')).toHaveAttribute('readonly', '');
-    await page.getByTestId('owner-serveringsstalle-input').fill('Festlokalen');
+    await page.getByTestId('owner-careOf-input').fill('c/o Festlokalen');
     await page.getByTestId('owner-modal-save').click();
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toContainText('Festlokalen');
+    await expect(owner.getByTestId('stakeholder-address')).toContainText('c/o Festlokalen');
 
     const submitButton = await openRegistrationConfirmation(page);
     const createRequest = page.waitForRequest(
@@ -334,7 +331,7 @@ test.describe('Register new errand page', () => {
         externalIdType: 'PRIVATE',
         externalId: mockSelfStakeholder.externalId,
         firstName: mockSelfStakeholder.firstName,
-        serveringsstalle: 'Festlokalen',
+        careOf: 'c/o Festlokalen',
       }),
     ]);
   });

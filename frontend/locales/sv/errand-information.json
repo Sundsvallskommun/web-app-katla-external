@@ -99,7 +99,6 @@
     "select_label": "Välj företag du representerar",
     "no_organizations": "Du har inga företag eller organisationer att registrera ärendet för. Du kan ansöka som privatperson.",
     "select_placeholder": "Välj företag eller organisation",
-    "serveringsstalle": "Serveringsställe",
     "modal": {
       "title": "Redigera ärendeägare",
       "organization_number": "Organisationsnummer",

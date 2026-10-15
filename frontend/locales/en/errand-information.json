@@ -99,7 +99,6 @@
     "select_label": "Select the company you represent",
     "no_organizations": "You have no companies or organisations to register the case for. You can apply as a private person.",
     "select_placeholder": "Select a company or organisation",
-    "serveringsstalle": "Serving location",
     "modal": {
       "title": "Edit case owner",
       "organization_number": "Organisation number",
