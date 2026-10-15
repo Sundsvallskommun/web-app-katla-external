@@ -202,24 +202,6 @@
         }
       },
       "title": "Kontaktuppgifter till försäljningsstället"
-    },
-    "harDuKassaregister": {
-      "type": "string",
-      "oneOf": [
-        {
-          "const": "JA",
-          "title": "Ja"
-        },
-        {
-          "const": "NEJ",
-          "title": "Nej"
-        }
-      ],
-      "title": "Har du kassaregister?"
-    },
-    "registreringskod": {
-      "type": "string",
-      "title": "Ange registreringskod"
     }
   },
   "required": [
@@ -230,8 +212,7 @@
     "besoksadressSammaSomArendeagare",
     "stadigvarandeForsaljningAvLivsmedel",
     "tillverkarFolkolPaForsaljningsstallet",
-    "egenkontrollprogramFolkol",
-    "harDuKassaregister"
+    "egenkontrollprogramFolkol"
   ],
   "allOf": [
     {
@@ -317,23 +298,6 @@
         "required": [
           "dokumentationKanVisasVidTillsyn"
         ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "harDuKassaregister": {
-            "const": "JA"
-          }
-        },
-        "required": [
-          "harDuKassaregister"
-        ]
-      },
-      "then": {
-        "properties": {
-          "registreringskod": true
-        }
       }
     }
   ],

@@ -13,9 +13,7 @@
     "serveringsstalletsNamn",
     "besoksadressSammaSomArendeagare",
     "besoksadress",
-    "kontaktuppgifterTillServeringsstallet",
-    "harDuKassaregister",
-    "registreringskod"
+    "kontaktuppgifterTillServeringsstallet"
   ],
   "ui:sections": [
     {
@@ -45,9 +43,7 @@
         "serveringsstalletsNamn",
         "besoksadressSammaSomArendeagare",
         "besoksadress",
-        "kontaktuppgifterTillServeringsstallet",
-        "harDuKassaregister",
-        "registreringskod"
+        "kontaktuppgifterTillServeringsstallet"
       ]
     }
   ],
@@ -177,11 +173,5 @@
       "multiple": true,
       "className": "w-full max-w-[48rem]"
     }
-  },
-  "harDuKassaregister": {
-    "ui:widget": "RadiobuttonWidget"
-  },
-  "registreringskod": {
-    "ui:widget": "TextWidget"
   }
 }

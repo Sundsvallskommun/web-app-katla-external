@@ -113,10 +113,9 @@ export const happyPaths: SchemaCase[] = [
       { radio: 'tillverkarFolkolPaForsaljningsstallet', value: 'NEJ' },
       { radio: 'egenkontrollprogramFolkol', value: 'NEJ_JAG_FYLLER_I_DOKUMENTET' },
       ...premisesAtOwnerAddress,
-      { radio: 'harDuKassaregister', value: 'NEJ' },
     ],
     attachments: [],
-    absent: ['fakturamottagare', 'besoksadress', 'registreringskod'],
+    absent: ['fakturamottagare', 'besoksadress'],
   },
   {
     title: 'Anmälan om servering av endast folköl',
