@@ -28,6 +28,7 @@ import {
 import { createDefaultAuthGuard } from '@middlewares/default-auth.middleware';
 import errorMiddleware from '@middlewares/error.middleware';
 import { buildPublicPathSet, PublicRouteInfo } from '@middlewares/public.decorator';
+import { authFlowRateLimit, globalRateLimit } from '@middlewares/rate-limit.middleware';
 import { Strategy, VerifiedCallback } from '@node-saml/passport-saml';
 import { logger, stream } from '@utils/logger';
 import bodyParser from 'body-parser';
@@ -35,7 +36,6 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import { existsSync, mkdirSync } from 'fs';
 import helmet from 'helmet';
@@ -204,9 +204,9 @@ class App {
   private initializeMiddlewares(publicPaths: Set<string>, publicRoutes: PublicRouteInfo[]) {
     this.app.set('trust proxy', 1);
     this.app.use(morgan(LOG_FORMAT ?? 'default', { stream }));
-    // Basic rate limiting for every route (login flows, swagger, proxied APIs). Tune per
-    // deployment; environments behind a gateway may also limit at the edge.
-    this.app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 1000, standardHeaders: true, legacyHeaders: false }));
+    // Per-client backstop for every route. Tighter limits sit on the SAML routes below and on
+    // the costly handlers (see rate-limit.middleware.ts). Keyed on req.ip, hence trust proxy.
+    this.app.use(globalRateLimit);
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
@@ -250,6 +250,8 @@ class App {
         },
       }),
     );
+
+    this.app.use(`${BASE_URL_PREFIX}/saml`, authFlowRateLimit);
 
     this.app.get(
       `${BASE_URL_PREFIX}/saml/login`,

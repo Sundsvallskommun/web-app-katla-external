@@ -20,6 +20,9 @@ export async function proxy(req: NextRequest) {
   if (isProtectedRoute(unprefixedPathname, parseProtectedRoutes(envs.protectedRoutes))) {
     const cookieName = envs.sessionCookieName;
     const token = req.cookies.get(cookieName)?.value ?? '';
+    // This call leaves from the Next server, so without the chain the backend rate limiter would
+    // pool every visitor's session check under one ip.
+    const forwardedFor = req.headers.get('x-forwarded-for');
 
     const response = await fetch(`${envs.apiUrl}/me`, {
       cache: 'no-cache',
@@ -27,6 +30,7 @@ export async function proxy(req: NextRequest) {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         Cookie: `${cookieName}=${encodeURIComponent(token)}`,
+        ...(forwardedFor ? { 'X-Forwarded-For': forwardedFor } : {}),
       },
     });
 
