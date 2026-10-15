@@ -147,7 +147,7 @@
   "verksamhetsbeskrivning": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
-      "className": "w-full min-h-[14rem]"
+      "className": "w-full min-h-[24rem]"
     }
   },
   "serveringsstalletsNamn": {
@@ -267,7 +267,7 @@
   "beskrivBesoksarrangemanget": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
-      "className": "w-full min-h-[14rem]"
+      "className": "w-full min-h-[24rem]"
     }
   },
   "beskrivForsaljningsplats": {
@@ -297,7 +297,7 @@
   "beskrivBeroende": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
-      "className": "w-full min-h-[14rem]"
+      "className": "w-full min-h-[24rem]"
     }
   },
   "produktionsbeskrivningsval": {
@@ -307,7 +307,7 @@
   "produktionsbeskrivning": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
-      "className": "w-full min-h-[14rem]"
+      "className": "w-full min-h-[24rem]"
     }
   },
   "kunskapOmAlkohollagen": {
