@@ -8,9 +8,8 @@ interface ErrorAlertProps {
 }
 
 /**
- * Gemensam presentation av ett API-fel. Äger rollen, uppmärkningen och
- * ikonen så att felmeddelanden ser likadana ut och annonseras likadant
- * oavsett vilken yta som visar dem.
+ * Shared presentation of an API error. Owns the role, markup and icon so errors look and are
+ * announced the same wherever they appear.
  */
 export const ErrorAlert: React.FC<ErrorAlertProps> = ({ className, message }) => (
   <div role="alert" className={className}>
@@ -27,7 +26,7 @@ interface ErrorAlertListProps {
   messages: string[];
 }
 
-/** Renderar flera samtidiga fel, till exempel metadata- och ärendefel på samma yta. */
+/** Renders several concurrent errors, e.g. metadata and errand errors on the same surface. */
 export const ErrorAlertList: React.FC<ErrorAlertListProps> = ({ messages }) => (
   <>
     {messages.map((message, index) => (

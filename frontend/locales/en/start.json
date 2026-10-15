@@ -1,0 +1,10 @@
+{
+  "title": "E-services",
+  "intro": "Choose the e-service you want to use.",
+  "services": {
+    "alkoholtillstand": {
+      "title": "Alcohol and tobacco permits",
+      "description": "Apply for a serving permit or report sales of tobacco and nicotine products."
+    }
+  }
+}

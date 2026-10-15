@@ -3,7 +3,12 @@ import type { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { errandFormDataContractErrorMessage, loadFormSchema, loadFormSchemaForEntry } from '../utils/schema-utils';
+import {
+  errandFormDataContractErrorMessage,
+  loadFormSchema,
+  loadFormSchemaForEntry,
+  SchemaNotFoundError,
+} from '../utils/schema-utils';
 
 interface UseFormSchemaResult {
   schema: RJSFSchema | null;
@@ -11,6 +16,8 @@ interface UseFormSchemaResult {
   schemaId: string | undefined;
   loading: boolean;
   error: string | null;
+  /** The service has no schema by that name — the errand type has no form, which is not an error. */
+  notFound: boolean;
 }
 
 export type FormSchemaSource =
@@ -28,6 +35,7 @@ export function useFormSchema(schemaName: string, source: FormSchemaSource = { k
   const [schemaId, setSchemaId] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const loadedSchemaRef = useRef<{ schemaName: string; schemaId: string; locale: string } | null>(null);
   const sourceKind = source.kind;
   const persistedSchemaId = source.kind === 'persisted' ? source.schemaId : undefined;
@@ -38,8 +46,8 @@ export function useFormSchema(schemaName: string, source: FormSchemaSource = { k
       persistedSchemaId !== undefined &&
       loadedSchemaRef.current?.schemaName === schemaName &&
       loadedSchemaRef.current.schemaId === persistedSchemaId &&
-      // Utan språket i jämförelsen skulle ett språkbyte avbryta här och behålla
-      // det tidigare språkets schema.
+      // Without the language in the comparison, a language switch would bail out here and keep
+      // the previous language's schema.
       loadedSchemaRef.current.locale === locale
     ) {
       return;
@@ -49,9 +57,10 @@ export function useFormSchema(schemaName: string, source: FormSchemaSource = { k
     loadedSchemaRef.current = null;
     setLoading(true);
     setError(null);
+    setNotFound(false);
 
-    // Skjut upp anropet till laddaren så att ett saknat persisterat ID hanteras
-    // som ett avvisat kontraktslöfte i stället för att kastas synkront ur effekten.
+    // Defer the loader call so a missing persisted ID becomes a rejected contract promise rather
+    // than throwing synchronously out of the effect.
     const schemaPromise = Promise.resolve().then(() =>
       sourceKind === 'new' ?
         loadFormSchema(schemaName, t, locale)
@@ -73,7 +82,11 @@ export function useFormSchema(schemaName: string, source: FormSchemaSource = { k
         setSchema(null);
         setUiSchema(undefined);
         setSchemaId(undefined);
-        setError(errandFormDataContractErrorMessage(err, t) ?? (err instanceof Error ? err.message : String(err)));
+        if (err instanceof SchemaNotFoundError) {
+          setNotFound(true);
+        } else {
+          setError(errandFormDataContractErrorMessage(err, t) ?? (err instanceof Error ? err.message : String(err)));
+        }
         setLoading(false);
       });
 
@@ -82,5 +95,5 @@ export function useFormSchema(schemaName: string, source: FormSchemaSource = { k
     };
   }, [locale, persistedSchemaId, schemaName, sourceKind, t]);
 
-  return { schema, uiSchema, schemaId, loading, error };
+  return { schema, uiSchema, schemaId, loading, error, notFound };
 }

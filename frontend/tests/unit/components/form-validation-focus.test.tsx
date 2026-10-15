@@ -28,7 +28,7 @@ function ValidationHarness() {
 }
 
 describe('FormValidationProvider', () => {
-  it('flyttar fokus till fältet som markeras som felaktigt i samma uppdatering', async () => {
+  it('moves focus to the field flagged as invalid in the same update', async () => {
     const user = userEvent.setup();
     render(
       <FormValidationProvider>

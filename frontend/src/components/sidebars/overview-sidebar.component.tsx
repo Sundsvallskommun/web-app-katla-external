@@ -1,8 +1,6 @@
 'use client';
 
 import { LogoutButton } from '@components/buttons/logout-button.component';
-import { NotificationsBell } from '@components/notifications/notification-bell';
-import { NotificationsWrapper } from '@components/notifications/notification-wrapper';
 import { AppUserMenu } from '@components/user-menu/app-user-menu.component';
 import { createUserMenuGroups } from '@layouts/userMenuGroup';
 import { useUserStore } from '@services/user-service/user-service';
@@ -17,13 +15,12 @@ import { FilterOverviewSidebarStatusSelector } from './filter-overview-sidebar-s
 
 export const OverviewSidebar: React.FC = () => {
   const { t } = useTranslation();
-  const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(true);
   const userMenuGroups = createUserMenuGroups(t);
 
   const user = useUserStore(useShallow((s) => s.user));
 
-  // Bugfix (static-components): JSX-variabel i stället för komponent skapad under rendering
+  // A JSX variable rather than a component created during render (static-components).
   const sidebarLogo = (
     <NextLink
       href="/"
@@ -33,7 +30,7 @@ export const OverviewSidebar: React.FC = () => {
       <Logo
         className={cx(open ? '' : 'w-[2.8rem]')}
         variant={open ? 'service' : 'symbol'}
-        title={'Katla'}
+        title={'Registrering'}
         subtitle={process.env.NEXT_PUBLIC_APP_NAME}
       />
     </NextLink>
@@ -51,35 +48,24 @@ export const OverviewSidebar: React.FC = () => {
           <div className={cx('mb-24', open ? '' : 'flex flex-col items-center justify-center pt-[1rem]')}>
             {sidebarLogo}
           </div>
-          <div
-            className={cx(
-              'h-fit items-center',
-              open ? 'pb-24 flex gap-12 justify-between' : 'pb-15 flex flex-col items-center justify-center'
-            )}
-          >
-            {open && (
-              <div className="flex gap-12 justify-between items-center">
-                <AppUserMenu
-                  data-cy="avatar-aside"
-                  initials={user.initials}
-                  menuTitle={`${user.name} (${user.username})`}
-                  menuGroups={userMenuGroups}
-                  buttonSize="md"
-                  className="flex-shrink-0"
-                  buttonRounded={false}
-                />
-                <span className="leading-tight h-fit font-bold mb-0" data-cy="userinfo">
-                  {user.name}
-                </span>
-              </div>
-            )}
-            <NotificationsBell
-              expanded={showNotifications}
-              toggleShow={() => {
-                setShowNotifications((current) => !current);
-              }}
-            />
-          </div>
+          {/* The row holds only the user block, which is hidden when collapsed, so the row is
+              dropped entirely rather than left as an empty spacer. */}
+          {open && (
+            <div className="h-fit pb-24 flex gap-12 items-center">
+              <AppUserMenu
+                data-cy="avatar-aside"
+                initials={user.initials}
+                menuTitle={user.name}
+                menuGroups={userMenuGroups}
+                buttonSize="md"
+                className="flex-shrink-0"
+                buttonRounded={false}
+              />
+              <span className="leading-tight h-fit font-bold mb-0" data-cy="userinfo">
+                {user.name}
+              </span>
+            </div>
+          )}
           <Divider className={cx(open ? '' : 'w-[4rem] mx-auto')} />
           <div className={cx('flex flex-col gap-8', open ? 'py-24' : 'items-center justify-center py-15')}>
             <FilterOverviewSidebarStatusSelector smallSideBar={!open} />
@@ -105,7 +91,6 @@ export const OverviewSidebar: React.FC = () => {
           </div>
         </div>
       </aside>
-      <NotificationsWrapper show={showNotifications} setShow={setShowNotifications} open={open} />
     </>
   );
 };

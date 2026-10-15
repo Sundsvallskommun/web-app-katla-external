@@ -1,0 +1,1038 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Tillfälligt tillstånd, endast slutet sällskap",
+  "type": "object",
+  "properties": {
+    "arDuFirmatecknare": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JA",
+          "title": "Ja"
+        },
+        {
+          "const": "NEJ",
+          "title": "Nej"
+        }
+      ],
+      "title": "Är du firmatecknare?"
+    },
+    "fakturaadressSammaSomForetaget": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JA",
+          "title": "Ja"
+        },
+        {
+          "const": "NEJ",
+          "title": "Nej"
+        }
+      ],
+      "title": "Är fakturaadressen samma som företagets adress?",
+      "description": "Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens."
+    },
+    "fakturamottagare": {
+      "type": "object",
+      "properties": {
+        "cO": {
+          "type": "string",
+          "title": "c/o"
+        },
+        "utdelningsadress": {
+          "type": "string",
+          "title": "Utdelningsadress"
+        },
+        "postnummer": {
+          "type": "string",
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
+        },
+        "postort": {
+          "type": "string",
+          "title": "Postort"
+        }
+      },
+      "required": [
+        "utdelningsadress",
+        "postnummer",
+        "postort"
+      ],
+      "title": "Fakturamottagare"
+    },
+    "fakturareferens": {
+      "type": "string",
+      "title": "Fakturareferens",
+      "description": "Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer."
+    },
+    "verksamhetsbeskrivningsval": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JAG_VILL_SKRIVA_VERKSAMHETSBESKRIVNINGEN_I",
+          "title": "Jag vill skriva verksamhetsbeskrivningen i formuläret"
+        },
+        {
+          "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM",
+          "title": "Jag vill bifoga verksamhetsbeskrivningen som fil"
+        }
+      ],
+      "title": "Verksamhetsbeskrivning",
+      "description": "Du måste lämna en detaljerad beskrivning av företagets verksamhet.\n\nHur vill du lämna verksamhetsbeskrivningen?"
+    },
+    "verksamhetsbeskrivning": {
+      "type": "string",
+      "title": "Verksamhetsbeskrivning"
+    },
+    "kunskapOmAlkohollagen": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "HAR_GODKANT_KUNSKAPSPROV",
+          "title": "Jag eller annan person som är ansvarig i företaget har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 5 åren"
+        },
+        {
+          "const": "DRIVER_ANNAT_FORETAG_MED_TILLSTAND",
+          "title": "Jag eller annan person som är ansvarig i företaget driver annat företag med gällande serveringstillstånd idag"
+        },
+        {
+          "const": "BEHOVER_SKRIVA_KUNSKAPSPROV",
+          "title": "Jag eller annan person som är ansvarig i företaget behöver skriva kunskapsprovet"
+        }
+      ],
+      "title": "Kunskap om alkohollagen",
+      "description": "För att få ett serveringstillstånd behöver du eller annan person som är ansvarig i företaget ha kunskap om ansvarsfull alkoholservering och alkohollagen. Denna kunskap kan du visa på flera sätt."
+    },
+    "personnummer": {
+      "type": "object",
+      "properties": {
+        "personnummer": {
+          "type": "string",
+          "title": "Personnummer",
+          "pattern": "^(19|20)?\\d{6}[-+]?\\d{4}$"
+        }
+      },
+      "title": "Personnummer",
+      "description": "Ange personnummer på den person i företaget som har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 5 åren."
+    },
+    "organisationsnummer": {
+      "type": "object",
+      "properties": {
+        "organisationsnummer": {
+          "type": "string",
+          "title": "Organisationsnummer",
+          "pattern": "^\\d{6}-?\\d{4}$"
+        }
+      },
+      "title": "Organisationsnummer",
+      "description": "Vilket företag med gällande serveringstillstånd driver du eller annan person som är ansvarig i företaget idag?\n\nOm du eller annan företrädare för organisationen har ett serveringstillstånd idag som minst motsvarar den aktuella ansökan, och det inte finns skäl att ifrågasätta kunskaperna, kan det vara så att kunskaperna inte behöver styrkas med ett kunskapsprov."
+    },
+    "anmalPersonerTillKunskapsprovet": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "VILL_ANMALA_NU",
+          "title": "Vill anmäla nu"
+        },
+        {
+          "const": "VILL_ANMALA_SENARE",
+          "title": "Vill anmäla senare"
+        }
+      ],
+      "title": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "description": "Om ditt ärende gäller en ansökan om stadigvarande serveringstillstånd så kan inte tillståndet beviljas innan minst en av de personer som du uppger här har genomfört och fått godkänt på kunskapsprovet."
+    },
+    "personerTillKunskapsprovet": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fornamn": {
+            "type": "string",
+            "title": "Förnamn"
+          },
+          "efternamn": {
+            "type": "string",
+            "title": "Efternamn"
+          },
+          "personnummer": {
+            "type": "string",
+            "title": "Personnummer"
+          },
+          "telefonnummer": {
+            "type": "string",
+            "title": "Telefonnummer"
+          },
+          "ePostadress": {
+            "type": "string",
+            "title": "E-postadress"
+          }
+        }
+      },
+      "title": "Härmed anmäler jag följande person/personer till att genomföra kunskapsprovet:"
+    },
+    "angeMellanVilkaDatumDetTillfalliga": {
+      "type": "object",
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date",
+          "title": "Från och med"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date",
+          "title": "Till och med"
+        }
+      },
+      "required": [
+        "startDate",
+        "endDate"
+      ],
+      "title": "Ange mellan vilka datum det tillfälliga tillståndet ska gälla"
+    },
+    "ovrigaUppgifterGallandeDatum": {
+      "type": "string",
+      "title": "Övriga uppgifter gällande datum"
+    },
+    "klockslagForServeringen": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "type": "string",
+          "format": "time",
+          "title": "Från klockan"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "time",
+          "title": "Till klockan"
+        }
+      },
+      "required": [
+        "startTime",
+        "endTime"
+      ],
+      "title": "Klockslag för serveringen",
+      "description": "Ange när servering önskas påbörjas, samt avslutas (standard är 11:00-01:00 om inte annat beslutas)."
+    },
+    "alkoholdrycker": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "oneOf": [
+          {
+            "const": "STARKOL",
+            "title": "Starköl"
+          },
+          {
+            "const": "VIN",
+            "title": "Vin"
+          },
+          {
+            "const": "SPRITDRYCKER",
+            "title": "Spritdrycker"
+          },
+          {
+            "const": "CIDER_ELLER_ANDRA_JASTA_ALKOHOLDRYCKER",
+            "title": "Cider eller andra jästa alkoholdrycker"
+          }
+        ]
+      },
+      "title": "Vilka alkoholdrycker ska serveras?"
+    },
+    "dryckesmenyval": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JAG_VILL_BESKRIVA",
+          "title": "Jag vill beskriva dryckesmenyn i formuläret"
+        },
+        {
+          "const": "JAG_VILL_LADDA_UPP",
+          "title": "Jag vill bifoga dryckesmenyn som fil"
+        }
+      ],
+      "title": "Dryckesmeny"
+    },
+    "dryckesmeny": {
+      "type": "string",
+      "title": "Beskriv dryckesmenyn",
+      "description": "Ange även alkoholfria alternativ samt prissättning."
+    },
+    "serverasMat": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JA",
+          "title": "Ja"
+        },
+        {
+          "const": "NEJ",
+          "title": "Nej"
+        }
+      ],
+      "title": "Kommer ni att servera mat?"
+    },
+    "menyval": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JAG_VILL_BESKRIVA",
+          "title": "Jag vill beskriva menyn i formuläret"
+        },
+        {
+          "const": "JAG_VILL_LADDA_UPP",
+          "title": "Jag vill bifoga menyn som fil"
+        }
+      ],
+      "title": "Meny"
+    },
+    "menyBeskrivning": {
+      "type": "string",
+      "title": "Beskriv menyn",
+      "description": "Ange även prissättning."
+    },
+    "finansiering": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "oneOf": [
+          {
+            "const": "EGNA_MEDEL",
+            "title": "Egna medel"
+          },
+          {
+            "const": "BANKLAN",
+            "title": "Banklån"
+          },
+          {
+            "const": "PRIVATLAN",
+            "title": "Privatlån"
+          },
+          {
+            "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN",
+            "title": "Annan finansiering (exempelvis Almilån, Bryggerilån eller Revers)"
+          }
+        ]
+      },
+      "title": "Finansiering",
+      "description": "För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med."
+    },
+    "egnaMedel": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bank": {
+            "type": "string",
+            "title": "Bank"
+          },
+          "kontonummer": {
+            "type": "string",
+            "title": "Kontonummer"
+          },
+          "beloppKronor": {
+            "type": "string",
+            "title": "Belopp (kronor)"
+          }
+        },
+        "required": [
+          "bank",
+          "kontonummer",
+          "beloppKronor"
+        ]
+      },
+      "title": "Egna medel"
+    },
+    "banklan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "langivare": {
+            "type": "string",
+            "title": "Långivare"
+          },
+          "beloppKronor": {
+            "type": "string",
+            "title": "Belopp (kronor)"
+          }
+        },
+        "required": [
+          "langivare",
+          "beloppKronor"
+        ]
+      },
+      "title": "Banklån"
+    },
+    "privatlan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "langivare": {
+            "type": "string",
+            "title": "Långivare"
+          },
+          "beloppKronor": {
+            "type": "string",
+            "title": "Belopp (kronor)"
+          }
+        },
+        "required": [
+          "langivare",
+          "beloppKronor"
+        ]
+      },
+      "title": "Privatlån"
+    },
+    "annanFinansiering": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "lanetyp": {
+            "type": "string",
+            "title": "Lånetyp"
+          },
+          "langivare": {
+            "type": "string",
+            "title": "Långivare"
+          },
+          "beloppKronor": {
+            "type": "string",
+            "title": "Belopp (kronor)"
+          }
+        },
+        "required": [
+          "lanetyp",
+          "langivare",
+          "beloppKronor"
+        ]
+      },
+      "title": "Annan finansiering"
+    },
+    "ovrigaUpplysningarFinansiering": {
+      "type": "string",
+      "title": "Övriga upplysningar angående finansieringen"
+    },
+    "gaster": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "oneOf": [
+          {
+            "const": "ANSTALLDA",
+            "title": "Anställda"
+          },
+          {
+            "const": "MEDLEMMAR",
+            "title": "Medlemmar"
+          },
+          {
+            "const": "ANNAT_SLUTET_SALLSKAP",
+            "title": "Annat slutet sällskap"
+          }
+        ]
+      },
+      "title": "Gäster"
+    },
+    "beraknatAntalGaster": {
+      "type": "object",
+      "properties": {
+        "antal": {
+          "type": "string",
+          "title": "Antal"
+        }
+      },
+      "required": [
+        "antal"
+      ],
+      "title": "Beräknat antal gäster"
+    },
+    "hurHarGasternaBjuditsIn": {
+      "type": "string",
+      "title": "Hur har gästerna bjudits in"
+    },
+    "vadArDetForTypAvTillstallning": {
+      "type": "string",
+      "title": "Vad är det för typ av tillställning"
+    },
+    "serveringsstalletsNamn": {
+      "type": "string",
+      "title": "Serveringsställets namn"
+    },
+    "kontaktuppgifterTillServeringsstallet": {
+      "type": "object",
+      "properties": {
+        "telefonnummer": {
+          "type": "string",
+          "title": "Telefonnummer"
+        }
+      },
+      "required": [
+        "telefonnummer"
+      ],
+      "title": "Kontaktuppgifter till serveringsstället",
+      "description": "Om ingen fast telefon finns, lämna mobilnummer till företrädare."
+    },
+    "besoksadress": {
+      "type": "object",
+      "properties": {
+        "gatuadress": {
+          "type": "string",
+          "title": "Gatuadress"
+        },
+        "postnummer": {
+          "type": "string",
+          "title": "Postnummer"
+        },
+        "postort": {
+          "type": "string",
+          "title": "Postort"
+        }
+      },
+      "required": [
+        "gatuadress",
+        "postnummer",
+        "postort"
+      ],
+      "title": "Serveringsställets besöksadress"
+    },
+    "serveringsansvarigPersonal": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "fornamn": {
+            "type": "string",
+            "title": "Förnamn"
+          },
+          "efternamn": {
+            "type": "string",
+            "title": "Efternamn"
+          },
+          "personnummer": {
+            "type": "string",
+            "title": "Personnummer"
+          }
+        },
+        "required": [
+          "fornamn",
+          "efternamn",
+          "personnummer"
+        ]
+      },
+      "title": "Serveringsansvarig personal",
+      "description": "Nedan anger du namn och personnummer till den person eller de personer som ska vara ansvariga för serveringen av alkohol. En person som är serveringsansvarig måste vara minst 20 år."
+    },
+    "ordningOchNykterhet": {
+      "type": "string",
+      "title": "Hur ska ordning och nykterhet säkerställas?"
+    },
+    "sittplatserILokalen": {
+      "type": "object",
+      "properties": {
+        "antalSittplatserInomhus": {
+          "type": "string",
+          "title": "Antal sittplatser i bordsavdelning/matsal"
+        }
+      },
+      "required": [
+        "antalSittplatserInomhus"
+      ],
+      "title": "Sittplatser i lokalen"
+    },
+    "maximaltAntalPersonerILokalen": {
+      "type": "object",
+      "properties": {
+        "antalPersoner": {
+          "type": "string",
+          "title": "Antal personer"
+        }
+      },
+      "required": [
+        "antalPersoner"
+      ],
+      "title": "Maximalt antal personer som kommer att vistas i lokalen samtidigt (inklusive personal)"
+    },
+    "finnsPolistillstand": {
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "JA",
+          "title": "Ja"
+        },
+        {
+          "const": "NEJ",
+          "title": "Nej"
+        },
+        {
+          "const": "EJ_AKTUELLT",
+          "title": "Ej aktuellt"
+        }
+      ],
+      "title": "Har ni sökt tillstånd hos Polismyndigheten?"
+    }
+  },
+  "required": [
+    "arDuFirmatecknare",
+    "verksamhetsbeskrivningsval",
+    "fakturaadressSammaSomForetaget",
+    "alkoholdrycker",
+    "dryckesmenyval",
+    "serverasMat",
+    "serveringsansvarigPersonal",
+    "sittplatserILokalen",
+    "maximaltAntalPersonerILokalen",
+    "angeMellanVilkaDatumDetTillfalliga",
+    "klockslagForServeringen",
+    "beraknatAntalGaster",
+    "vadArDetForTypAvTillstallning",
+    "serveringsstalletsNamn",
+    "kontaktuppgifterTillServeringsstallet",
+    "besoksadress",
+    "finnsPolistillstand",
+    "gaster",
+    "hurHarGasternaBjuditsIn",
+    "kunskapOmAlkohollagen",
+    "finansiering",
+    "ordningOchNykterhet"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "fakturaadressSammaSomForetaget": {
+            "const": "NEJ"
+          }
+        },
+        "required": [
+          "fakturaadressSammaSomForetaget"
+        ]
+      },
+      "then": {
+        "properties": {
+          "fakturamottagare": true
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verksamhetsbeskrivningsval": {
+            "const": "JAG_VILL_SKRIVA_VERKSAMHETSBESKRIVNINGEN_I"
+          }
+        },
+        "required": [
+          "verksamhetsbeskrivningsval"
+        ]
+      },
+      "then": {
+        "required": [
+          "verksamhetsbeskrivning"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dryckesmenyval": {
+            "const": "JAG_VILL_BESKRIVA"
+          }
+        },
+        "required": [
+          "dryckesmenyval"
+        ]
+      },
+      "then": {
+        "required": [
+          "dryckesmeny"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "serverasMat": {
+            "const": "JA"
+          }
+        },
+        "required": [
+          "serverasMat"
+        ]
+      },
+      "then": {
+        "required": [
+          "menyval"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "menyval": {
+            "const": "JAG_VILL_BESKRIVA"
+          }
+        },
+        "required": [
+          "menyval"
+        ]
+      },
+      "then": {
+        "required": [
+          "menyBeskrivning"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kunskapOmAlkohollagen": {
+            "const": "HAR_GODKANT_KUNSKAPSPROV"
+          }
+        },
+        "required": [
+          "kunskapOmAlkohollagen"
+        ]
+      },
+      "then": {
+        "required": [
+          "personnummer"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kunskapOmAlkohollagen": {
+            "const": "DRIVER_ANNAT_FORETAG_MED_TILLSTAND"
+          }
+        },
+        "required": [
+          "kunskapOmAlkohollagen"
+        ]
+      },
+      "then": {
+        "required": [
+          "organisationsnummer"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kunskapOmAlkohollagen": {
+            "const": "BEHOVER_SKRIVA_KUNSKAPSPROV"
+          }
+        },
+        "required": [
+          "kunskapOmAlkohollagen"
+        ]
+      },
+      "then": {
+        "required": [
+          "anmalPersonerTillKunskapsprovet"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "anmalPersonerTillKunskapsprovet": {
+            "const": "VILL_ANMALA_NU"
+          }
+        },
+        "required": [
+          "anmalPersonerTillKunskapsprovet"
+        ]
+      },
+      "then": {
+        "required": [
+          "personerTillKunskapsprovet"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "EGNA_MEDEL"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      },
+      "then": {
+        "required": [
+          "egnaMedel"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "BANKLAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      },
+      "then": {
+        "required": [
+          "banklan"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "PRIVATLAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      },
+      "then": {
+        "required": [
+          "privatlan"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      },
+      "then": {
+        "required": [
+          "annanFinansiering"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "enum": [
+                "EGNA_MEDEL",
+                "BANKLAN",
+                "PRIVATLAN",
+                "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+              ]
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      },
+      "then": {
+        "properties": {
+          "ovrigaUpplysningarFinansiering": true
+        }
+      }
+    }
+  ],
+  "x-attachments": [
+    {
+      "key": "POWER_OF_ATTORNEY",
+      "label": "Fullmakt",
+      "requiredWhen": {
+        "properties": {
+          "arDuFirmatecknare": {
+            "const": "NEJ"
+          }
+        },
+        "required": [
+          "arDuFirmatecknare"
+        ]
+      }
+    },
+    {
+      "key": "CERTIFICATE_OF_REGISTRATION",
+      "label": "Registreringsbevis från Bolagsverket",
+      "description": "Har du inte något registreringsbevis tillgängligt så kan du hämta ett på verksamt.se."
+    },
+    {
+      "key": "OWNERSHIP_INFORMATION",
+      "label": "Uppgifter om ägarförhållanden",
+      "description": "Handlingar som styrker vilka fysiska personer som finns bakom organisationsnumret. Aktiebolag: dokumentation som visar aktiefördelningen, exempelvis en aktiebok. Handelsbolag och kommanditbolag: dokumentation som visar ägarfördelningen, exempelvis ett bolagsavtal. Förening eller stiftelse: stadgar eller protokoll från konstituerande möte som visar vilka som är firmatecknare. Koncern: information om ägarförhållanden för koncernbolaget utöver handlingen för bolagsformen."
+    },
+    {
+      "key": "TAX_AGENCY_EXTRACT",
+      "label": "Registerutdrag från Skatteverket",
+      "description": "Av registerutdraget framgår om du eller ditt företag är godkänt för F-skatt eller FA-skatt, är momsregistrerat och registrerat som arbetsgivare. Du hämtar ett registerutdrag på verksamt.se."
+    },
+    {
+      "key": "BUSINESS_DESCRIPTION",
+      "label": "Verksamhetsbeskrivning",
+      "requiredWhen": {
+        "properties": {
+          "verksamhetsbeskrivningsval": {
+            "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM"
+          }
+        },
+        "required": [
+          "verksamhetsbeskrivningsval"
+        ]
+      }
+    },
+    {
+      "key": "SERVING_AREA_DRAWING",
+      "label": "Ritning över området med serveringsytan markerad",
+      "requiredWhen": {}
+    },
+    {
+      "key": "PREMISES_AGREEMENT",
+      "label": "Hyresavtal eller markupplåtelse",
+      "description": "Hyreskontrakt, arrendeavtal eller köpeavtal (inklusive bilagor) för lokalen som verksamheten ska bedrivas i, inklusive platsen för eventuell uteservering.",
+      "requiredWhen": {}
+    },
+    {
+      "key": "BUDGET",
+      "label": "Budget",
+      "requiredWhen": {}
+    },
+    {
+      "key": "GUEST_LIST",
+      "label": "Gästlista",
+      "description": "Namn på deltagarna, inte personnummer.",
+      "requiredWhen": {}
+    },
+    {
+      "key": "BANK_STATEMENT",
+      "label": "Kontoutdrag för egna medel",
+      "requiredWhen": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "EGNA_MEDEL"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      }
+    },
+    {
+      "key": "BANK_LOAN_CERTIFICATE",
+      "label": "Lånebevis för banklån",
+      "requiredWhen": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "BANKLAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      }
+    },
+    {
+      "key": "PRIVATE_LOAN_CERTIFICATE",
+      "label": "Lånebevis för privatlån",
+      "requiredWhen": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "PRIVATLAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      }
+    },
+    {
+      "key": "OTHER_FINANCING_CERTIFICATE",
+      "label": "Lånebevis för annan finansiering",
+      "requiredWhen": {
+        "properties": {
+          "finansiering": {
+            "contains": {
+              "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+            }
+          }
+        },
+        "required": [
+          "finansiering"
+        ]
+      }
+    },
+    {
+      "key": "DRINKS_MENU",
+      "label": "Dryckesmeny",
+      "requiredWhen": {
+        "properties": {
+          "dryckesmenyval": {
+            "const": "JAG_VILL_LADDA_UPP"
+          }
+        },
+        "required": [
+          "dryckesmenyval"
+        ]
+      }
+    },
+    {
+      "key": "MENU",
+      "label": "Meny",
+      "requiredWhen": {
+        "properties": {
+          "menyval": {
+            "const": "JAG_VILL_LADDA_UPP"
+          }
+        },
+        "required": [
+          "menyval"
+        ]
+      }
+    },
+    {
+      "key": "POLICE_PERMIT",
+      "label": "Tillstånd från Polismyndigheten eller kopia på ansökan",
+      "requiredWhen": {
+        "properties": {
+          "finnsPolistillstand": {
+            "const": "JA"
+          }
+        },
+        "required": [
+          "finnsPolistillstand"
+        ]
+      }
+    }
+  ]
+}

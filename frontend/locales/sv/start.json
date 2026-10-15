@@ -1,0 +1,10 @@
+{
+  "title": "E-tjänster",
+  "intro": "Välj den e-tjänst du vill använda.",
+  "services": {
+    "alkoholtillstand": {
+      "title": "Alkohol- och tobakstillstånd",
+      "description": "Ansök om serveringstillstånd eller anmäl försäljning av tobak och nikotinprodukter."
+    }
+  }
+}

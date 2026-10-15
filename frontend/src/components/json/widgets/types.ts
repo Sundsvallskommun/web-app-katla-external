@@ -6,14 +6,18 @@ export interface EnumOption {
 }
 
 /**
- * Utökade alternativ som kan skickas via ui:options i schemat
+ * Extra options that can be passed through ui:options in the schema.
  */
 export interface WidgetOptions {
   className?: string;
   placeholder?: string;
   multiple?: boolean;
   disableToolbar?: boolean;
+  direction?: 'row' | 'column';
   enumOptions?: EnumOption[];
+  enumDisabled?: unknown[];
+  /** Picker granularity in seconds, as `<input type="time">` counts it. */
+  step?: number;
 }
 
 export function getWidgetOptions(options: WidgetProps['options']): WidgetOptions {
@@ -23,7 +27,10 @@ export function getWidgetOptions(options: WidgetProps['options']): WidgetOptions
     placeholder: opts.placeholder as string | undefined,
     multiple: opts.multiple as boolean | undefined,
     disableToolbar: opts.disableToolbar as boolean | undefined,
+    direction: opts.direction === 'row' || opts.direction === 'column' ? opts.direction : undefined,
     enumOptions: opts.enumOptions as EnumOption[] | undefined,
+    enumDisabled: Array.isArray(opts.enumDisabled) ? opts.enumDisabled : undefined,
+    step: typeof opts.step === 'number' ? opts.step : undefined,
   };
 }
 
@@ -70,15 +77,15 @@ export function getCommonProps(props: WidgetProps, defaultClassName: string): Co
 }
 
 /**
- * Tar bort HTML-taggar ur en sträng för att få ren text.
- * Används för att validera textlängd utan att räkna med HTML-uppmärkning.
+ * Strips HTML tags from a string to get plain text, so text length can be validated without
+ * counting markup.
  */
 export function stripHtml(html: string): string {
   if (typeof DOMParser !== 'undefined') {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return (doc.body.textContent || '').trim();
   }
-  // Reserv för SSR: iterativ parser i stället för regex för att undvika ReDoS
+  // SSR fallback: an iterative parser rather than a regex, to avoid ReDoS.
   let result = '';
   let inTag = false;
   for (const char of html) {

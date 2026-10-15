@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { applyUiSchemaTitleToSchema, localeFromAcceptLanguage, localizeUiSchema, resolveLocaleExtensions } from '@/utils/schema-localization';
 
-/** Utdrag ur det verkliga ui-schemat för 2281_avvikelse-plats-handelse_1.3, med x-i18n pålagt. */
+/** Extract from the real ui schema for 2281_avvikelse-plats-handelse_1.3, with x-i18n added. */
 const uiSchema = () => ({
   'ui:title': 'Plats och händelseförlopp',
   'x-i18n': { en: { 'ui:title': 'Location and sequence of events' } },
@@ -52,7 +52,7 @@ describe('localeFromAcceptLanguage', () => {
     expect(localeFromAcceptLanguage('de,fr;q=0.9,en;q=0.8')).toBe('en');
   });
 
-  // Ett formulär ska aldrig sluta ladda för att språket är okänt.
+  // An unknown language must never stop a form from loading.
   it('falls back to Swedish for missing, empty or unsupported headers', () => {
     expect(localeFromAcceptLanguage(undefined)).toBe('sv');
     expect(localeFromAcceptLanguage('')).toBe('sv');
@@ -102,8 +102,8 @@ describe('localizeUiSchema', () => {
     expect(result.eventTime).toMatchObject({ 'ui:title': 'Tid' });
   });
 
-  // Blocket bär alla språk. Läcker det ut växer varje svar med text ingen läser,
-  // och frontend skulle kunna råka rendera fel språk från det.
+  // The block carries every language. Leaking it grows each response with text nobody reads,
+  // and the frontend could render the wrong language from it.
   it.each(['sv', 'en', 'de'])('never leaks the x-i18n block for locale %s', locale => {
     const serialized = JSON.stringify(localizeUiSchema(uiSchema(), locale));
 
@@ -138,7 +138,7 @@ describe('resolveLocaleExtensions', () => {
     expect(resolveLocaleExtensions([], 'en')).toEqual([]);
   });
 
-  // En trasig eller halvskriven översättning får inte välta hela formuläret.
+  // A broken or half-written translation must not bring the whole form down.
   it('ignores a malformed x-i18n block instead of failing', () => {
     expect(resolveLocaleExtensions({ title: 'Tid', 'x-i18n': 'trasig' }, 'en')).toEqual({ title: 'Tid' });
     expect(resolveLocaleExtensions({ title: 'Tid', 'x-i18n': { en: 'trasig' } }, 'en')).toEqual({ title: 'Tid' });
@@ -146,8 +146,8 @@ describe('resolveLocaleExtensions', () => {
 });
 
 describe('applyUiSchemaTitleToSchema', () => {
-  // Schemats rubrik namnger formuläret i felsammanfattningen. Den ligger i JSON-schemat och
-  // kan bara ändras med en ny version, så den översätts via ui-schemats rot i stället.
+  // The schema title names the form in the error summary. It lives in the JSON schema and only
+  // changes with a new version, so it is translated via the ui schema root instead.
   it('takes the localized root title from the ui-schema', () => {
     const schema = applyUiSchemaTitleToSchema(
       { type: 'object', title: 'Plats och händelseförlopp' },

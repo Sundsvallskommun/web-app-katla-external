@@ -21,10 +21,8 @@ interface MetadataState {
   setContactReasons: (reasons: ContactReasonDTO[]) => void;
 }
 
-// Storen är medvetet inte persistad. En localStorage-kopia gjorde att ärendesidor
-// kunde rendera på en platsstruktur som hämtades för länge sedan, och platsvalet
-// styr vilka som får se ärendet. Varje yta hämtar i stället metadata via
-// useLoadMetadata.
+// The store is deliberately not persisted: a localStorage copy let errand pages render against
+// metadata fetched long ago. Each surface fetches it itself through useLoadMetadata instead.
 export const useMetadataStore = create<MetadataState>()((set) => ({
   metadata: null,
 

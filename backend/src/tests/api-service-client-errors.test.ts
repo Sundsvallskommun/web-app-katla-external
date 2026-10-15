@@ -4,9 +4,12 @@ import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest'
 import ApiService from '@/services/api.service';
 import ApiTokenService from '@/services/api-token.service';
 
+import { mockCitizenPartyId } from './helpers/mock-data';
+
 vi.mock('axios');
 
 const mockedAxios = vi.mocked(axios);
+const citizenSender = { user: { partyId: mockCitizenPartyId } };
 let refreshTokenSpy: MockInstance<ApiTokenService['refreshToken']>;
 
 describe('ApiService client-error propagation', () => {
@@ -29,9 +32,9 @@ describe('ApiService client-error propagation', () => {
       new ApiService().patch<undefined>(
         {
           baseURL: 'https://api.example.test',
-          url: '/notifications',
+          url: '/errands/errand-id',
         },
-        { session: {} },
+        citizenSender,
       ),
     ).resolves.toEqual({ data: undefined, message: 'success' });
   });
@@ -55,7 +58,7 @@ describe('ApiService client-error propagation', () => {
           url: '/errands/123',
           propagateClientError: true,
         },
-        { session: {} },
+        citizenSender,
       ),
     ).rejects.toMatchObject({ status: 409, message: 'Upstream request rejected' });
 
@@ -76,7 +79,7 @@ describe('ApiService client-error propagation', () => {
     mockedAxios.mockRejectedValueOnce({ response });
     mockedAxios.isAxiosError.mockReturnValue(true);
 
-    await expect(new ApiService().patch({ baseURL: 'https://api.example.test', url: '/errands/123' }, { session: {} })).rejects.toMatchObject({
+    await expect(new ApiService().patch({ baseURL: 'https://api.example.test', url: '/errands/123' }, citizenSender)).rejects.toMatchObject({
       status: 500,
       message: 'Internal server error from gateway',
     });
@@ -107,7 +110,7 @@ describe('ApiService client-error propagation', () => {
           url: '/errands/123',
           propagateClientError: true,
         },
-        { session: {} },
+        citizenSender,
       ),
     ).resolves.toEqual({ data: { id: '123' }, message: 'success' });
 
@@ -139,7 +142,7 @@ describe('ApiService client-error propagation', () => {
     mockedAxios.mockRejectedValueOnce({ response: firstResponse }).mockRejectedValueOnce({ response: secondResponse });
     mockedAxios.isAxiosError.mockReturnValue(true);
 
-    await expect(new ApiService().get({ baseURL: 'https://api.example.test', url: '/errands' }, { session: {} })).rejects.toMatchObject({
+    await expect(new ApiService().get({ baseURL: 'https://api.example.test', url: '/errands' }, citizenSender)).rejects.toMatchObject({
       status: 500,
       message: 'Internal server error from gateway',
     });
@@ -163,7 +166,7 @@ describe('ApiService client-error propagation', () => {
       .mockResolvedValueOnce({ data: { id: '123' }, headers: {} });
     mockedAxios.isAxiosError.mockReturnValue(true);
 
-    await expect(new ApiService().post({ baseURL: 'https://api.example.test/gateway', url: '/errands' })).resolves.toEqual({
+    await expect(new ApiService().post({ baseURL: 'https://api.example.test/gateway', url: '/errands' }, citizenSender)).resolves.toEqual({
       data: { id: '123' },
       message: 'success',
     });

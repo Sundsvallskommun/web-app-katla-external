@@ -15,11 +15,10 @@ interface UseLoadMetadataResult {
 /**
  * Fyller metadatastoren.
  *
- * Metadata bär rollnamn, kategorier och platsstrukturen som platsväljaren
- * bygger sitt träd av. Varje yta som behöver den måste därför hämta den
- * själv — storen är inte längre persistad, så det som inte hämtas finns inte.
- * Statusen beskriver just den här hookinstansens request; data som redan ligger
- * i storen gör alltså inte en ny hämtning redo i förtid.
+ * Metadata carries role names and categories. Every surface that needs it must fetch it itself:
+ * the store is not persisted, so what is not fetched does not exist. The status describes this
+ * hook instance's own request, so data already in the store does not mark a new fetch ready
+ * early.
  */
 export function useLoadMetadata(): UseLoadMetadataResult {
   const { t } = useTranslation();

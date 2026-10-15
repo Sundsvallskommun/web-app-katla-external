@@ -3,7 +3,6 @@ import type { ApiResponse } from '@services/api-service';
 
 export const getMe: ApiResponse<User> = {
   data: {
-    username: 'username',
     name: 'Förnamn Efternamn',
     initials: 'FE',
   },

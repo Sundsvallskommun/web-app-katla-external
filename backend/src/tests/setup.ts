@@ -3,9 +3,9 @@ Object.assign(process.env, {
   APP_NAME: 'Katla test',
   PORT: '3001',
   BASE_URL_PREFIX: '/api',
-  // Appens monteringsrot är '/' i testerna. express-session hoppar över hela middlewaren
-  // när request-pathen inte börjar med cookie.path, så en path bunden till API-prefixet
-  // gör att req.session saknas på rutter utanför /api (passport kastar då).
+  // The app mounts at '/' in tests. express-session skips the whole middleware when the request
+  // path does not start with cookie.path, so a path tied to the API prefix leaves req.session
+  // missing on routes outside /api, and passport throws.
   SESSION_COOKIE_PATH: '/',
   API_BASE_URL: 'http://localhost:3001',
   CLIENT_KEY: 'test-client-key',
@@ -15,6 +15,7 @@ Object.assign(process.env, {
   SAML_FAILURE_REDIRECT: 'http://localhost:3000/login',
   SAML_SUCCESS_REDIRECT: 'http://localhost:3000',
   SAML_ENTRY_SSO: 'http://localhost:4000/sso',
+  SAML_LOGOUT_URL: 'http://localhost:4000/logout',
   SAML_IDP_PUBLIC_CERT: 'test-certificate',
   SAML_ISSUER: 'test-issuer',
   SAML_PRIVATE_KEY: 'test-private-key',
@@ -27,5 +28,5 @@ Object.assign(process.env, {
   SESSION_MEMORY: 'true',
   SWAGGER_ENABLED: 'false',
   MUNICIPALITY_ID: '2281',
-  NAMESPACE: 'test',
+  SERVICE_NAMESPACES: 'alkoholtillstand=test',
 });

@@ -57,15 +57,16 @@ function getOrCreateValidator<T>(schemaId: string, validators: Map<string, T>, c
 }
 
 /**
- * AJV cachar kompilerade scheman på schemadokumentets `$id`. Katlas schema-ID är
- * den oföränderliga versionsidentiteten, så varje exakt Katla-ID äger sin egen
- * AJV-instans även när flera versioner avsiktligt delar samma `$id`.
+ * AJV caches compiled schemas on the schema document's `$id`. The Katla schema ID is the
+ * immutable version identity, so each exact Katla ID owns its own AJV instance even when several
+ * versions deliberately share one `$id`.
  */
 export function getFormSchemaValidator(schemaId: string): FormSchemaValidator {
   return getOrCreateValidator(schemaId, formSchemaValidators, createFormSchemaValidator);
 }
 
-// Persisterade JSON-parametrar kan ha vilken JSON-rottyp som helst, även om det interaktiva formuläret i dag äger objektrötter.
+// Persisted JSON parameters may have any JSON root type, even though the interactive form today
+// only owns object roots.
 export function getJsonValueSchemaValidator(schemaId: string): JsonValueSchemaValidator {
   return getOrCreateValidator(schemaId, jsonValueSchemaValidators, createJsonValueSchemaValidator);
 }

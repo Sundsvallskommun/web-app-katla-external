@@ -1,12 +1,12 @@
 import i18nConfig from '@app/i18nConfig';
 
 /**
- * Språken i den ordning de visas, härledda ur i18n-konfigurationen så att ett nytt språk
- * bara behöver läggas till på ett ställe.
+ * The languages in display order, derived from the i18n config so a new language only has to be
+ * added in one place.
  *
- * Namnen skrivs på språket självt ("English", inte "Engelska"). En användare som inte läser
- * svenska ska kunna hitta sitt språk i menyn, och därför bär varje alternativ även ett
- * lang-attribut så att skärmläsare uttalar namnet med rätt röst.
+ * Names are written in the language itself ("English", not "Engelska") so a user who does not
+ * read Swedish can find theirs. Each option also carries a lang attribute so screen readers
+ * pronounce the name with the right voice.
  */
 export const languageOptions = i18nConfig.locales.map((locale) => ({
   value: locale,

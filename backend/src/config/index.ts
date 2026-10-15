@@ -4,7 +4,7 @@ import { APIS } from './api-config';
 
 export { APIS };
 
-// Tom sträng ska precis som tidigare falla tillbaka på development, därav den explicita kontrollen.
+// An empty string must fall back to development, hence the explicit check.
 const nodeEnv = process.env.NODE_ENV;
 config({ path: `.env.${nodeEnv !== undefined && nodeEnv !== '' ? nodeEnv : 'development'}.local`, quiet: true });
 
@@ -28,6 +28,7 @@ export const {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_PATH,
   SAML_CALLBACK_URL,
+  SAML_LOGOUT_URL,
   SAML_LOGOUT_CALLBACK_URL,
   SAML_SUCCESS_BASE,
   SAML_SUCCESS_REDIRECT,
@@ -41,6 +42,5 @@ export const {
   SAML_PRIVATE_KEY,
   SAML_PUBLIC_KEY,
   MUNICIPALITY_ID,
-  NAMESPACE,
-  AUTHORIZED_GROUPS,
+  SERVICE_NAMESPACES,
 } = process.env;

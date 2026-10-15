@@ -1,0 +1,2168 @@
+{
+  "flowID": "2181",
+  "queryKeyByID": {
+    "81698": "foretrader_du_ett_foretag_81698",
+    "81699": "kontaktuppgifter_81699",
+    "81700": "kontaktuppgifter_81700",
+    "81701": "hamtning_av_foretagsuppgifter_81701",
+    "81702": "valj_foretag_81702",
+    "81703": "ar_du_firmatecknare_81703",
+    "81704": "ladda_upp_fullmakt_81704",
+    "81705": "ditt_foretag_81705",
+    "81706": "foretagsform_81706",
+    "81707": "ar_fakturaadressen_samma_som_foretagets_81707",
+    "81708": "fakturamottagare_81708",
+    "81709": "fakturareferens_81709",
+    "81710": "bifoga_aktuellt_registreringsbevis_fran_81710",
+    "81711": "bifoga_uppgifter_om_agarforhallanden_81711",
+    "81712": "bifoga_registerutdrag_fran_skatteverket_81712",
+    "81713": "verksamhetsbeskrivning_81713",
+    "81714": "verksamhetsbeskrivning_81714",
+    "81715": "bifoga_verksamhetsbeskrivning_81715",
+    "81716": "vad_vill_du_ansoka_om_eller_anmala_81716",
+    "81718": "kunskap_om_alkohollagen_81718",
+    "81719": "personnummer_81719",
+    "81720": "organisationsnummer_81720",
+    "81721": "vill_du_anmala_personer_i_foretaget_till_81721",
+    "81723": "harmed_anmaler_jag_foljande_person_perso_81723",
+    "81726": "verksamhetens_inriktning_81726",
+    "81727": "har_ni_81727",
+    "81728": "beskriv_verksamhetens_inriktning_81728",
+    "81729": "ska_servering_av_alkohol_ske_till_allman_81729",
+    "81730": "serveringsperiod_for_allmanheten_81730",
+    "81731": "ange_period_for_servering_till_allmanhet_81731",
+    "81732": "serveringstider_inomhus_allmanheten_81732",
+    "81733": "serveringstider_utomhus_allmanheten_81733",
+    "81734": "serveringsperiod_for_slutet_sallskap_81734",
+    "81735": "ange_period_for_servering_till_slutet_sa_81735",
+    "81736": "serveringstider_inomhus_slutet_sallskap_81736",
+    "81737": "serveringstider_utomhus_slutet_sallskap_81737",
+    "81738": "vilka_alkoholdrycker_ska_serveras_81738",
+    "81739": "beskriv_utbudet_av_mat_81739",
+    "81740": "bifoga_meny_81740",
+    "81741": "meny_81741",
+    "81743": "finansiering_81743",
+    "81744": "egna_medel_81744",
+    "81745": "bifoga_kontoutdrag_81745",
+    "81746": "banklan_81746",
+    "81747": "bifoga_lanebevis_for_banklan_81747",
+    "81748": "privatlan_81748",
+    "81749": "bifoga_lanebevis_for_privatlan_81749",
+    "81750": "annan_finansiering_81750",
+    "81751": "bifoga_lanebevis_for_annan_finansiering_81751",
+    "81752": "ovriga_upplysningar_angaende_finansierin_81752",
+    "81754": "serveringsstallets_namn_81754",
+    "81755": "ar_serveringsstallets_besoksadress_samma_81755",
+    "81756": "serveringsstallets_besoksadress_81756",
+    "81757": "kontaktuppgifter_till_serveringsstallet_81757",
+    "81758": "serveringsansvarig_personal_81758",
+    "81759": "sittplatser_i_lokalen_81759",
+    "81760": "maximalt_antal_personer_som_kommer_att_v_81760",
+    "81761": "bifoga_planritning_81761",
+    "81762": "bifoga_avtal_gallande_lokal_och_mark_81762",
+    "81763": "bifoga_avtal_gallande_verksamheten_81763",
+    "81764": "bifoga_brandskyddsdokumentation_81764",
+    "81766": "ange_mellan_vilka_datum_det_tillfalliga_81766",
+    "81767": "ovriga_uppgifter_gallande_datum_81767",
+    "81768": "klockslag_for_serveringen_81768",
+    "81769": "vilka_alkoholdrycker_ska_serveras_81769",
+    "81770": "meny_81770",
+    "81771": "gaster_81771",
+    "81772": "gastlista_eller_medlemslista_81772",
+    "81773": "beraknat_antal_gaster_81773",
+    "81774": "hur_har_gasterna_bjudits_in_81774",
+    "81775": "vad_ar_det_for_typ_av_tillstallning_81775",
+    "81776": "serveringsstalle_81776",
+    "81777": "serveringsansvarig_personal_81777",
+    "81778": "sittplatser_i_lokalen_81778",
+    "81779": "maximalt_antal_personer_som_kommer_att_v_81779",
+    "81780": "finns_polistillstand_81780",
+    "81781": "ladda_upp_polistillstand_81781",
+    "81784": "jag_vill_81784",
+    "81785": "kommer_ni_att_servera_mat_81785",
+    "81786": "beskriv_utbudet_av_mat_81786",
+    "81787": "bifoga_meny_81787",
+    "81788": "meny_81788",
+    "81789": "egenkontrollprogram_vid_servering_av_fol_81789",
+    "81790": "bifoga_egenkontrollprogram_for_servering_81790",
+    "81791": "serveringsstallets_namn_81791",
+    "81792": "ar_serveringsstallets_besoksadress_samma_81792",
+    "81793": "serveringsstallets_besoksadress_81793",
+    "81794": "kontaktuppgifter_till_serveringsstallet_81794",
+    "81795": "sittplatser_i_lokalen_81795",
+    "81796": "maximalt_antal_personer_som_kommer_att_v_81796",
+    "81797": "bifoga_livsmedelsregistrering_fran_miljo_81797",
+    "81799": "forsaljningsstalle_81799",
+    "81800": "alkoholdrycker_81800",
+    "81801": "forsaljningsperiod_81801",
+    "81802": "ange_period_for_forsaljning_81802",
+    "81803": "forsaljningstider_81803",
+    "81804": "besoksarrangemang_81804",
+    "81805": "beskriv_besoksarrangemanget_81805",
+    "81806": "ladda_upp_beskrivning_pa_besoksarrangema_81806",
+    "81807": "ladda_upp_egenkontrollprogram_81807",
+    "81808": "ritning_for_forsaljningslokal_81808",
+    "81809": "hyresavtal_eller_agarbevis_81809",
+    "81810": "gardsforsaljningstillstand_81810",
+    "81811": "beskriv_forsaljningsplats_81811",
+    "81813": "kunskap_om_alkohollagen_81813",
+    "81814": "personnummer_81814",
+    "81815": "organisationsnummer_81815",
+    "81816": "vill_du_anmala_personer_i_foretaget_till_81816",
+    "81818": "harmed_anmaler_jag_foljande_person_perso_81818",
+    "81819": "vilka_alkoholdrycker_ska_serveras_81819",
+    "81820": "finansiering_81820",
+    "81821": "egna_medel_81821",
+    "81822": "bifoga_kontoutdrag_81822",
+    "81823": "banklan_81823",
+    "81824": "bifoga_lanebevis_for_banklan_81824",
+    "81825": "privatlan_81825",
+    "81826": "bifoga_lanebevis_for_privatlan_81826",
+    "81827": "annan_finansiering_81827",
+    "81828": "bifoga_lanebevis_for_annan_finansiering_81828",
+    "81829": "ovriga_upplysningar_angaende_finansierin_81829",
+    "81830": "har_ni_anmalt_koket_som_livsmedelsanlagg_81830",
+    "81832": "kapacitet_81832",
+    "81833": "koksinformation_81833",
+    "81834": "planritning_kok_81834",
+    "81835": "brandskydd_kok_81835",
+    "81836": "hyresavtal_eller_upplatelseavtal_kok_81836",
+    "81837": "godkanna_cateringtillfalle_81837",
+    "81839": "kunskap_om_alkohollagen_81839",
+    "81840": "personnummer_81840",
+    "81841": "organisationsnummer_81841",
+    "81842": "vill_du_anmala_personer_i_foretaget_till_81842",
+    "81844": "harmed_anmaler_jag_foljande_person_perso_81844",
+    "81846": "verksamhetens_inriktning_81846",
+    "81847": "har_ni_81847",
+    "81848": "beskriv_verksamhetens_inriktning_81848",
+    "81849": "finansiering_81849",
+    "81850": "egna_medel_81850",
+    "81851": "bifoga_kontoutdrag_81851",
+    "81852": "banklan_81852",
+    "81853": "bifoga_lanebevis_for_banklan_81853",
+    "81854": "privatlan_81854",
+    "81855": "bifoga_lanebevis_for_privatlan_81855",
+    "81856": "annan_finansiering_81856",
+    "81857": "bifoga_lanebevis_for_annan_finansiering_81857",
+    "81858": "ovriga_upplysningar_angaende_finansierin_81858",
+    "81859": "sittplatser_i_lokalen_81859",
+    "81860": "maximalt_antal_personer_som_kommer_att_v_81860",
+    "81861": "bifoga_planritning_81861",
+    "81862": "bifoga_avtal_gallande_lokal_och_mark_81862",
+    "81863": "bifoga_brandskyddsdokumentation_81863",
+    "81865": "regler_for_serveringstillstand_till_priv_81865",
+    "81866": "forsaljning_av_alkoholdrycker_81866",
+    "81867": "ar_tillstallningen_i_ovrigt_kostnadsfri_81867",
+    "81868": "var_kommer_tillstallningen_att_aga_rum_81868",
+    "81869": "du_behover_inte_ansoka_om_serveringstill_81869",
+    "81870": "bifoga_hyreskontrakt_81870",
+    "81871": "datum_for_serveringen_81871",
+    "81872": "klockslag_for_serveringen_81872",
+    "81873": "vilka_alkoholdrycker_ska_serveras_81873",
+    "81874": "meny_81874",
+    "81875": "beraknat_antal_gaster_81875",
+    "81876": "vad_ar_det_for_typ_av_tillstallning_81876",
+    "81877": "vad_ar_det_for_typ_av_slutet_sallskap_81877",
+    "81878": "adress_81878",
+    "81879": "sittplatser_i_lokalen_81879",
+    "81880": "maximalt_antal_personer_som_kommer_att_v_81880",
+    "81881": "ladda_upp_ritning_pa_lokalen_med_serveri_81881",
+    "81883": "har_du_kassaregister_81883",
+    "81884": "ange_registreringskod_81884"
+  },
+  "rules": [
+    {
+      "evaluatorID": "88918",
+      "name": "visa om under 20",
+      "type": "UserAgeQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81697",
+      "sourceKey": null,
+      "sourceTitle": "Du måste vara 20 år eller äldre för att kunna ansöka",
+      "targetQueryIDs": [],
+      "targetKeys": []
+    },
+    {
+      "evaluatorID": "88919",
+      "name": "visa företag",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81698",
+      "sourceKey": "foretrader_du_ett_foretag_81698",
+      "sourceTitle": "Företräder du ett företag?",
+      "targetQueryIDs": [
+        "81700",
+        "81701",
+        "81716"
+      ],
+      "targetKeys": [
+        "kontaktuppgifter_81700",
+        "hamtning_av_foretagsuppgifter_81701",
+        "vad_vill_du_ansoka_om_eller_anmala_81716"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49632"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88920",
+      "name": "Visa privat",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81698",
+      "sourceKey": "foretrader_du_ett_foretag_81698",
+      "sourceTitle": "Företräder du ett företag?",
+      "targetQueryIDs": [
+        "81699",
+        "81865",
+        "81866",
+        "81867",
+        "81868",
+        "81871",
+        "81872",
+        "81873",
+        "81874",
+        "81875",
+        "81876",
+        "81877",
+        "81878",
+        "81879",
+        "81880",
+        "81881"
+      ],
+      "targetKeys": [
+        "kontaktuppgifter_81699",
+        "regler_for_serveringstillstand_till_priv_81865",
+        "forsaljning_av_alkoholdrycker_81866",
+        "ar_tillstallningen_i_ovrigt_kostnadsfri_81867",
+        "var_kommer_tillstallningen_att_aga_rum_81868",
+        "datum_for_serveringen_81871",
+        "klockslag_for_serveringen_81872",
+        "vilka_alkoholdrycker_ska_serveras_81873",
+        "meny_81874",
+        "beraknat_antal_gaster_81875",
+        "vad_ar_det_for_typ_av_tillstallning_81876",
+        "vad_ar_det_for_typ_av_slutet_sallskap_81877",
+        "adress_81878",
+        "sittplatser_i_lokalen_81879",
+        "maximalt_antal_personer_som_kommer_att_v_81880",
+        "ladda_upp_ritning_pa_lokalen_med_serveri_81881"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49633"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88921",
+      "name": "visa hämta",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81701",
+      "sourceKey": "hamtning_av_foretagsuppgifter_81701",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [
+        "81702"
+      ],
+      "targetKeys": [
+        "valj_foretag_81702"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49634"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88922",
+      "name": "visa fyll i",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81701",
+      "sourceKey": "hamtning_av_foretagsuppgifter_81701",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [
+        "81703",
+        "81705",
+        "81706"
+      ],
+      "targetKeys": [
+        "ar_du_firmatecknare_81703",
+        "ditt_foretag_81705",
+        "foretagsform_81706"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49635"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88923",
+      "name": "vikta uppgifter",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81701",
+      "sourceKey": "hamtning_av_foretagsuppgifter_81701",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49634",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49635",
+          "weight": "2"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88924",
+      "name": "visa fullmakt",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81703",
+      "sourceKey": "ar_du_firmatecknare_81703",
+      "sourceTitle": "Är du firmatecknare?",
+      "targetQueryIDs": [
+        "81704"
+      ],
+      "targetKeys": [
+        "ladda_upp_fullmakt_81704"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49637"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88925",
+      "name": "sätt vikt företag",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81706",
+      "sourceKey": "foretagsform_81706",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "företag",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49638",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49639",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49640",
+          "weight": "10"
+        },
+        {
+          "alternativeID": "49641",
+          "weight": "3"
+        },
+        {
+          "alternativeID": "49642",
+          "weight": "4"
+        },
+        {
+          "alternativeID": "49643",
+          "weight": "5"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88926",
+      "name": "visa uppladdningsfråga bolagsverket",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81706",
+      "sourceKey": "foretagsform_81706",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "81710"
+      ],
+      "targetKeys": [
+        "bifoga_aktuellt_registreringsbevis_fran_81710"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49638",
+        "49639",
+        "49641",
+        "49642",
+        "49643"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88927",
+      "name": "visa filuppladdning ägandeförhållande",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81706",
+      "sourceKey": "foretagsform_81706",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "81711"
+      ],
+      "targetKeys": [
+        "bifoga_uppgifter_om_agarforhallanden_81711"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49638",
+        "49641",
+        "49642",
+        "49643"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88928",
+      "name": "visa filuppladdningsfråga skatteverket",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81706",
+      "sourceKey": "foretagsform_81706",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "81712"
+      ],
+      "targetKeys": [
+        "bifoga_registerutdrag_fran_skatteverket_81712"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49638",
+        "49639",
+        "49640",
+        "49641",
+        "49642",
+        "49643"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88929",
+      "name": "visa verksamhetsbeskrivning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81706",
+      "sourceKey": "foretagsform_81706",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "81713"
+      ],
+      "targetKeys": [
+        "verksamhetsbeskrivning_81713"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49638",
+        "49639",
+        "49640",
+        "49641",
+        "49642",
+        "49643"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88930",
+      "name": "visa om uppgifter = 1||2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81707",
+      "sourceKey": "ar_fakturaadressen_samma_som_foretagets_81707",
+      "sourceTitle": "Är fakturaadressen samma som företagets adress?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88931",
+      "name": "visa obligatorisk följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81707",
+      "sourceKey": "ar_fakturaadressen_samma_som_foretagets_81707",
+      "sourceTitle": "Är fakturaadressen samma som företagets adress?",
+      "targetQueryIDs": [
+        "81708"
+      ],
+      "targetKeys": [
+        "fakturamottagare_81708"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49645"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88932",
+      "name": "visa om uppgifter = 1||2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81709",
+      "sourceKey": "fakturareferens_81709",
+      "sourceTitle": "Fakturareferens",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88933",
+      "name": "visa följdfråga skriv",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81713",
+      "sourceKey": "verksamhetsbeskrivning_81713",
+      "sourceTitle": "Verksamhetsbeskrivning",
+      "targetQueryIDs": [
+        "81714"
+      ],
+      "targetKeys": [
+        "verksamhetsbeskrivning_81714"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49646"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88934",
+      "name": "visa följdfråga filuppladdning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81713",
+      "sourceKey": "verksamhetsbeskrivning_81713",
+      "sourceTitle": "Verksamhetsbeskrivning",
+      "targetQueryIDs": [
+        "81715"
+      ],
+      "targetKeys": [
+        "bifoga_verksamhetsbeskrivning_81715"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49647"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88935",
+      "name": "Visa \"Ansöka om stadigvarande tillstånd för servering av alkoholdrycker\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81718",
+        "81725",
+        "81726",
+        "81728",
+        "81729",
+        "81738",
+        "81742",
+        "81743",
+        "81753",
+        "81754",
+        "81755",
+        "81757",
+        "81758",
+        "81759",
+        "81760",
+        "81761",
+        "81762",
+        "81763",
+        "81764"
+      ],
+      "targetKeys": [
+        "kunskap_om_alkohollagen_81718",
+        null,
+        "verksamhetens_inriktning_81726",
+        "beskriv_verksamhetens_inriktning_81728",
+        "ska_servering_av_alkohol_ske_till_allman_81729",
+        "vilka_alkoholdrycker_ska_serveras_81738",
+        null,
+        "finansiering_81743",
+        null,
+        "serveringsstallets_namn_81754",
+        "ar_serveringsstallets_besoksadress_samma_81755",
+        "kontaktuppgifter_till_serveringsstallet_81757",
+        "serveringsansvarig_personal_81758",
+        "sittplatser_i_lokalen_81759",
+        "maximalt_antal_personer_som_kommer_att_v_81760",
+        "bifoga_planritning_81761",
+        "bifoga_avtal_gallande_lokal_och_mark_81762",
+        "bifoga_avtal_gallande_verksamheten_81763",
+        "bifoga_brandskyddsdokumentation_81764"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49648"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88936",
+      "name": "Visa \"Ansöka om tillfälligt tillstånd för servering av alkoholdrycker till allmänheten\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81766",
+        "81768",
+        "81769",
+        "81770",
+        "81773",
+        "81775",
+        "81776",
+        "81777",
+        "81778",
+        "81779",
+        "81780"
+      ],
+      "targetKeys": [
+        "ange_mellan_vilka_datum_det_tillfalliga_81766",
+        "klockslag_for_serveringen_81768",
+        "vilka_alkoholdrycker_ska_serveras_81769",
+        "meny_81770",
+        "beraknat_antal_gaster_81773",
+        "vad_ar_det_for_typ_av_tillstallning_81775",
+        "serveringsstalle_81776",
+        "serveringsansvarig_personal_81777",
+        "sittplatser_i_lokalen_81778",
+        "maximalt_antal_personer_som_kommer_att_v_81779",
+        "finns_polistillstand_81780"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49649",
+        "49650"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88937",
+      "name": "Visa \"Ansöka om tillfälligt tillstånd för servering av alkoholdrycker till slutet sällskap\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81771",
+        "81772",
+        "81774"
+      ],
+      "targetKeys": [
+        "gaster_81771",
+        "gastlista_eller_medlemslista_81772",
+        "hur_har_gasterna_bjudits_in_81774"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49650"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88938",
+      "name": "Visa \"Anmäla servering av endast folköl (klass 2)\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81785",
+        "81789",
+        "81791",
+        "81792",
+        "81794",
+        "81795",
+        "81796"
+      ],
+      "targetKeys": [
+        "kommer_ni_att_servera_mat_81785",
+        "egenkontrollprogram_vid_servering_av_fol_81789",
+        "serveringsstallets_namn_81791",
+        "ar_serveringsstallets_besoksadress_samma_81792",
+        "kontaktuppgifter_till_serveringsstallet_81794",
+        "sittplatser_i_lokalen_81795",
+        "maximalt_antal_personer_som_kommer_att_v_81796"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49651"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88939",
+      "name": "Visa \"Ansöka om tillstånd för gårdsförsäljning\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81799",
+        "81800",
+        "81801",
+        "81803",
+        "81804",
+        "81807",
+        "81808",
+        "81809",
+        "81810",
+        "81811"
+      ],
+      "targetKeys": [
+        "forsaljningsstalle_81799",
+        "alkoholdrycker_81800",
+        "forsaljningsperiod_81801",
+        "forsaljningstider_81803",
+        "besoksarrangemang_81804",
+        "ladda_upp_egenkontrollprogram_81807",
+        "ritning_for_forsaljningslokal_81808",
+        "hyresavtal_eller_agarbevis_81809",
+        "gardsforsaljningstillstand_81810",
+        "beskriv_forsaljningsplats_81811"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49652"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88940",
+      "name": "Visa \"Ansökan om stadigvarande tillstånd för catering till slutna sällskap\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81813",
+        "81819",
+        "81820",
+        "81837"
+      ],
+      "targetKeys": [
+        "kunskap_om_alkohollagen_81813",
+        "vilka_alkoholdrycker_ska_serveras_81819",
+        "finansiering_81820",
+        "godkanna_cateringtillfalle_81837"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49653"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88941",
+      "name": "Visa \"Ansökan om provsmakning av alkoholhaltiga drycker\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81839",
+        "81845",
+        "81846",
+        "81848",
+        "81849",
+        "81859",
+        "81860",
+        "81861",
+        "81862",
+        "81863"
+      ],
+      "targetKeys": [
+        "kunskap_om_alkohollagen_81839",
+        null,
+        "verksamhetens_inriktning_81846",
+        "beskriv_verksamhetens_inriktning_81848",
+        "finansiering_81849",
+        "sittplatser_i_lokalen_81859",
+        "maximalt_antal_personer_som_kommer_att_v_81860",
+        "bifoga_planritning_81861",
+        "bifoga_avtal_gallande_lokal_och_mark_81862",
+        "bifoga_brandskyddsdokumentation_81863"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49654"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88942",
+      "name": "vikta ansökan",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "ansökan",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49648",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49649",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49650",
+          "weight": "3"
+        },
+        {
+          "alternativeID": "49651",
+          "weight": "4"
+        },
+        {
+          "alternativeID": "49652",
+          "weight": "5"
+        },
+        {
+          "alternativeID": "49653",
+          "weight": "6"
+        },
+        {
+          "alternativeID": "49654",
+          "weight": "7"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88943",
+      "name": "Visa \"Ansöka om tillfälligt tillstånd för servering av alkoholdrycker till allmänheten\" valfri",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81716",
+      "sourceKey": "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "sourceTitle": "Vad vill du ansöka om eller anmäla?",
+      "targetQueryIDs": [
+        "81767"
+      ],
+      "targetKeys": [
+        "ovriga_uppgifter_gallande_datum_81767"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49649",
+        "49650"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88944",
+      "name": "sätt vikt alkohollag",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81718",
+      "sourceKey": "kunskap_om_alkohollagen_81718",
+      "sourceTitle": "Kunskap om alkohollagen",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag1",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49655",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49656",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49657",
+          "weight": "3"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88945",
+      "name": "visa om alkohollag1 = 1",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81719",
+      "sourceKey": "personnummer_81719",
+      "sourceTitle": "Personnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag1",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88946",
+      "name": "visa om alkohollag1 = 2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81720",
+      "sourceKey": "organisationsnummer_81720",
+      "sourceTitle": "Organisationsnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag1",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88947",
+      "name": "visa om alkohollag = 3",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81721",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81721",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag1",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88948",
+      "name": "visa följdfråga nu",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81721",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81721",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81723"
+      ],
+      "targetKeys": [
+        "harmed_anmaler_jag_foljande_person_perso_81723"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49658"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88949",
+      "name": "visa följdfråga senare",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81721",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81721",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81724"
+      ],
+      "targetKeys": [
+        null
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49659"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88950",
+      "name": "visa \"Beskriv utbudet av mat\"",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81726",
+      "sourceKey": "verksamhetens_inriktning_81726",
+      "sourceTitle": "Verksamhetens inriktning",
+      "targetQueryIDs": [
+        "81739"
+      ],
+      "targetKeys": [
+        "beskriv_utbudet_av_mat_81739"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30863",
+        "30864",
+        "30865",
+        "30866",
+        "30867",
+        "30868",
+        "30869",
+        "30872"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88951",
+      "name": "visa följdfråga hotell",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81726",
+      "sourceKey": "verksamhetens_inriktning_81726",
+      "sourceTitle": "Verksamhetens inriktning",
+      "targetQueryIDs": [
+        "81727"
+      ],
+      "targetKeys": [
+        "har_ni_81727"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30867"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88952",
+      "name": "sätt vikt typeOfServing",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81729",
+      "sourceKey": "ska_servering_av_alkohol_ske_till_allman_81729",
+      "sourceTitle": "Ska servering av alkohol ske till allmänheten eller till slutet sällskap?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "typeOfServing",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49660",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49661",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49662",
+          "weight": "3"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88953",
+      "name": "visa om typeOfServing = 1||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81730",
+      "sourceKey": "serveringsperiod_for_allmanheten_81730",
+      "sourceTitle": "Serveringsperiod för allmänheten",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 1 || $weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88954",
+      "name": "visa datumfråga för period",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81730",
+      "sourceKey": "serveringsperiod_for_allmanheten_81730",
+      "sourceTitle": "Serveringsperiod för allmänheten",
+      "targetQueryIDs": [
+        "81731"
+      ],
+      "targetKeys": [
+        "ange_period_for_servering_till_allmanhet_81731"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49664"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88955",
+      "name": "visa om typeOfServing = 1||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81732",
+      "sourceKey": "serveringstider_inomhus_allmanheten_81732",
+      "sourceTitle": "Serveringstider inomhus allmänheten",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 1 || $weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88956",
+      "name": "visa om typeOfServing = 1||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81733",
+      "sourceKey": "serveringstider_utomhus_allmanheten_81733",
+      "sourceTitle": "Serveringstider utomhus allmänheten",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 1 ||$weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88957",
+      "name": "visa om typeOfServing = 2||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81734",
+      "sourceKey": "serveringsperiod_for_slutet_sallskap_81734",
+      "sourceTitle": "Serveringsperiod för slutet sällskap",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 2 || $weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88958",
+      "name": "visa datumfråga för period",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81734",
+      "sourceKey": "serveringsperiod_for_slutet_sallskap_81734",
+      "sourceTitle": "Serveringsperiod för slutet sällskap",
+      "targetQueryIDs": [
+        "81735"
+      ],
+      "targetKeys": [
+        "ange_period_for_servering_till_slutet_sa_81735"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49666"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88959",
+      "name": "visa om typeOfServing = 2||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81736",
+      "sourceKey": "serveringstider_inomhus_slutet_sallskap_81736",
+      "sourceTitle": "Serveringstider inomhus slutet sällskap",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 2 || $weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88960",
+      "name": "visa om typeOfServing = 2||3",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81737",
+      "sourceKey": "serveringstider_utomhus_slutet_sallskap_81737",
+      "sourceTitle": "Serveringstider utomhus slutet sällskap",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{typeOfServing} = 2 || $weight{typeOfServing} = 3",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88961",
+      "name": "visa filuppladdning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81739",
+      "sourceKey": "beskriv_utbudet_av_mat_81739",
+      "sourceTitle": "Beskriv utbudet av mat",
+      "targetQueryIDs": [
+        "81740"
+      ],
+      "targetKeys": [
+        "bifoga_meny_81740"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49667"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88962",
+      "name": "visa textarea",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81739",
+      "sourceKey": "beskriv_utbudet_av_mat_81739",
+      "sourceTitle": "Beskriv utbudet av mat",
+      "targetQueryIDs": [
+        "81741"
+      ],
+      "targetKeys": [
+        "meny_81741"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49668"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88963",
+      "name": "visa egna medel",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81743",
+      "sourceKey": "finansiering_81743",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81744",
+        "81745"
+      ],
+      "targetKeys": [
+        "egna_medel_81744",
+        "bifoga_kontoutdrag_81745"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30879"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88964",
+      "name": "visa banklån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81743",
+      "sourceKey": "finansiering_81743",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81746",
+        "81747"
+      ],
+      "targetKeys": [
+        "banklan_81746",
+        "bifoga_lanebevis_for_banklan_81747"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30880"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88965",
+      "name": "visa privatlån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81743",
+      "sourceKey": "finansiering_81743",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81748",
+        "81749"
+      ],
+      "targetKeys": [
+        "privatlan_81748",
+        "bifoga_lanebevis_for_privatlan_81749"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30881"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88966",
+      "name": "visa annan finansiering",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81743",
+      "sourceKey": "finansiering_81743",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81750",
+        "81751"
+      ],
+      "targetKeys": [
+        "annan_finansiering_81750",
+        "bifoga_lanebevis_for_annan_finansiering_81751"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30882"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88967",
+      "name": "visa övriga upplysningar",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81743",
+      "sourceKey": "finansiering_81743",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81752"
+      ],
+      "targetKeys": [
+        "ovriga_upplysningar_angaende_finansierin_81752"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30879",
+        "30880",
+        "30881",
+        "30882"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88968",
+      "name": "vissa addressfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81755",
+      "sourceKey": "ar_serveringsstallets_besoksadress_samma_81755",
+      "sourceTitle": "Är serveringsställets besöksadress samma som företagets adress?",
+      "targetQueryIDs": [
+        "81756"
+      ],
+      "targetKeys": [
+        "serveringsstallets_besoksadress_81756"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49670"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88969",
+      "name": "visa filuppladdningsfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81780",
+      "sourceKey": "finns_polistillstand_81780",
+      "sourceTitle": "Finns polistillstånd",
+      "targetQueryIDs": [
+        "81781"
+      ],
+      "targetKeys": [
+        "ladda_upp_polistillstand_81781"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49671"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88970",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81785",
+      "sourceKey": "kommer_ni_att_servera_mat_81785",
+      "sourceTitle": "Kommer ni att servera mat",
+      "targetQueryIDs": [
+        "81786"
+      ],
+      "targetKeys": [
+        "beskriv_utbudet_av_mat_81786"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49676"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88971",
+      "name": "visa filuppladdningsfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81786",
+      "sourceKey": "beskriv_utbudet_av_mat_81786",
+      "sourceTitle": "Beskriv utbudet av mat",
+      "targetQueryIDs": [
+        "81787"
+      ],
+      "targetKeys": [
+        "bifoga_meny_81787"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49678"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88972",
+      "name": "visa textarea",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81786",
+      "sourceKey": "beskriv_utbudet_av_mat_81786",
+      "sourceTitle": "Beskriv utbudet av mat",
+      "targetQueryIDs": [
+        "81788"
+      ],
+      "targetKeys": [
+        "meny_81788"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49679"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88973",
+      "name": "visa filuppladdningsfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81789",
+      "sourceKey": "egenkontrollprogram_vid_servering_av_fol_81789",
+      "sourceTitle": "Egenkontrollprogram vid servering av folköl (klass 2)",
+      "targetQueryIDs": [
+        "81790"
+      ],
+      "targetKeys": [
+        "bifoga_egenkontrollprogram_for_servering_81790"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49680"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88974",
+      "name": "visa adressfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81792",
+      "sourceKey": "ar_serveringsstallets_besoksadress_samma_81792",
+      "sourceTitle": "Är serveringsställets besöksadress samma som företagets adress?",
+      "targetQueryIDs": [
+        "81793"
+      ],
+      "targetKeys": [
+        "serveringsstallets_besoksadress_81793"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49683"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88975",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81801",
+      "sourceKey": "forsaljningsperiod_81801",
+      "sourceTitle": "Försäljningsperiod",
+      "targetQueryIDs": [
+        "81802"
+      ],
+      "targetKeys": [
+        "ange_period_for_forsaljning_81802"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49685"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88976",
+      "name": "visa föjdfråga filuppladdning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81804",
+      "sourceKey": "besoksarrangemang_81804",
+      "sourceTitle": "Besöksarrangemang",
+      "targetQueryIDs": [
+        "81806"
+      ],
+      "targetKeys": [
+        "ladda_upp_beskrivning_pa_besoksarrangema_81806"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49686"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88977",
+      "name": "visa följdfråga textfält",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81804",
+      "sourceKey": "besoksarrangemang_81804",
+      "sourceTitle": "Besöksarrangemang",
+      "targetQueryIDs": [
+        "81805"
+      ],
+      "targetKeys": [
+        "beskriv_besoksarrangemanget_81805"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49687"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88978",
+      "name": "sätt vikt alkohollag",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81813",
+      "sourceKey": "kunskap_om_alkohollagen_81813",
+      "sourceTitle": "Kunskap om alkohollagen",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag2",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49688",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49689",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49690",
+          "weight": "3"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88979",
+      "name": "visa om alkohollag2 = 1",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81814",
+      "sourceKey": "personnummer_81814",
+      "sourceTitle": "Personnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag2",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88980",
+      "name": "visa om alkohollag2 = 2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81815",
+      "sourceKey": "organisationsnummer_81815",
+      "sourceTitle": "Organisationsnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag2",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88981",
+      "name": "visa om alkohollag2= 3",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81816",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81816",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag2",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "88982",
+      "name": "visa följdfråga nu",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81816",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81816",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81818"
+      ],
+      "targetKeys": [
+        "harmed_anmaler_jag_foljande_person_perso_81818"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49691"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88983",
+      "name": "visa följdfråga senare",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81816",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81816",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81817"
+      ],
+      "targetKeys": [
+        null
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49692"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88984",
+      "name": "Visa egna medel",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81820",
+      "sourceKey": "finansiering_81820",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81821",
+        "81822"
+      ],
+      "targetKeys": [
+        "egna_medel_81821",
+        "bifoga_kontoutdrag_81822"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30898"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88985",
+      "name": "visa banklån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81820",
+      "sourceKey": "finansiering_81820",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81823",
+        "81824"
+      ],
+      "targetKeys": [
+        "banklan_81823",
+        "bifoga_lanebevis_for_banklan_81824"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30899"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88986",
+      "name": "visa privatlån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81820",
+      "sourceKey": "finansiering_81820",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81825",
+        "81826"
+      ],
+      "targetKeys": [
+        "privatlan_81825",
+        "bifoga_lanebevis_for_privatlan_81826"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30900"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88987",
+      "name": "visa annan finansiering",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81820",
+      "sourceKey": "finansiering_81820",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81827",
+        "81828"
+      ],
+      "targetKeys": [
+        "annan_finansiering_81827",
+        "bifoga_lanebevis_for_annan_finansiering_81828"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30901"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88988",
+      "name": "visa övriga upplysningar",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81820",
+      "sourceKey": "finansiering_81820",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81829"
+      ],
+      "targetKeys": [
+        "ovriga_upplysningar_angaende_finansierin_81829"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30898",
+        "30899",
+        "30900",
+        "30901"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88989",
+      "name": "visa följdfråga information",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81830",
+      "sourceKey": "har_ni_anmalt_koket_som_livsmedelsanlagg_81830",
+      "sourceTitle": "Har ni anmält köket som livsmedelsanläggning hos miljökontoret",
+      "targetQueryIDs": [
+        "81831"
+      ],
+      "targetKeys": [
+        null
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49694"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88990",
+      "name": "sätt vikt alkohollag3",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81839",
+      "sourceKey": "kunskap_om_alkohollagen_81839",
+      "sourceTitle": "Kunskap om alkohollagen",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag3",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49695",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "49696",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "49697",
+          "weight": "3"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "88991",
+      "name": "Visa om alkohollag3 = 1",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81840",
+      "sourceKey": "personnummer_81840",
+      "sourceTitle": "Personnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag3",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88992",
+      "name": "Visa om alkohollag3 = 2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81841",
+      "sourceKey": "organisationsnummer_81841",
+      "sourceTitle": "Organisationsnummer",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag3",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88993",
+      "name": "Visa om alkohollag3 = 3",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81842",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81842",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "alkohollag3",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "88994",
+      "name": "Visa följdfråga senare",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81842",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81842",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81843"
+      ],
+      "targetKeys": [
+        null
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49699"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88995",
+      "name": "Visa följdfråga Nu",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81842",
+      "sourceKey": "vill_du_anmala_personer_i_foretaget_till_81842",
+      "sourceTitle": "Vill du anmäla personer i företaget till kunskapsprovet nu eller senare?",
+      "targetQueryIDs": [
+        "81844"
+      ],
+      "targetKeys": [
+        "harmed_anmaler_jag_foljande_person_perso_81844"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49698"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88996",
+      "name": "visa följdfråga hotell",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81846",
+      "sourceKey": "verksamhetens_inriktning_81846",
+      "sourceTitle": "Verksamhetens inriktning",
+      "targetQueryIDs": [
+        "81847"
+      ],
+      "targetKeys": [
+        "har_ni_81847"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30907"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88997",
+      "name": "Visa egna medel",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81849",
+      "sourceKey": "finansiering_81849",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81850",
+        "81851"
+      ],
+      "targetKeys": [
+        "egna_medel_81850",
+        "bifoga_kontoutdrag_81851"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30915"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88998",
+      "name": "Visa banklån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81849",
+      "sourceKey": "finansiering_81849",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81852",
+        "81853"
+      ],
+      "targetKeys": [
+        "banklan_81852",
+        "bifoga_lanebevis_for_banklan_81853"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30916"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "88999",
+      "name": "Visa privatlån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81849",
+      "sourceKey": "finansiering_81849",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81854",
+        "81855"
+      ],
+      "targetKeys": [
+        "privatlan_81854",
+        "bifoga_lanebevis_for_privatlan_81855"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30917"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "89000",
+      "name": "Visa annan finansiering",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81849",
+      "sourceKey": "finansiering_81849",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81856",
+        "81857"
+      ],
+      "targetKeys": [
+        "annan_finansiering_81856",
+        "bifoga_lanebevis_for_annan_finansiering_81857"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30918"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "89001",
+      "name": "Visa övriga upplysningar",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81849",
+      "sourceKey": "finansiering_81849",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "81858"
+      ],
+      "targetKeys": [
+        "ovriga_upplysningar_angaende_finansierin_81858"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30915",
+        "30916",
+        "30917",
+        "30918"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "89002",
+      "name": "sätt vikt kostnadsfri",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81867",
+      "sourceKey": "ar_tillstallningen_i_ovrigt_kostnadsfri_81867",
+      "sourceTitle": "Är tillställningen i övrigt kostnadsfri för gästerna?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "kostnadsfri",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49700",
+          "weight": "1"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "89003",
+      "name": "Visa filuppladdning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81868",
+      "sourceKey": "var_kommer_tillstallningen_att_aga_rum_81868",
+      "sourceTitle": "Var kommer tillställningen att äga rum?",
+      "targetQueryIDs": [
+        "81870"
+      ],
+      "targetKeys": [
+        "bifoga_hyreskontrakt_81870"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49703"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "89004",
+      "name": "sätt vikt bostad",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "81868",
+      "sourceKey": "var_kommer_tillstallningen_att_aga_rum_81868",
+      "sourceTitle": "Var kommer tillställningen att äga rum?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "bostad",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "49701",
+          "weight": "1"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "89005",
+      "name": "visa om kostnadsfri = 1 & bostad = 1",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81869",
+      "sourceKey": "du_behover_inte_ansoka_om_serveringstill_81869",
+      "sourceTitle": "Du behöver inte ansöka om serveringstillstånd!",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "($weight{kostnadsfri} + $weight{bostad}) = 2",
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "89006",
+      "name": "visa Registreringskod",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "81883",
+      "sourceKey": "har_du_kassaregister_81883",
+      "sourceTitle": "Har du kassaregister?",
+      "targetQueryIDs": [
+        "81884"
+      ],
+      "targetKeys": [
+        "ange_registreringskod_81884"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "49704"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "89007",
+      "name": "visa om ansökan = 1-7",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "81883",
+      "sourceKey": "har_du_kassaregister_81883",
+      "sourceTitle": "Har du kassaregister?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "ansökan",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    }
+  ],
+  "skippedQueries": []
+}

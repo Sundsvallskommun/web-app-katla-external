@@ -2,8 +2,8 @@ import { ColorSchemeMode } from '@sk-web-gui/react';
 import { Monitor, Moon, Sun } from 'lucide-react';
 
 /**
- * Färglägena i den ordning de visas. Ägs på ett ställe så att användarmenyn och
- * mobilmenyn aldrig kan gå isär i värden, etiketter eller ikoner.
+ * The colour schemes in display order. Owned in one place so the user menu and the mobile menu
+ * can never drift apart in values, labels or icons.
  */
 export const colorSchemeOptions = [
   { value: ColorSchemeMode.Light, labelKey: 'layout:color_scheme.light', icon: Sun },

@@ -4,6 +4,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { MUNICIPALITY_ID } from '@/config';
 import { getApiBase } from '@/config/api-config';
 import { JsonSchema, UiSchema } from '@/data-contracts/jsonschema/data-contracts';
+import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { SchemaResponseDTO } from '@/responses/schema.response';
@@ -19,8 +20,8 @@ export class SchemaController {
   private apiBase = getApiBase('jsonschema');
 
   /**
-   * Ui-schemat lagrar sina översättningar i x-i18n-block. De löses upp här, så att frontend
-   * får färdig text för det begärda språket och aldrig ser de andra språken.
+   * The ui schema stores its translations in x-i18n blocks. They are resolved here so the
+   * frontend gets finished text for the requested locale and never sees the other languages.
    */
   private async fetchUiSchema(schemaId: string, req: RequestWithUser, locale: string): Promise<Record<string, unknown>> {
     try {
@@ -32,9 +33,14 @@ export class SchemaController {
         req,
       );
       return localizeUiSchema(mapUiSchema(uiRes.data), locale);
-    } catch {
-      logger.info(`No UI schema found for ${schemaId}, using empty object`);
-      return {};
+    } catch (error) {
+      // Only a missing ui schema is optional. Anything else — upstream failure, malformed body —
+      // must not silently render the form without sections and widgets.
+      if (error instanceof HttpException && error.status === 404) {
+        logger.info(`No UI schema found for ${schemaId}, using empty object`);
+        return {};
+      }
+      throw error;
     }
   }
 
@@ -44,18 +50,26 @@ export class SchemaController {
   @ResponseSchema(SchemaResponseDTO)
   async getSchemaById(@Param('schemaId') schemaId: string, @Req() req: RequestWithUser): Promise<SchemaResponseDTO> {
     const locale = localeFromAcceptLanguage(req.headers['accept-language']);
-    const schemaRes = await this.apiService.get<JsonSchema>(
-      {
-        baseURL: apiURL(this.apiBase),
-        url: `${MUNICIPALITY_ID}/schemas/${schemaId}`,
-      },
-      req,
-    );
+    const schema = (
+      await this.apiService.get<JsonSchema>(
+        {
+          baseURL: apiURL(this.apiBase),
+          url: `${MUNICIPALITY_ID}/schemas/${schemaId}`,
+        },
+        req,
+      )
+    ).data;
 
-    const result = mapSchemaResponse(schemaRes.data, schemaId);
+    const result = mapSchemaResponse(schema, schemaId);
     const uiSchema = await this.fetchUiSchema(result.schemaId, req, locale);
 
-    return { schema: applyUiSchemaTitleToSchema(result.schema, uiSchema), schemaId: result.schemaId, uiSchema };
+    return {
+      schema: applyUiSchemaTitleToSchema(result.schema, uiSchema),
+      schemaId: result.schemaId,
+      name: result.name,
+      version: result.version,
+      uiSchema,
+    };
   }
 
   @Get('/schemas/latest/:schemaName')
@@ -64,17 +78,25 @@ export class SchemaController {
   @ResponseSchema(SchemaResponseDTO)
   async getLatestSchema(@Param('schemaName') schemaName: string, @Req() req: RequestWithUser): Promise<SchemaResponseDTO> {
     const locale = localeFromAcceptLanguage(req.headers['accept-language']);
-    const latestRes = await this.apiService.get<JsonSchema>(
-      {
-        baseURL: apiURL(this.apiBase),
-        url: `${MUNICIPALITY_ID}/schemas/${schemaName}/versions/latest`,
-      },
-      req,
-    );
+    const latest = (
+      await this.apiService.get<JsonSchema>(
+        {
+          baseURL: apiURL(this.apiBase),
+          url: `${MUNICIPALITY_ID}/schemas/${schemaName}/versions/latest`,
+        },
+        req,
+      )
+    ).data;
 
-    const result = mapSchemaResponse(latestRes.data);
+    const result = mapSchemaResponse(latest);
     const uiSchema = await this.fetchUiSchema(result.schemaId, req, locale);
 
-    return { schema: applyUiSchemaTitleToSchema(result.schema, uiSchema), schemaId: result.schemaId, uiSchema };
+    return {
+      schema: applyUiSchemaTitleToSchema(result.schema, uiSchema),
+      schemaId: result.schemaId,
+      name: result.name,
+      version: result.version,
+      uiSchema,
+    };
   }
 }

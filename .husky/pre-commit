@@ -1,0 +1,35 @@
+CONSOLE_LOGS=$(git diff --cached --diff-filter=ACM -- '*.ts' '*.tsx' | grep -n '^\+.*console\.log' | grep -v '^\+.*//.*console\.log' || true)
+if [ -n "$CONSOLE_LOGS" ]; then
+  echo "Found console.log in staged changes:"
+  echo "$CONSOLE_LOGS"
+  echo ""
+  echo "Remove them or use console.warn/console.error instead."
+  echo "To bypass this check, use: git commit --no-verify"
+  exit 1
+fi
+
+PII_ALLOWLIST="$(git rev-parse --show-toplevel)/.husky/pii-allowlist.txt"
+
+# Prints tokens matching $1 in added lines, minus allowlisted ones.
+find_pii() {
+  git diff --cached --diff-filter=ACM -- '*.ts' '*.tsx' '*.json' ':(exclude,glob)**/data-contracts/**' \
+    | grep -E '^\+' | grep -Eo "$1" | sort -u | grep -vxF -f "$PII_ALLOWLIST" || true
+}
+
+report_pii() {
+  echo "Possible $1 found in staged changes:"
+  echo "$2"
+  echo ""
+  echo "If these are known test/fixture values, add them to .husky/pii-allowlist.txt."
+  echo "Otherwise remove the sensitive data before committing."
+  echo "To bypass this check, use: git commit --no-verify"
+  exit 1
+}
+
+PNR=$(find_pii '(19|20)[0-9]{6}[-]?[0-9]{4}|[0-9]{6}[-][0-9]{4}')
+[ -n "$PNR" ] && report_pii "personnummer" "$PNR"
+
+PHONE=$(find_pii '\+46[ ]?[0-9]{6,10}|07[0-9][-]?[0-9]{3}[-]?[0-9]{2}[-]?[0-9]{2}|0[1-9][0-9][-]?[0-9]{2,3}[-]?[0-9]{2}[-]?[0-9]{2}')
+[ -n "$PHONE" ] && report_pii "phone number" "$PHONE"
+
+yarn lint-staged

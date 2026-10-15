@@ -10,10 +10,14 @@ import { useUserStore } from '@services/user-service/user-service';
 import { Divider, Link, Logo, PopupMenu } from '@sk-web-gui/react';
 import { storeErrandFormHandover } from '@utils/errand-form-handover';
 import { Menu } from 'lucide-react';
+import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { appConfig } from 'src/config/appconfig';
+import { servicePath } from 'src/constants/services';
+import { useService } from 'src/hooks/use-service';
 import { useWizardStore } from 'src/stores/wizard-store';
 
 interface BaseErrandLayoutProps {
@@ -25,11 +29,12 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
   const user = useUserStore((s) => s.user);
   const { getValues, watch } = useFormContext<ErrandFormDTO>();
   const { t } = useTranslation();
+  const service = useService();
   const pathname = usePathname();
 
-  // Sidhuvudet är det enda stället som både äger språkvalen och ser formuläret, så det är
-  // här överlämningen måste skrivas. Nyckeln är sökvägen utan språkprefix – samma sida på
-  // ett annat språk ger samma nyckel, vilket är precis den navigering som ska överleva.
+  // The header is the only place that both owns the language choice and sees the form, so the
+  // handover has to be written here. The key is the path without language prefix: the same page
+  // in another language gives the same key, which is exactly the navigation that must survive.
   const saveFormBeforeLanguageSwitch = useCallback(() => {
     storeErrandFormHandover({
       path: pathWithoutLocale(pathname),
@@ -42,24 +47,19 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
 
   const errandNumber = watch('errandNumber');
   const status = watch('status');
+  const lifecycle = watch('lifecycle');
 
-  // Bugfix (static-components): JSX-variabel i stället för komponent skapad under rendering
+  // A JSX variable rather than a component created during render (static-components).
   const singleErrandTitle = (
     <div className="flex items-center gap-12 md:gap-24 py-8 md:py-10">
-      {registerNewErrand ?
+      <NextLink href="/" title={t('layout:controls.go_to_start', { app: process.env.NEXT_PUBLIC_APP_NAME })}>
         <Logo variant="symbol" className="h-32 md:h-40" />
-      : <a
-          href={`${process.env.NEXT_PUBLIC_BASE_PATH}/oversikt`}
-          title={t('layout:controls.go_to_start', { app: process.env.NEXT_PUBLIC_APP_NAME })}
-        >
-          <Logo variant="symbol" className="h-32 md:h-40" />
-        </a>
-      }
+      </NextLink>
       <span className="text-large">
         {registerNewErrand ?
-          <strong className="text-large ml-8 font-bold">{t('filtering:new_errand')}</strong>
+          <strong className="text-large ml-8 font-bold">{appConfig.applicationName}</strong>
         : <>
-            <StatusLabel status={status} />
+            <StatusLabel status={status} lifecycle={lifecycle} />
             <span className="ml-8 text-small">{errandNumber}</span>
           </>
         }
@@ -80,7 +80,7 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
                 <div data-cy="usermenu">
                   <AppUserMenu
                     initials={user.initials}
-                    menuTitle={`${user.name} (${user.username})`}
+                    menuTitle={user.name}
                     menuSubTitle=""
                     menuGroups={userMenuGroups}
                     buttonRounded={false}
@@ -88,27 +88,25 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
                   />
                 </div>
 
-                <Divider orientation="vertical" className="mx-24" />
-                <LinkButton
-                  href="/arende/registrera"
-                  data-cy="register-new-errand-button"
-                  color="primary"
-                  variant="tertiary"
-                >
-                  {t('filtering:new_errand')}
-                </LinkButton>
+                {!registerNewErrand && (
+                  <>
+                    <Divider orientation="vertical" className="mx-24" />
+                    <LinkButton
+                      href={servicePath(service)}
+                      data-cy="register-new-errand-button"
+                      color="primary"
+                      variant="tertiary"
+                    >
+                      {t('filtering:new_errand')}
+                    </LinkButton>
+                  </>
+                )}
               </div>
             }
             mobileMenu={
-              // Språkvalet ligger utanför menyn, inte i den. Registreringen saknar meny
-              // med flit – den ska inte erbjuda vägar bort från formuläret – men språket
-              // är inget man ska behöva lämna sidan för att byta.
               <div className="flex items-center gap-8">
                 <LanguageSwitchButton onBeforeSwitch={saveFormBeforeLanguageSwitch} />
                 {!registerNewErrand && (
-                  // Eget block, av samma skäl som i LanguageSwitchButton: panelen placeras
-                  // utifrån sin statiska position, och raden runt omkring är en flex-container
-                  // som annars centrerar den över knappen.
                   <div className="relative">
                     <PopupMenu align="end">
                       <PopupMenu.Button iconButton aria-label={t('layout:controls.open_menu')}>
@@ -116,12 +114,12 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
                       </PopupMenu.Button>
                       <PopupMenu.Panel>
                         <PopupMenu.Group>
-                          <div className="font-bold">{`${user.name} (${user.username})`}</div>
+                          <div className="font-bold">{user.name}</div>
                         </PopupMenu.Group>
                         <PopupMenu.Items>
                           <PopupMenu.Group>
                             <PopupMenu.Item>
-                              <Link href={`${process.env.NEXT_PUBLIC_BASE_PATH}/arende/registrera`}>
+                              <Link href={`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`}>
                                 {t('filtering:new_errand')}
                               </Link>
                             </PopupMenu.Item>

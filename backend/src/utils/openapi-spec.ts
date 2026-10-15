@@ -9,10 +9,9 @@ type OpenApiSchemas = ReturnType<typeof validationMetadatasToSchemas>;
 type RoutingControllersOptions = NonNullable<Parameters<typeof routingControllersToSpec>[1]>;
 
 /**
- * Bygger JSON Schema-komponenterna för DTO:erna. Ägs på ett ställe så att appen
- * och kontraktstesterna aldrig kan validera mot olika scheman: utan
- * `additionalConverters` saknar specen nullable-markeringarna från
- * `custom-validation-classes`.
+ * Builds the JSON Schema components for the DTOs. Owned in one place so the app and the
+ * contract tests can never validate against different schemas: without `additionalConverters`
+ * the spec loses the nullable markings from `custom-validation-classes`.
  */
 export const buildOpenApiSchemas = (): OpenApiSchemas =>
   validationMetadatasToSchemas({
@@ -21,6 +20,6 @@ export const buildOpenApiSchemas = (): OpenApiSchemas =>
     additionalConverters,
   });
 
-/** Bygger OpenAPI-specen för angivna controllers med samma scheman som servas. */
+/** Builds the OpenAPI spec for the given controllers, using the schemas actually served. */
 export const buildOpenApiSpec = (controllers: RoutingControllersOptions['controllers'], routePrefix: string): unknown =>
   routingControllersToSpec(getMetadataArgsStorage(), { routePrefix, controllers }, { components: { schemas: buildOpenApiSchemas() } });

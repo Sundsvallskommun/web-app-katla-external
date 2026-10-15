@@ -42,7 +42,6 @@ export const MobileMenuBody: React.FC<MobileMenuBodyProps> = ({ onClose }) => {
             <Avatar initials={user.initials} size="md" />
             <div className="flex flex-col">
               <span className="font-bold text-base">{user.name}</span>
-              <span className="text-small text-dark-secondary">{user.username}</span>
             </div>
           </div>
 

@@ -5,14 +5,14 @@ const isSupportedLocale = (value: string): boolean => i18nConfig.locales.include
 const firstSegmentOf = (path: string): string => path.replace(/^\//, '').split('/')[0] ?? '';
 
 /**
- * Sökvägarna som hanteras här är alltid utan basePath — både `nextUrl.pathname` i proxyn
- * och `usePathname()` i klienten utelämnar det, och `router.push()` lägger tillbaka det.
+ * Paths here are always without basePath — both `nextUrl.pathname` in the proxy and
+ * `usePathname()` on the client omit it, and `router.push()` puts it back.
  */
 
 /**
- * Plockar ut språket ur sökvägens första segment. Standardspråket saknar prefix
- * (prefixDefault är av i next-i18n-router), så en sökväg utan känt språksegment
- * tolkas som standardspråket.
+ * Reads the language from the first path segment. The default locale has no prefix
+ * (prefixDefault is off in next-i18n-router), so a path without a known language segment is
+ * the default locale.
  */
 export const localeFromPath = (path: string | null | undefined): string => {
   const firstSegment = firstSegmentOf(path ?? '');
@@ -20,9 +20,8 @@ export const localeFromPath = (path: string | null | undefined): string => {
 };
 
 /**
- * Tar bort ett eventuellt språkprefix. Används för jämförelser som ska vara språkoberoende
- * – utan detta skulle t.ex. en lista över skyddade rutter sluta matcha så fort sökvägen
- * bär ett språkprefix.
+ * Strips any language prefix, for comparisons that must be locale-independent — without it a
+ * list of protected routes would stop matching as soon as the path carries a prefix.
  */
 export const pathWithoutLocale = (path: string | null | undefined): string => {
   const value = path ?? '';
@@ -32,9 +31,9 @@ export const pathWithoutLocale = (path: string | null | undefined): string => {
 };
 
 /**
- * Bygger sökvägen till samma sida på ett annat språk, alltid med uttryckligt språkprefix.
- * Prefixet behålls även för standardspråket: proxyn skriver då om NEXT_LOCALE-kakan och
- * skalar bort prefixet igen, vilket är det som gör att valet överlever nästa navigering.
+ * Builds the path to the same page in another language, always with an explicit prefix. The
+ * prefix is kept even for the default locale: the proxy then rewrites the NEXT_LOCALE cookie and
+ * strips it again, which is what makes the choice survive the next navigation.
  */
 export const pathWithLocale = (path: string | null | undefined, locale: string): string => {
   const base = pathWithoutLocale(path);

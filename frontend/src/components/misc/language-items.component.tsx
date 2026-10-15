@@ -7,16 +7,15 @@ import { useLanguageSwitch } from 'src/hooks/use-language-switch';
 
 interface LanguageItemsProps {
   /**
-   * Radiogruppens namn. Två grupper med samma namn på samma sida delar markering, och sedan
-   * språkvalet finns både i användarmenyn och som egen knapp i sidhuvudet renderas listan
-   * mer än en gång – varje plats måste därför bära ett eget namn.
+   * The radio group's name. Two groups sharing a name on one page share selection, and the list
+   * renders more than once (user menu and header button), so each place needs its own name.
    */
   name?: string;
-  /** Prefix för data-cy, av samma skäl som `name`: selektorerna måste vara unika per yta. */
+  /** data-cy prefix, for the same reason as `name`: selectors must be unique per surface. */
   testIdPrefix?: string;
   /**
-   * Körs precis före navigeringen, för sidor som har tillstånd att rädda undan. Språkbytet
-   * monterar om trädet, så det som bara ligger i minnet är borta efter det.
+   * Runs just before navigation, for pages with state to save. The switch remounts the tree, so
+   * anything living only in memory is gone afterwards.
    */
   onBeforeSwitch?: () => void;
 }

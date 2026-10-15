@@ -4,7 +4,7 @@ import { FormValidationContext } from '@contexts/form-validation-context';
 import { focusFirstInvalidField } from '@utils/focus-first-error';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-// Utbruten till egen fil så att kontextfilen bara exporterar icke-komponenter (react-refresh/only-export-components)
+// Split out so the context file exports only non-components (react-refresh/only-export-components).
 export function FormValidationProvider({ children }: { children: ReactNode }) {
   const [showValidation, setShowValidation] = useState(false);
   const [focusRequest, setFocusRequest] = useState(0);
@@ -13,8 +13,8 @@ export function FormValidationProvider({ children }: { children: ReactNode }) {
     setFocusRequest((request) => request + 1);
   }, []);
 
-  // Felen renderas i samma uppdatering som valideringen slås på, och avsnitt som fälls ut
-  // uppdaterar sig i sin tur. Fokus väntar därför en bildruta så att fältet finns att nå.
+  // Errors render in the same update that turns validation on, and expanding sections update in
+  // turn. Focus therefore waits a frame so the field is there to reach.
   useEffect(() => {
     if (focusRequest === 0) return undefined;
 

@@ -16,30 +16,12 @@
   "field_description": {
     "new_tab_announcement": "Opens in a new tab"
   },
-  "facility_search": {
-    "section_title": "More information about the location",
-    "add_label": "Add location where the deviation occurred",
-    "card_header": "Location where the deviation occurred",
-    "label": "Location",
-    "placeholder": "Search location",
-    "label_hint": "Search by facility, department or any higher organisational level.",
-    "department_label": "Department",
-    "select_sub_place": "Select a unit within {{place}}",
-    "sub_place_required": "You need to select a unit for the location to be complete.",
-    "no_place_structure": "The location structure could not be loaded. Reload the page or contact an administrator.",
-    "suggestion_header": "Suggested from your employment",
-    "suggestion_description": "This location is suggested from your employment and has not been selected yet. Check that it is right for this event — if you are reporting on behalf of another operation, search for the correct location instead.",
-    "suggestion_confirm": "Use this location",
-    "change": "Change location",
-    "unit_manager": "Unit manager",
-    "unit_label": "Unit where the deviation occurred",
-    "floor": "Floor/Department",
-    "select_floor": "Select...",
-    "no_manager": "No unit manager was found. Check the location selection or contact an administrator.",
-    "no_results": "No results found",
-    "no_subunits": "No subunits",
-    "loading_subunits": "Loading subunits...",
-    "your_units": "Your units",
-    "loading": "Loading..."
+  "array": {
+    "add": "Add",
+    "row": "Row {{position}}",
+    "remove": "Remove row {{position}}",
+    "copy": "Copy row {{position}}",
+    "move_up": "Move row {{position}} up",
+    "move_down": "Move row {{position}} down"
   }
 }

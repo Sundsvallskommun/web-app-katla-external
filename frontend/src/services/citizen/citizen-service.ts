@@ -7,3 +7,7 @@ export const getStakeholderUsingPersonNumber = async (personNumber: string): Pro
 
   return apiService.get<StakeholderDTO>(`citizen/person/${sanitizedPersonNumber}`).then((res) => res);
 };
+
+/** The logged in citizen as a stakeholder, resolved from the session. */
+export const getMyStakeholder = async (): Promise<AxiosResponse<StakeholderDTO>> =>
+  apiService.get<StakeholderDTO>('citizen/me');

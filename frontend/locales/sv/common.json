@@ -5,28 +5,12 @@
     "today": "Idag {{time}}",
     "yesterday": "Igår {{time}}"
   },
-  "notification": {
-    "to_errand": "Till ärendet",
-    "from": "Från: {{name}}",
-    "event": "Händelse: {{label}}",
-    "unknown_sender": "Okänd",
-    "subtype": {
-      "ATTACHMENT": "Ny bilaga",
-      "DECISION": "Nytt beslut",
-      "ERRAND": "Ärende uppdaterat",
-      "MESSAGE": "Nytt meddelande",
-      "NOTE": "Ny kommentar/anteckning",
-      "SYSTEM": "Fasbyte",
-      "SUSPENSION": "Parkering upphört"
-    }
-  },
   "api_errors": {
     "metadata": "Metadata kunde inte hämtas. Försök igen senare.",
     "errands": "Ärendena kunde inte hämtas. Försök igen senare.",
     "counts": "Antalet ärenden kunde inte hämtas. Försök igen senare.",
-    "notifications": "Notiserna kunde inte hämtas. Försök igen senare.",
-    "acknowledge_notification": "Notisen kunde inte kvitteras.",
-    "errand": "Ärendet kunde inte hämtas. Försök igen senare."
+    "errand": "Ärendet kunde inte hämtas. Försök igen senare.",
+    "organizations": "Dina företag och organisationer kunde inte hämtas. Försök igen senare."
   },
   "errand-table": {
     "loading": "Laddar ärenden",
@@ -39,7 +23,7 @@
     "header": {
       "status": "Status",
       "errandNumber": "Ärendenummer",
-      "classificationType": "Typ av rapport",
+      "classificationType": "Ärendetyp",
       "created": "Rapporterat"
     }
   },
@@ -56,5 +40,10 @@
   "tabs": {
     "basic_information": "Grundinformation"
   },
-  "loading_information": "Laddar information"
+  "loading_information": "Laddar information",
+  "render_error": {
+    "title": "Något gick fel",
+    "description": "Sidan kunde inte visas. Försök igen, och kontakta supporten om felet kvarstår.",
+    "retry": "Försök igen"
+  }
 }

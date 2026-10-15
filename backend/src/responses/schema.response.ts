@@ -1,4 +1,4 @@
-import { IsObject, IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 
 export class SchemaResponseDTO {
   @IsObject()
@@ -9,4 +9,14 @@ export class SchemaResponseDTO {
 
   @IsString()
   schemaId!: string;
+
+  // The localization contract forbids parsing name or version out of the schema ID, so the
+  // adapter passes them through typed when upstream provides them.
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  version?: string;
 }

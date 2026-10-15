@@ -15,6 +15,7 @@ import {
   SAML_IDP_PUBLIC_CERT,
   SAML_ISSUER,
   SAML_LOGOUT_CALLBACK_URL,
+  SAML_LOGOUT_URL,
   SAML_PRIVATE_KEY,
   SAML_PUBLIC_KEY,
   SAML_SUCCESS_REDIRECT,
@@ -24,7 +25,9 @@ import {
   SESSION_MEMORY,
   SWAGGER_ENABLED,
 } from '@config';
+import { createDefaultAuthGuard } from '@middlewares/default-auth.middleware';
 import errorMiddleware from '@middlewares/error.middleware';
+import { buildPublicPathSet, PublicRouteInfo } from '@middlewares/public.decorator';
 import { Strategy, VerifiedCallback } from '@node-saml/passport-saml';
 import { logger, stream } from '@utils/logger';
 import bodyParser from 'body-parser';
@@ -46,9 +49,10 @@ import { routingControllersToSpec } from 'routing-controllers-openapi';
 import createFileStore from 'session-file-store';
 import swaggerUi from 'swagger-ui-express';
 
-import { HttpException } from './exceptions/HttpException';
+import { loadRepresentingOrganizations } from './auth/login-session';
+import { citizenVerify } from './auth/verify.citizen';
 import { Profile } from './interfaces/profile.interface';
-import { authorizeGroups, getRole } from './services/authorization.service';
+import { SamlIdentity } from './interfaces/users.interface';
 import { getSafeRedirect, getSamlRedirects } from './utils/isValidOrigin';
 import { buildOpenApiSchemas } from './utils/openapi-spec';
 
@@ -56,25 +60,24 @@ type ControllerClass = new () => object;
 
 const corsWhitelist = (ORIGIN ?? '').split(',');
 
-const sessionTTL = 4 * 24 * 60 * 60;
+const sessionTTL = 12 * 60 * 60;
 // NOTE: memory uses ms while file uses seconds
 const sessionStore: session.Store = SESSION_MEMORY
   ? new (createMemoryStore(session))({ checkPeriod: sessionTTL * 1000 })
   : new (createFileStore(session))({ sessionTTL, path: './data/sessions' });
 
-// Tom sträng ska, precis som ett saknat värde, falla tillbaka på nästa alternativ.
+// An empty string falls through to the next candidate, like a missing one.
 const firstNonEmpty = (...values: (string | undefined)[]): string | undefined => values.find(value => value !== undefined && value !== '');
 
 export const DEFAULT_SESSION_COOKIE_NAME = 'connect.sid';
 
 export const getSessionCookieName = (): string => firstNonEmpty(SESSION_COOKIE_NAME) ?? DEFAULT_SESSION_COOKIE_NAME;
 
-// Sessionskakans path måste täcka HELA appen, inte bara API-prefixet: Next-middlewaren
-// (frontend/src/proxy.ts) läser kakan på UI-vägar som /oversikt, och en kaka med
-// path=/api skickas aldrig dit av webbläsaren (RFC 6265 §5.1.4) — resultatet blir en
-// oändlig loop tillbaka till /login trots giltig session. Sätt SESSION_COOKIE_PATH till
-// appens monteringsrot (t.ex. /registrering/avvikelse_iaf, eller / lokalt där frontend
-// saknar basePath). Faller tillbaka på BASE_URL_PREFIX för bakåtkompatibilitet.
+// The cookie path must cover the WHOLE app, not just the API prefix: the Next middleware
+// (frontend/src/proxy.ts) reads it on UI paths like /oversikt, and the browser never sends
+// a path=/api cookie there (RFC 6265 §5.1.4) — an endless loop back to /login despite a
+// valid session. Set SESSION_COOKIE_PATH to the app's mount root (e.g. /registrering/aot,
+// or / locally where the frontend has no basePath).
 export const getSessionCookiePath = (): string => firstNonEmpty(SESSION_COOKIE_PATH, BASE_URL_PREFIX) ?? '/';
 
 export const getSessionCookieOptions = (
@@ -82,23 +85,35 @@ export const getSessionCookieOptions = (
   deployEnvironment: string | undefined = ENVIRONMENT,
 ): session.CookieOptions => ({
   httpOnly: true,
-  // ENVIRONMENT=LOCAL stänger av Secure-flaggan så att lokala prod-byggen fungerar över http
-  // (Dockerfile och `yarn start` tvingar NODE_ENV=production, och webbläsaren vägrar spara en
-  // Secure-kaka över http://localhost — resultatet blir en inloggningsloop). Använd TEST i
-  // testmiljön och lämna den tom/osatt i produktion, då är Secure alltid på.
+  // ENVIRONMENT=LOCAL drops the Secure flag so local production builds work over http (the
+  // Dockerfile and `yarn start` force NODE_ENV=production, and browsers refuse a Secure cookie
+  // over http://localhost — a login loop). Use TEST in the test environment and leave it unset
+  // in production, where Secure is always on.
   secure: environment === 'production' && deployEnvironment !== 'LOCAL',
   sameSite: 'lax',
   maxAge: sessionTTL * 1000,
   path: getSessionCookiePath(),
 });
 
-// Plockar ut ett name-fält ur ett okänt felobjekt (SAML-verifieringen skickar { name, message }).
+// Pulls a name out of an unknown error object (SAML verification sends { name, message }).
 const getErrorName = (err: unknown): string | undefined => {
   if (typeof err === 'object' && err !== null && 'name' in err) {
     const { name } = err as { name?: unknown };
     if (typeof name === 'string' && name !== '') return name;
   }
   return undefined;
+};
+
+const getSamlIdentity = (source: unknown): SamlIdentity | undefined => {
+  if (typeof source !== 'object' || source === null) return undefined;
+  const { nameID, nameIDFormat, sessionIndex } = source as Partial<SamlIdentity>;
+  if (typeof nameID !== 'string' || nameID === '') return undefined;
+
+  return {
+    nameID,
+    nameIDFormat: typeof nameIDFormat === 'string' ? nameIDFormat : '',
+    sessionIndex: typeof sessionIndex === 'string' ? sessionIndex : '',
+  };
 };
 
 const getRelayState = (body: unknown): unknown =>
@@ -129,83 +144,20 @@ const samlStrategy = new Strategy(
     // Identity Provider's public key
     idpCert: SAML_IDP_PUBLIC_CERT ?? '',
     issuer: SAML_ISSUER ?? '',
-    wantAssertionsSigned: false,
+    wantAssertionsSigned: true,
     signatureAlgorithm: 'sha256',
     digestAlgorithm: 'sha256',
     // maxAssertionAgeMs: 2592000000,
     // authnRequestBinding: 'HTTP-POST',
-    //logoutUrl: 'http://194.71.24.30/sso',
+    logoutUrl: SAML_LOGOUT_URL ?? '',
     logoutCallbackUrl: SAML_LOGOUT_CALLBACK_URL ?? '',
-    acceptedClockSkewMs: -1,
+    // -1 would disable the assertion time check entirely.
+    acceptedClockSkewMs: 5000,
     wantAuthnResponseSigned: false,
-    audience: false,
+    audience: SAML_ISSUER ?? '',
   },
-  function (profile: Profile | null, done: VerifiedCallback) {
-    if (!profile) {
-      done({
-        name: 'SAML_MISSING_PROFILE',
-        message: 'Missing SAML profile',
-      });
-      return;
-    }
-    // Depending on using Onegate or ADFS for federation the profile data looks a bit different
-    // Here we use the null coalescing operator (??) to handle both cases.
-    // (A switch from Onegate to ADFS was done on august 6 2023 due to problems in MobilityGuard.)
-    //
-    // const { givenName, sn, email, groups } = profile;
-    const givenName = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ?? profile.givenName;
-    const sn = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] ?? profile.sn;
-    const email = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ?? profile.email;
-    const groups = profile['http://schemas.xmlsoap.org/claims/Group']?.join(',') ?? profile.groups;
-    const username = profile['urn:oid:0.9.2342.19200300.100.1.1'];
-
-    if (!givenName || !sn || !email || !groups || !username) {
-      logger.error(
-        'Could not extract necessary profile data fields from the IDP profile. Does the Profile interface match the IDP profile response? The profile response may differ, for example Onegate vs ADFS.',
-      );
-      done(null, undefined, {
-        name: 'SAML_MISSING_ATTRIBUTES',
-        message: 'Missing profile attributes',
-      });
-      return;
-    }
-
-    if (!authorizeGroups(groups)) {
-      logger.error('Group authorization failed. Is the user a member of the authorized groups?');
-      done(null, undefined, {
-        name: 'SAML_MISSING_GROUP',
-        message: 'SAML_MISSING_GROUP',
-      });
-      return;
-    }
-
-    const groupList: string[] = groups !== undefined ? groups.split(',').map(x => x.toLowerCase()) : [];
-
-    const appGroups: string[] = groupList.length > 0 ? groupList : [];
-
-    try {
-      const findUser = {
-        name: `${givenName} ${sn}`,
-        firstName: givenName,
-        lastName: sn,
-        username: username,
-        email: email,
-        groups: appGroups,
-        role: getRole(appGroups),
-        // permissions: getPermissions(appGroups),
-      };
-
-      logger.info(`Found user: ${JSON.stringify(findUser)}`);
-
-      done(null, findUser);
-    } catch (err) {
-      if (err instanceof HttpException && err?.status === 404) {
-        // TODO: Handle missing person form Citizen?
-        logger.error('Error when calling Citizen:');
-        logger.error(err);
-      }
-      done(err instanceof Error ? err : null);
-    }
+  (profile: Profile | null, done: VerifiedCallback) => {
+    void citizenVerify(profile, done);
   },
   function (profile: Profile | null, done: VerifiedCallback) {
     done(null, {});
@@ -220,14 +172,15 @@ class App {
 
   constructor(Controllers: ControllerClass[]) {
     this.app = express();
-    // Tom sträng ska precis som tidigare falla tillbaka på respektive standardvärde.
+    // An empty string falls back to the default, like a missing value.
     this.env = NODE_ENV !== undefined && NODE_ENV !== '' ? NODE_ENV : 'development';
     this.port = PORT !== undefined && PORT !== '' ? PORT : 3000;
     this.swaggerEnabled = SWAGGER_ENABLED || false;
 
     this.initializeDataFolders();
 
-    this.initializeMiddlewares();
+    const { paths: publicPaths, routes: publicRoutes } = buildPublicPathSet(Controllers);
+    this.initializeMiddlewares(publicPaths, publicRoutes);
     this.initializeRoutes(Controllers);
     if (this.swaggerEnabled) {
       this.initializeSwagger(Controllers);
@@ -248,11 +201,11 @@ class App {
     return this.app;
   }
 
-  private initializeMiddlewares() {
+  private initializeMiddlewares(publicPaths: Set<string>, publicRoutes: PublicRouteInfo[]) {
     this.app.set('trust proxy', 1);
     this.app.use(morgan(LOG_FORMAT ?? 'default', { stream }));
-    // Grundläggande rate limiting för alla rutter (inloggningsflöden, swagger, proxade API:er).
-    // Justera per driftmiljö; miljöer bakom en gateway kan även rate-limita i kanten.
+    // Basic rate limiting for every route (login flows, swagger, proxied APIs). Tune per
+    // deployment; environments behind a gateway may also limit at the edge.
     this.app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 1000, standardHeaders: true, legacyHeaders: false }));
     this.app.use(hpp());
     this.app.use(helmet());
@@ -263,8 +216,8 @@ class App {
 
     this.app.use(
       session({
-        // Egennamn per app gör att flera appar på samma värdnamn (draken-test.sundsvall.se)
-        // aldrig kan skriva över eller förväxlas med varandras sessionskakor.
+        // A per-app name stops several apps on one host (draken-test.sundsvall.se) from
+        // overwriting or being mistaken for each other's session cookies.
         name: getSessionCookieName(),
         secret: SECRET_KEY ?? '',
         resave: false,
@@ -287,11 +240,11 @@ class App {
           } else if (NODE_ENV == 'development') {
             callback(null, true);
           } else {
-            // Neka genom att utelämna Access-Control-Allow-Origin, inte genom att kasta.
-            // CORS upprätthålls av webbläsaren; ett kastat fel blir i stället 500 här och
-            // sänker legitima cross-site-POST:ar som aldrig omfattas av CORS — framför allt
-            // SAML-callbacken, som IdP:n postar med sin egen Origin. Se draken, vars cors
-            // använder en sträng-origin och därför aldrig kastar (därav att MEX fungerar).
+            // Deny by omitting Access-Control-Allow-Origin, not by throwing. CORS is enforced
+            // by the browser; throwing turns this into a 500 and kills legitimate cross-site
+            // POSTs that CORS never covers — above all the SAML callback, which the IdP posts
+            // with its own Origin. Draken's cors uses a string origin and never throws, which
+            // is why MEX works there.
             callback(null, false);
           }
         },
@@ -326,30 +279,46 @@ class App {
       res.status(200).send(metadata);
     });
 
-    this.app.get(
-      `${BASE_URL_PREFIX}/saml/logout`,
-      (req, res, next) => {
-        if (req.session.returnTo) {
-          req.query.RelayState = req.session.returnTo;
-        } else if (typeof req.query.successRedirect === 'string' && req.query.successRedirect !== '') {
-          req.query.RelayState = req.query.successRedirect;
-        }
-        next();
-      },
-      (req, res, next) => {
-        const successRedirect = getSafeRedirect(req.query.successRedirect, SAML_SUCCESS_REDIRECT ?? '');
+    this.app.get(`${BASE_URL_PREFIX}/saml/logout`, (req, res, next) => {
+      const successRedirect = getSafeRedirect(req.query.successRedirect, SAML_SUCCESS_REDIRECT ?? '');
 
-        samlStrategy.logout(req as unknown as Parameters<typeof samlStrategy.logout>[0], () => {
-          req.logout(err => {
-            if (err) {
-              next(err);
-              return;
-            }
-            res.redirect(successRedirect);
-          });
+      const endLocalSession = (redirect: string): void => {
+        req.logout(err => {
+          if (err) {
+            next(err);
+            return;
+          }
+          res.redirect(redirect);
         });
-      },
-    );
+      };
+
+      // Single Logout. The nameID it needs is gone once req.logout runs, so build the url first.
+      // A refused login leaves no req.user but still has a live IdP session — hence the fallback.
+      const identity = getSamlIdentity(req.user) ?? req.session.samlIdentity;
+      if (!SAML_LOGOUT_URL || !identity) {
+        logger.warn('Ending the local session only: SAML_LOGOUT_URL or the SAML nameID is missing');
+        endLocalSession(successRedirect);
+        return;
+      }
+      req.user = identity;
+
+      samlStrategy.logout(req as unknown as Parameters<typeof samlStrategy.logout>[0], (err, url) => {
+        if (err || !url) {
+          logger.error(`Could not build the SAML logout url, ending the local session only: ${String(err)}`);
+          endLocalSession(successRedirect);
+          return;
+        }
+
+        try {
+          const idpLogout = new URL(url);
+          idpLogout.searchParams.set('RelayState', successRedirect);
+          endLocalSession(idpLogout.toString());
+        } catch {
+          logger.error(`The SAML logout url is not a valid url, ending the local session only: ${url}`);
+          endLocalSession(successRedirect);
+        }
+      });
+    });
 
     this.app.get(`${BASE_URL_PREFIX}/saml/logout/callback`, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
       // Passport may clear session-scoped SAML messages during logout, so preserve the result first.
@@ -360,7 +329,9 @@ class App {
           return;
         }
 
-        const { successRedirect, failureRedirect } = getSamlRedirects(getRelayState(req.body), SAML_SUCCESS_REDIRECT ?? '');
+        // The LogoutResponse comes over the redirect binding, so RelayState is a query param here.
+        const relayState = getRelayState(req.query) ?? getRelayState(req.body);
+        const { successRedirect, failureRedirect } = getSamlRedirects(relayState, SAML_SUCCESS_REDIRECT ?? '');
         if (failMessage) {
           failureRedirect.searchParams.set('failMessage', failMessage);
           res.redirect(failureRedirect.toString());
@@ -374,14 +345,19 @@ class App {
     this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
       const { successRedirect, failureRedirect } = getSamlRedirects(getRelayState(req.body), SAML_SUCCESS_REDIRECT ?? '');
 
-      const authenticate = passport.authenticate('saml', (err: unknown, user?: Express.User | false | null) => {
+      const authenticate = passport.authenticate('saml', (err: unknown, user?: Express.User | false | null, info?: unknown) => {
         if (err) {
           const errorName = getErrorName(err);
+          logger.warn(`SAML login callback failed: ${errorName ?? 'SAML_UNKNOWN_ERROR'}`);
           failureRedirect.searchParams.set('failMessage', errorName ?? 'SAML_UNKNOWN_ERROR');
           res.redirect(failureRedirect.toString());
           return;
         } else if (!user) {
-          failureRedirect.searchParams.set('failMessage', 'NO_USER');
+          // The IdP session outlives our refusal, so keep what a LogoutRequest needs — otherwise
+          // the refused user is stuck: the IdP re-asserts the same identity on every retry.
+          req.session.samlIdentity = getSamlIdentity((info as { samlIdentity?: unknown } | undefined)?.samlIdentity);
+          // Verification rejects through info rather than err, so without it every refusal reads as NO_USER.
+          failureRedirect.searchParams.set('failMessage', getErrorName(info) ?? 'NO_USER');
           res.redirect(failureRedirect.toString());
           return;
         } else {
@@ -391,12 +367,26 @@ class App {
               res.redirect(failureRedirect.toString());
               return;
             }
-            res.redirect(successRedirect.toString());
+            // Runs after req.login so it lands on the authenticated, persisted session.
+            void loadRepresentingOrganizations(req).then(() => {
+              res.redirect(successRedirect.toString());
+            });
           });
         }
       }) as express.RequestHandler;
       authenticate(req, res, next);
     });
+
+    // Default-deny authentication. Mounted last so the SAML endpoints above stay reachable, and
+    // before initializeRoutes() so every routing-controllers route sits behind it unless its
+    // handler carries @Public().
+    for (const route of publicRoutes) {
+      logger.warn(
+        `Auth guard: PUBLIC ${route.httpMethod} ${route.path} (${route.controller}.${route.action})` +
+          (route.reason !== undefined && route.reason !== '' ? ` - ${route.reason}` : ' - no reason given'),
+      );
+    }
+    this.app.use(BASE_URL_PREFIX ?? '', createDefaultAuthGuard(publicPaths));
   }
 
   private initializeRoutes(controllers: ControllerClass[]) {

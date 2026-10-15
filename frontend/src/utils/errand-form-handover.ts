@@ -3,14 +3,14 @@ import { ErrandFormDTO } from '@interfaces/errand-form';
 const STORAGE_KEY = 'errand-form-handover';
 
 /**
- * Hur länge en överlämning får ligga kvar. Navigeringen sker på klienten och är i praktiken
- * omedelbar, så fönstret behöver bara täcka den. Utan det skulle en överlämning som av någon
- * anledning aldrig hämtades kunna dyka upp i ett tomt formulär långt senare.
+ * How long a handover may linger. Navigation happens on the client and is effectively instant,
+ * so the window only has to cover that. Without it a handover that was never picked up could
+ * surface in an empty form much later.
  */
 const MAX_AGE_MS = 10_000;
 
 export interface ErrandFormHandover {
-  /** Sökvägen utan språkprefix, så att överlämningen bara gäller sidan den skrevs på. */
+  /** The path without language prefix, so the handover applies only to the page that wrote it. */
   path: string;
   values: ErrandFormDTO;
   wizardStep: number;
@@ -18,23 +18,28 @@ export interface ErrandFormHandover {
 }
 
 /**
- * Ett språkbyte är en navigering till en annan route, och hela ärendeträdet monteras om.
- * Formuläret lever bara i minnet, så utan den här överlämningen förlorar användaren allt
- * hen fyllt i genom att byta språk mitt i registreringen – priset för att byta språk blir
- * att börja om.
+ * Switching language navigates to another route and remounts the whole errand tree. The form
+ * lives only in memory, so without this handover switching language mid-registration costs the
+ * user everything they have entered.
  */
 export const storeErrandFormHandover = (handover: Omit<ErrandFormHandover, 'storedAt'>): void => {
   try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...handover, storedAt: Date.now() }));
+    // A File does not survive JSON, so a bilaga that has not reached SupportManagement yet cannot
+    // cross the navigation. Dropping it leaves a list that matches what can still be sent.
+    const values = {
+      ...handover.values,
+      attachments: handover.values.attachments?.filter((attachment) => !attachment.file),
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...handover, values, storedAt: Date.now() }));
   } catch {
-    // Utan lagring faller vi tillbaka på det tidigare beteendet – ett tomt formulär – i
-    // stället för att låta själva språkbytet krascha.
+    // With no storage, fall back to the old behaviour — an empty form — rather than letting the
+    // language switch itself crash.
   }
 };
 
 /**
- * Läser överlämningen en gång och tar bort den. Den ska överleva just den navigering som
- * skrev den, inte återuppstå nästa gång användaren öppnar ett tomt formulär.
+ * Reads the handover once and removes it. It should survive exactly the navigation that wrote
+ * it, not reappear the next time an empty form is opened.
  */
 export const takeErrandFormHandover = (path: string): ErrandFormHandover | null => {
   try {

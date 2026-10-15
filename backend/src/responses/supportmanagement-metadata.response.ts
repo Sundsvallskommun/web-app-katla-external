@@ -2,6 +2,7 @@ import { Type as TypeTransformer } from 'class-transformer';
 import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import {
+  AttachmentPurpose,
   Category,
   ContactReason,
   ExternalIdType,
@@ -14,7 +15,7 @@ import {
   Role,
   Status,
   Type,
-} from '@/data-contracts/supportmanagement/data-contracts';
+} from '@/data-contracts/support-management-alkt-sprint/data-contracts';
 
 export class TypeDTO implements Type {
   @IsString()
@@ -256,7 +257,38 @@ export class PhaseDTO implements Phase {
   modified?: string;
 }
 
+export class AttachmentPurposeDTO implements AttachmentPurpose {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsString()
+  name!: string;
+  @IsString()
+  @IsOptional()
+  displayName?: string | null;
+  @IsNumber()
+  @IsOptional()
+  sortOrder?: number | null;
+  @IsBoolean()
+  @IsOptional()
+  deprecated?: boolean;
+  @IsString()
+  @IsOptional()
+  created?: string;
+  @IsString()
+  @IsOptional()
+  modified?: string;
+}
+
 export class MetadataResponseDTO implements MetadataResponse {
+  /**
+   * The app's SupportManagement namespace. Not part of the upstream metadata — added here because
+   * the frontend needs it to derive schema names, and one config value beats mirroring it into a
+   * second env file.
+   */
+  @IsOptional()
+  @IsString()
+  namespace?: string;
   @IsOptional()
   @ValidateNested({ each: true })
   @TypeTransformer(() => CategoryDTO)
@@ -277,6 +309,10 @@ export class MetadataResponseDTO implements MetadataResponse {
   @ValidateNested({ each: true })
   @TypeTransformer(() => RoleDTO)
   roles?: RoleDTO[];
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @TypeTransformer(() => AttachmentPurposeDTO)
+  attachmentPurposes?: AttachmentPurposeDTO[];
   @IsOptional()
   @ValidateNested({ each: true })
   @TypeTransformer(() => ContactReasonDTO)

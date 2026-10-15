@@ -1,10 +1,9 @@
 import { AboutErrandContent } from '@components/errand-sections/about-errand.component';
-import { DeviationInformation } from '@components/errand-sections/deviation-information.component';
+import { ErrandAttachmentsContent } from '@components/errand-sections/errand-attachments.component';
+import { ErrandDetails } from '@components/errand-sections/errand-details.component';
+import { ErrandOwnerContent } from '@components/errand-sections/errand-owner.component';
 import { OtherPartiesContent } from '@components/errand-sections/other-parties.component';
-import { ReporterContent } from '@components/errand-sections/reporter.component';
-import { UserContent } from '@components/errand-sections/user.component';
 import { useTranslation } from 'react-i18next';
-import { appConfig } from 'src/config/appconfig';
 import { useActiveWizardSteps } from 'src/hooks/use-active-wizard-steps';
 import { useWizardStore } from 'src/stores/wizard-store';
 
@@ -20,22 +19,14 @@ export const WizardStepContent: React.FC = () => {
     switch (step?.id) {
       case 'about':
         return <AboutErrandContent />;
-      case 'reporter':
-        return (
-          <>
-            <ReporterContent />
-            {appConfig.features.otherPartiesDisclosure && (
-              <div className="mt-24">
-                <h2 className="text-h4-md mb-12">{t('errand-information:other_parties.title')}</h2>
-                <OtherPartiesContent />
-              </div>
-            )}
-          </>
-        );
-      case 'user':
-        return <UserContent />;
-      case 'deviation':
-        return <DeviationInformation compact />;
+      case 'owner':
+        return <ErrandOwnerContent />;
+      case 'other-parties':
+        return <OtherPartiesContent />;
+      case 'details':
+        return <ErrandDetails compact />;
+      case 'attachments':
+        return <ErrandAttachmentsContent />;
       case 'summary':
         return <WizardSummary />;
       default:

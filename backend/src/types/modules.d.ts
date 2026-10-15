@@ -1,4 +1,4 @@
-// Ambient-moduldeklarationer för beroenden som saknar medföljande typdeklarationer.
+// Ambient module declarations for dependencies that ship no types.
 
 declare module 'class-transformer/cjs/storage' {
   import type { MetadataStorage } from 'class-transformer/types/MetadataStorage';

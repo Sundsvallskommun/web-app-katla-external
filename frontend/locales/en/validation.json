@@ -20,5 +20,20 @@
     "person_number_invalid_date": "Invalid date in the personal identity number",
     "email_invalid": "Invalid email address",
     "phone_invalid": "Enter a valid mobile number, for example 0731234567, +46731234567 or 0046731234567."
+  },
+  "owner": {
+    "required": "Select the company or organisation the case concerns, or add yourself as a private person."
+  },
+  "categorization": {
+    "category_required": "Select the category the case concerns.",
+    "type_required": "Select the case type the case concerns."
+  },
+  "attachments": {
+    "required": "The attachment \"{{label}}\" is missing.",
+    "required_several": "The attachments {{labels}} are missing.",
+    "check_failed": "The attachments could not be checked. Please try again."
+  },
+  "stops": {
+    "check_failed": "The answers could not be checked. Please try again."
   }
 }

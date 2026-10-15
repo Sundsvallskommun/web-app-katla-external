@@ -1,0 +1,366 @@
+{
+  "kontaktuppgifter_6055": {
+    "hamtning_av_foretagsuppgifter_80359": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här kan du välja att hämta dina företagsuppgifter från Bolagsverket, SCB och Skatteverket, så att du slipper fylla i dem.<br />\nLäs mer på sidan <a href=\"http://bolagsverket.se/sammansatt-bastjanst-foretagsuppgifter\" target=\"_blank\"><u><font color=\"#0066cc\">Så här hämtas dina företagsuppgifter</font></u></a>.<br />\nDu kan också välja att fylla i uppgifter om ditt företag manuellt.</p>\n\n<p><strong>Vill du hämta uppgifter om ditt företag?</strong></p>"
+      }
+    },
+    "valj_foretag_80360": {
+      "ui:readonly": true,
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Välj det företag som ansökan gäller.<br />\nSaknas företaget så kan du backa och välja att fylla i uppgifterna manuellt.</p>\n\n<p>Vill du ändra uppgifter om ditt företag?<br />\nDet gör du på <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a>.<br />\nOm du som enskild näringsidkare vill ändra folkbokföringsadressen gör du det hos <a href=\"http://www.skatteverket.se/privat.4.76a43be412206334b89800052864.html\" target=\"_blank\"><u><font color=\"#0066cc\">Skatteverket</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_du_firmatecknare_80557": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_fullmakt_80558": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ditt_foretag_80361": {
+      "ui:order": [
+        "foretagets_namn_49864",
+        "organisationsnummer_49865",
+        "utdelningsadress_49866",
+        "postnummer_49867",
+        "postort_49868",
+        "foretagets_telefonnummer_49869",
+        "foretagets_e_postadress_49870"
+      ],
+      "organisationsnummer_49865": {
+        "ui:options": {
+          "placeholder": "XXXXXX-XXXX"
+        }
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "foretagsform_80362": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_fakturaadressen_samma_som_foretagets_80363": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "fakturamottagare_80364": {
+      "ui:order": [
+        "c_o_49871",
+        "utdelningsadress_49872",
+        "postnummer_49873",
+        "postort_49874"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "fakturareferens_80365": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_aktuellt_registreringsbevis_fran_80366": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Här bifogar du företagets registreringsbevis från Bolagsverket.<br />\nHar du inte något registreringsbevis tillgängligt så kan du hämta ett på <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_uppgifter_om_agarforhallanden_80367": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Nedan bifogar du handlingar som styrker vilka fysiska personer som finns bakom organisationsnumret. Syftet med denna informationsinsamling är att identifiera de personer som har betydande inflytande över verksamheten så dessa kan inkluderas i prövningen.</p>\n\n<p><br />\n<strong>Aktiebolag</strong>: Dokumentation som visar aktiefördelningen mellan ägare, exempelvis en aktiebok. Det är bolagets styrelse som ska hålla en aktuell aktiebok över aktier och aktieägare. </p>\n\n<p><strong>Handelsbolag/kommanditbolag</strong>: Dokumentation som visar ägarfördelningen i bolaget, exempelvis ett bolagsavtal.</p>\n\n<p><strong>Förening/stiftelse</strong>:  Stadgar eller protokoll från konstituerande möte som visar vilka som är firmatecknare.</p>\n\n<p><strong>Koncern</strong>: Information om ägarförhållanden för koncernbolaget, förutom den handling som gäller för bolagsformen enligt ovan.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_registerutdrag_fran_skatteverket_80368": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Här kan du bifoga ett registerutdrag från Skatteverket.<br />\nAv registerutdraget framgår det om du eller ditt företag är godkänt för F-skatt eller FA-skatt (F-skatt med villkor). Av utdraget framgår det också om du eller ditt företag är momsregistrerat och/eller registrerat som arbetsgivare. Här hämtar du ett registerutdrag: <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetsbeskrivning_80369": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetsbeskrivning_80370": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_verksamhetsbeskrivning_80371": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ui:order": [
+      "kontaktuppgifter_80358",
+      "hamtning_av_foretagsuppgifter_80359",
+      "valj_foretag_80360",
+      "ar_du_firmatecknare_80557",
+      "ladda_upp_fullmakt_80558",
+      "ditt_foretag_80361",
+      "foretagsform_80362",
+      "ar_fakturaadressen_samma_som_foretagets_80363",
+      "fakturamottagare_80364",
+      "fakturareferens_80365",
+      "bifoga_aktuellt_registreringsbevis_fran_80366",
+      "bifoga_uppgifter_om_agarforhallanden_80367",
+      "bifoga_registerutdrag_fran_skatteverket_80368",
+      "verksamhetsbeskrivning_80369",
+      "verksamhetsbeskrivning_80370",
+      "bifoga_verksamhetsbeskrivning_80371"
+    ]
+  },
+  "ansokan_6056": {
+    "vad_vill_du_gora_80555": {
+      "ui:widget": "checkboxes"
+    },
+    "tidsperiod_for_forsaljningen_80375": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "startdatum_forsaljning_80556": {
+      "ui:widget": "date",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "period_for_tidsbegransad_forsaljning_80376": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "forsaljningsstallet_80377": {
+      "ui:order": [
+        "forsaljningsstallets_namn_49875"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p> </p>\n<style type=\"text/css\">.cke{visibility:hidden;}\n</style>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_forsaljningsstallets_besoksadress_sam_80378": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "besoksadress_80379": {
+      "ui:order": [
+        "gatuadress_49876",
+        "postnummer_49877",
+        "postort_49878",
+        "telefonnummer_49879",
+        "e_post_49880"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "jag_kommer_ocksa_bedriva_distansforsaljn_80380": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Distansförsäljning är försäljning av varor via postorder, telefon eller internet där leverantören ansvarar för leveransen av varorna.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "hemsida_80381": {
+      "ui:order": [
+        "hemsida_49881"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "registreringen_omfattar_forsaljning_av_s_80382": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "finansiering_80687": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "egna_medel_80688": {
+      "items": {
+        "ui:order": [
+          "bank_5664",
+          "kontonummer_5665",
+          "belopp_kronor_5666"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_kontoutdrag_80689": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "banklan_80690": {
+      "items": {
+        "ui:order": [
+          "langivare_5667",
+          "belopp_kronor_5668"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_banklan_80691": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "privatlan_80692": {
+      "items": {
+        "ui:order": [
+          "langivare_5669",
+          "belopp_kronor_5670"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_privatlan_80693": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "annan_finansiering_80694": {
+      "items": {
+        "ui:order": [
+          "lanetyp_5671",
+          "langivare_5672",
+          "belopp_kronor_5673"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_annan_finansiering_80695": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ovriga_upplysningar_angaende_finansierin_80696": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_registrering_fran_lansstyrelsen_80383": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "finns_avtal_med_tillverkare_partihandlar_80384": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_avtal_80385": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_produktlista_80386": {
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Produkterna som ska säljas är registrerade hos Folkhälsomyndigheten.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_underlag_som_styrker_dispositions_80387": {
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Företaget har rätt att nyttja lokalen.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "egenkontrollprogram_80388": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Enligt Lag om tobak och liknande produkter och lagen om tobaksfria nikotinprodukter måste egenkontrollprogram bifogas anmälan. Läs mer på <a href=\"https://www.folkhalsomyndigheten.se/publikationer-och-material/publikationsarkiv/v/vagledning-till-naringsidkare-om-egenkontrollprogram-for-den-som-saljer-tobaksvaror-elektroniska-cigaretter-och-pafyllningsbehallare-samt-tobaksfria-nikotinprodukter/\" rel=\"noreferrer noopener\" target=\"_blank\">https://www.folkhalsomyndigheten.se/publikationer-och-material/publikationsarkiv/v/vagledning-till-naringsidkare-om-egenkontrollprogram-for-den-som-saljer-tobaksvaror-elektroniska-cigaretter-och-pafyllningsbehallare-samt-tobaksfria-nikotinprodukter/</a> </p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ui:order": [
+      "vad_vill_du_gora_80555",
+      "tidsperiod_for_forsaljningen_80375",
+      "startdatum_forsaljning_80556",
+      "period_for_tidsbegransad_forsaljning_80376",
+      "forsaljningsstallet_80377",
+      "ar_forsaljningsstallets_besoksadress_sam_80378",
+      "besoksadress_80379",
+      "jag_kommer_ocksa_bedriva_distansforsaljn_80380",
+      "hemsida_80381",
+      "registreringen_omfattar_forsaljning_av_s_80382",
+      "finansiering_80687",
+      "egna_medel_80688",
+      "bifoga_kontoutdrag_80689",
+      "banklan_80690",
+      "bifoga_lanebevis_for_banklan_80691",
+      "privatlan_80692",
+      "bifoga_lanebevis_for_privatlan_80693",
+      "annan_finansiering_80694",
+      "bifoga_lanebevis_for_annan_finansiering_80695",
+      "ovriga_upplysningar_angaende_finansierin_80696",
+      "bifoga_registrering_fran_lansstyrelsen_80383",
+      "finns_avtal_med_tillverkare_partihandlar_80384",
+      "bifoga_avtal_80385",
+      "bifoga_produktlista_80386",
+      "bifoga_underlag_som_styrker_dispositions_80387",
+      "egenkontrollprogram_80388"
+    ]
+  },
+  "ui:order": [
+    "kontaktuppgifter_6055",
+    "ansokan_6056"
+  ]
+}

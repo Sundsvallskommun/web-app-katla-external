@@ -17,22 +17,25 @@ describe('security middleware', () => {
 
   it('lets ENVIRONMENT=LOCAL turn off the secure flag for local http builds', () => {
     expect(getSessionCookieOptions('production', 'LOCAL').secure).toBe(false);
-    // Allt annat än LOCAL ska behålla Secure — särskilt tomt/osatt, som är produktionsfallet.
+    // Everything but LOCAL keeps Secure — especially unset, which is the production case.
     expect(getSessionCookieOptions('production', 'TEST').secure).toBe(true);
     expect(getSessionCookieOptions('production', '').secure).toBe(true);
     expect(getSessionCookieOptions('production', undefined).secure).toBe(true);
-    // LOCAL får inte slå på Secure i en icke-produktionsmiljö.
+    // LOCAL must not turn Secure on outside production.
     expect(getSessionCookieOptions('development', 'LOCAL').secure).toBe(false);
   });
 
   it('sets hardened attributes on a persisted session cookie', async () => {
     const app = new App([IndexController]).getServer();
-    app.get('/api/session-test', (req, res) => {
+    // Outside BASE_URL_PREFIX on purpose: the default-deny guard covers everything under the
+    // prefix, including routes appended after construction. The session cookie path is '/' in
+    // tests, so the cookie is still set here.
+    app.get('/session-test', (req, res) => {
       req.session.returnTo = '/';
       res.sendStatus(204);
     });
 
-    const response = await request(app).get('/api/session-test').expect(204);
+    const response = await request(app).get('/session-test').expect(204);
     const cookies = response.headers['set-cookie'];
     if (!Array.isArray(cookies)) {
       throw new Error('Expected one persisted session cookie');
@@ -45,19 +48,17 @@ describe('security middleware', () => {
     expect(cookies).toHaveLength(1);
     expect(cookie).toContain('HttpOnly');
     expect(cookie).toContain('SameSite=Lax');
-    // Kakans path ägs av getSessionCookiePath och måste täcka hela appen, inte bara
-    // API-prefixet: Next-middlewaren läser kakan på UI-vägar, och en kaka begränsad
-    // till /api skickas aldrig dit (RFC 6265 §5.1.4). Assertionen låser att
-    // sessionsmiddlewaren faktiskt använder helpern, så en återgång till ett hårdkodat
-    // prefix syns här i stället för som en inloggningsloop.
+    // getSessionCookiePath owns the cookie path, which must cover the whole app rather than the
+    // API prefix: the Next middleware reads the cookie on UI paths, and one scoped to /api is
+    // never sent there (RFC 6265 §5.1.4). This asserts the session middleware really uses the
+    // helper, so a regression to a hardcoded prefix shows up here, not as a login loop.
     expect(cookie).toContain(`Path=${getSessionCookiePath()}`);
     expect(getSessionCookiePath().startsWith('/api')).toBe(false);
   });
 
-  // En cross-site POST från IdP:n (SAML-callbacken) bär en Origin-header som aldrig ligger i
-  // ORIGIN-vitlistan. CORS ska då bara utelämna Access-Control-Allow-Origin — inte avvisa
-  // requesten. Kastar vi i stället ett fel blir det 500 "Not allowed by CORS" och inloggningen
-  // går aldrig igenom (draken/MEX fungerar just för att dess cors aldrig kastar).
+  // A cross-site POST from the IdP (the SAML callback) carries an Origin that is never in the
+  // ORIGIN whitelist. CORS must then simply omit Access-Control-Allow-Origin, not reject the
+  // request: throwing gives a 500 "Not allowed by CORS" and login never completes.
   it('does not reject requests from a non-whitelisted origin', async () => {
     const app = new App([IndexController]).getServer();
 

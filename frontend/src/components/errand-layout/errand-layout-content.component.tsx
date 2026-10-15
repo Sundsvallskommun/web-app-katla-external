@@ -3,7 +3,7 @@
 import { pathWithoutLocale } from '@app/locale-path';
 import { jsonParametersToErrandFormData } from '@components/json/utils/schema-utils';
 import { ErrorAlertList } from '@components/misc/error-alert.component';
-import { VisibleTabs } from '@components/tabs/tabs';
+import { visibleTabsFor } from '@components/tabs/tabs';
 import { MobileWizard } from '@components/wizard/mobile-wizard.component';
 import { FormValidationProvider } from '@contexts/form-validation-provider';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,7 +12,7 @@ import BaseErrandLayout from '@layouts/base-errand-layout/base-errand-layout.com
 import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import Main from '@layouts/main/main.component';
 import { getErrandUsingErrandNumber } from '@services/errand-service/errand-service';
-import { Spinner, Tabs } from '@sk-web-gui/react';
+import { cx, Spinner, Tabs } from '@sk-web-gui/react';
 import { ErrandFormHandover, takeErrandFormHandover } from '@utils/errand-form-handover';
 import { default as NextLink } from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
@@ -20,38 +20,31 @@ import { useEffect, useRef, useState } from 'react';
 import { FormProvider, Resolver, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { MOBILE_BREAKPOINT } from 'src/constants/responsive';
-import { useAutoInitReporter } from 'src/hooks/use-auto-init-reporter';
+import { servicePath } from 'src/constants/services';
 import { useLoadMetadata } from 'src/hooks/use-load-metadata';
 import { useMediaQuery } from 'src/hooks/use-media-query';
+import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { useWizardStore } from 'src/stores/wizard-store';
 import * as yup from 'yup';
 
-const ReporterInit: React.FC = () => {
-  useAutoInitReporter();
-  return null;
-};
-
 const FormSchema = yup.object({}).required();
 const REGISTER_ROUTE_IDENTITY = 'new-errand';
 const INVALID_ROUTE_IDENTITY = 'invalid-errand-route';
-const REGISTER_ROUTE_PATTERN = /\/arende\/registrera\/?$/;
 
 type ErrandRoute =
   | { identity: typeof REGISTER_ROUTE_IDENTITY; kind: 'register' }
   | { errandNumber: string; identity: string; kind: 'existing' }
   | { identity: typeof INVALID_ROUTE_IDENTITY; kind: 'invalid' };
 
-// Kontrollen finns för att avvisa svar från en tidigare route, inte för att
-// kräva kanonisk skiftlägesform. Jämför normaliserat så att en giltig djuplänk
-// med annan skiftlägesform fortfarande laddar ärendet.
+// The check exists to reject responses from an earlier route, not to demand canonical casing.
+// Compare normalised so a valid deep link with different casing still loads the errand.
 const matchesRequestedErrand = (errandNumber: string | undefined, requestedErrandNumber: string): boolean =>
   errandNumber?.trim().toLocaleUpperCase('sv-SE') === requestedErrandNumber.trim().toLocaleUpperCase('sv-SE');
 
 const createDefaultErrand = (): ErrandFormDTO => ({
   title: 'Empty errand',
   priority: 'MEDIUM',
-  status: 'DRAFT',
   //TODO: Change channel to ESERVICE_KATLA?
   channel: 'ESERVICE',
   resolution: 'INFORMED',
@@ -62,13 +55,14 @@ interface ErrandRouteContentProps {
   route: ErrandRoute;
 }
 
-// Tabs identifierar sitt direkta Button-barn via komponentreferens. Att skicka
-// de polymorfa länkpropsen genom ett objekt bevarar den identiteten och går
-// samtidigt runt den installerade deklarationen, som inte exponerar målets props.
+// Tabs identifies its direct Button child by component reference. Passing the polymorphic link
+// props through an object keeps that identity while working around the installed declaration,
+// which does not expose the target's props.
 const createLinkTabProps = (href: string) => ({ as: NextLink, href });
 
 const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route }) => {
   const { t } = useTranslation();
+  const service = useService();
   const registerNewErrand = route.kind === 'register';
   const requestedErrandNumber = route.kind === 'existing' ? route.errandNumber : null;
   const initialFocus = useRef<HTMLBodyElement>(null);
@@ -99,14 +93,14 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
   const { reset } = methods;
 
   useEffect(() => {
-    // Ett språkbyte är en navigering, och Next monterar om hela trädet. Överlämningen bär
-    // det som bara låg i minnet över den navigeringen; utan den kostar ett språkbyte mitt i
-    // registreringen allt användaren fyllt i.
+    // A language switch is a navigation, and Next remounts the whole tree. The handover carries
+    // what lived only in memory across it; without it, switching language mid-registration costs
+    // the user everything they entered.
     //
-    // Posten tas bort vid första läsningen, medan effekten kan köras om för samma sida –
-    // StrictMode gör det i utvecklingsläge. Svaret sparas därför per sökväg: en omkörning
-    // för samma sida återanvänder det, och ett flikbyte till en annan sökväg får sitt eget
-    // (tomma) svar i stället för att applicera om värden som hunnit bli inaktuella.
+    // The entry is removed on first read, while the effect may re-run for the same page —
+    // StrictMode does exactly that in development. The result is therefore cached per path: a
+    // re-run for the same page reuses it, and a move to another path gets its own (empty) result
+    // instead of reapplying values that have gone stale.
     const handoverPath = pathWithoutLocale(pathname);
     if (handoverRef.current?.path !== handoverPath) {
       handoverRef.current = { path: handoverPath, handover: takeErrandFormHandover(handoverPath) };
@@ -134,8 +128,8 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
         }
 
         const errandFormData = jsonParametersToErrandFormData(errand.jsonParameters);
-        // Överlämningen innehåller osparade ändringar och är därmed nyare än svaret från
-        // API:et, som bara bär det som hunnit sparas.
+        // The handover holds unsaved edits and is therefore newer than the API response, which
+        // carries only what has been saved.
         if (handover) {
           reset(handover.values);
           wizardGoToStep(handover.wizardStep);
@@ -153,13 +147,14 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
     };
   }, [pathname, registerNewErrand, requestedErrandNumber, reset, wizardGoToStep, wizardReset]);
 
-  const errandStatus = methods.watch('status');
   const errandNumber = methods.watch('errandNumber');
-  const isDraft = errandStatus === 'DRAFT';
-  // Ett utkast är samma oavslutade arbete oavsett om det just skapats eller
-  // återupptagits, och wizarden är det gränssnitt som är byggt för smal skärm.
-  // Utan det här villkoret bytte ett återupptaget utkast till flikvyn på mobil.
+  const isDraft = methods.watch('lifecycle') === 'DRAFT';
+  // A draft is the same unfinished work whether just created or resumed, and the wizard is the
+  // interface built for narrow screens. Without this condition a resumed draft switched to the
+  // tab view on mobile.
   const showMobileWizard = isMobile && (registerNewErrand || isDraft);
+  // Mirrors ErrandButtonGroup's visibility; keeps the submit action reachable while scrolling.
+  const showSubmitBar = registerNewErrand || isDraft;
 
   const getHeaderTitle = () => {
     if (registerNewErrand) {
@@ -171,9 +166,8 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
     return `${t('errand-information:errand')} ${errandNumber}`;
   };
 
-  // Rollnamn och platsstrukturen kommer ur metadata. Renderas sidan innan den
-  // finns blir rollerna tomma och platsväljaren fastnar i sitt laddningsläge,
-  // så metadata hör till samma readiness-gräns som själva ärendet.
+  // Role names come from metadata. Rendering the page before it exists leaves the roles empty,
+  // so metadata belongs to the same readiness boundary as the errand itself.
   const loadErrors = [loadState === 'error' ? t('api_errors.errand') : null, metadataError].filter(
     (message): message is string => message !== null
   );
@@ -203,16 +197,19 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
         >
           {t('layout:header.goto_content')}
         </NextLink>
-        {registerNewErrand && <ReporterInit />}
         <BaseErrandLayout registerNewErrand={registerNewErrand}>
           {showMobileWizard ?
             <MobileWizard />
-          : <div className="grow shrink overflow-y-auto">
+          : <div
+              className={cx('grow shrink overflow-y-auto', showSubmitBar && 'scroll-pt-[16rem] md:scroll-pt-[12rem]')}
+            >
               <div className="bg-transparent">
                 <div className="mb-xl">
-                  <div className="mx-auto max-w-[108rem] flex flex-col md:flex-row justify-between pt-16 md:pt-32 pb-12 px-16 md:px-0 gap-12">
-                    <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
-                    <ErrandButtonGroup isNewErrand={registerNewErrand} />
+                  <div className={cx(showSubmitBar && 'sticky top-0 z-10 bg-background-100')}>
+                    <div className="mx-auto max-w-[108rem] flex flex-col md:flex-row justify-between pt-16 md:pt-32 pb-12 px-16 md:px-0 gap-12">
+                      <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
+                      <ErrandButtonGroup isNewErrand={registerNewErrand} />
+                    </div>
                   </div>
                   <Main>
                     <Tabs
@@ -221,18 +218,20 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
                       panelsClassName="border-t-1"
                       size="sm"
                     >
-                      {VisibleTabs.filter((tab) => tab.visible).map((tab) => {
-                        return (
-                          <Tabs.Item key={tab.path}>
-                            <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
-                              {t(tab.labelKey)}
-                            </Tabs.Button>
-                            <Tabs.Content>
-                              <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
-                            </Tabs.Content>
-                          </Tabs.Item>
-                        );
-                      })}
+                      {visibleTabsFor(service)
+                        .filter((tab) => tab.visible)
+                        .map((tab) => {
+                          return (
+                            <Tabs.Item key={tab.path}>
+                              <Tabs.Button {...createLinkTabProps(tab.path)} className="text-base whitespace-nowrap">
+                                {t(tab.labelKey)}
+                              </Tabs.Button>
+                              <Tabs.Content>
+                                <div className="pt-xl pb-64 px-16 md:px-40">{children}</div>
+                              </Tabs.Content>
+                            </Tabs.Item>
+                          );
+                        })}
                     </Tabs>
                   </Main>
                 </div>
@@ -247,10 +246,11 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
 
 export const ErrandLayoutContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathName = usePathname();
+  const service = useService();
   const { errandnumber } = useParams<{ errandnumber?: string }>();
 
   let route: ErrandRoute;
-  if (REGISTER_ROUTE_PATTERN.test(pathName)) {
+  if (pathWithoutLocale(pathName).replace(/\/$/, '') === servicePath(service)) {
     route = { identity: REGISTER_ROUTE_IDENTITY, kind: 'register' };
   } else if (errandnumber) {
     route = { errandNumber: errandnumber, identity: `existing:${errandnumber}`, kind: 'existing' };
@@ -258,9 +258,9 @@ export const ErrandLayoutContent: React.FC<{ children: React.ReactNode }> = ({ c
     route = { identity: INVALID_ROUTE_IDENTITY, kind: 'invalid' };
   }
 
-  // En routeidentitet äger exakt en RHF-instans. Nyckeln river ned föregående
-  // formulär synkront vid A→B-navigation, innan B hinner rendera header eller
-  // åtgärder, medan requestupprensningen avvisar varje sent A-svar.
+  // One route identity owns exactly one RHF instance. The key tears the previous form down
+  // synchronously on an A→B navigation, before B renders its header or actions, while the
+  // request cleanup rejects any late A response.
   return (
     <ErrandRouteContent key={route.identity} route={route}>
       {children}

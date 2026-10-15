@@ -11,9 +11,9 @@ export const EntryLayout: React.FC<{
   return (
     <EmptyLayout>
       <div className="relative">
-        {/* Inloggningen ligger före allt annat i flödet, och det är här en användare som
-            inte läser svenska först möter appen. Utan språkvalet här måste hen logga in på
-            ett språk hen inte förstår för att sedan kunna byta. */}
+        {/* Login comes before everything else, and it is where a user who does not read Swedish
+            first meets the app. Without the language control here they would have to log in in a
+            language they do not understand before they could change it. */}
         <div className="absolute top-0 right-0 z-10 p-16 pt-[calc(1.6rem+env(safe-area-inset-top))] lg:p-24">
           <LanguageSwitchButton />
         </div>

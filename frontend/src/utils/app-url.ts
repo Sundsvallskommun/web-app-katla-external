@@ -1,4 +1,4 @@
 export const appURL = (path?: string): string => {
-  // (path ?? '') || … bevarar ||-semantiken: tom sträng ska falla tillbaka till bassökvägen
+  // (path ?? '') || … keeps || semantics: an empty string falls back to the base path.
   return `${window.location.origin}${(path ?? '') || process.env.NEXT_PUBLIC_BASE_PATH}`;
 };

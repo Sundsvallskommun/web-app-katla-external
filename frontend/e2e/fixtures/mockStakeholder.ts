@@ -36,3 +36,15 @@ export const mockManualEditStakeholder: StakeholderDTO = {
   zipCode: '12346',
   careOf: 'mockEditCareOf',
 };
+
+/** The logged in citizen, as /citizen/me hands them back. The name matches the getMe fixture. */
+export const mockSelfStakeholder: StakeholderDTO = {
+  personNumber: MOCK_HYPHEN_PERSON_NUMBER,
+  externalId: 'aaaaaaaa-0000-4000-8000-000000000001',
+  city: 'Sundsvall',
+  firstName: 'Förnamn',
+  lastName: 'Efternamn',
+  address: 'Storgatan 1',
+  zipCode: '85230',
+  careOf: '',
+};

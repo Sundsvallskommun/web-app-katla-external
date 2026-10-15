@@ -17,12 +17,12 @@ interface MainPageMobileHeaderProps {
 export const MainPageMobileHeader: React.FC<MainPageMobileHeaderProps> = ({ icon, actions, children }) => {
   const { t } = useTranslation();
   const headerIcon = icon ?? (
-    <NextLink href="/oversikt" title={t('layout:controls.go_to_start', { app: process.env.NEXT_PUBLIC_APP_NAME })}>
+    <NextLink href="/" title={t('layout:controls.go_to_start', { app: process.env.NEXT_PUBLIC_APP_NAME })}>
       <Logo variant="symbol" className="h-32" />
     </NextLink>
   );
 
-  // Bugfix (static-components): JSX-variabel i stället för komponent skapad under rendering
+  // A JSX variable rather than a component created during render (static-components).
   const title = (
     <div className="flex items-center gap-12 py-8">
       {headerIcon}

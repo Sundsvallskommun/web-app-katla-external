@@ -10,98 +10,19 @@
  * ---------------------------------------------------------------
  */
 
-export interface User {
-  name: string;
-  username: string;
-  initials: string;
+export interface OrganizationDTO {
+  partyId: string;
+  organizationNumber: string;
+  organizationName: string;
+  isAuthorizedSignatory?: boolean;
 }
 
-export interface UserApiResponse {
-  data: User;
-  message: string;
+export interface MyOrganizationsDTO {
+  organizations: OrganizationDTO[];
 }
 
-export interface NotificationDTO {
-  id?: string;
-  created?: string;
-  modified?: string;
-  ownerFullName?: string;
-  ownerId?: string;
-  createdBy?: string;
-  createdByFullName?: string;
-  type?: string;
-  subtype?: string;
-  description?: string;
-  content?: string;
-  expires?: string;
-  globalAcknowledged?: boolean;
-  acknowledged?: boolean;
-  errandId?: string;
-  errandNumber?: string;
-}
-
-export interface TypeDTO {
-  name: string;
-  displayName?: string;
-  escalationEmail?: string;
-  created?: string;
-  modified?: string;
-}
-
-export interface CategoryDTO {
-  name?: string;
-  displayName?: string;
-  types?: TypeDTO[];
-  created?: string;
-  modified?: string;
-}
-
-export interface ExternalIdTypeDTO {
-  name: string;
-  created?: string;
-  modified?: string;
-}
-
-export interface LabelDTO {
-  id?: string;
-  classification: string;
-  displayName?: string;
-  resourcePath?: string;
-  resourceName: string;
-  labels?: LabelDTO[];
-}
-
-export interface LabelsDTO {
-  labelStructure?: LabelDTO[];
-}
-
-export interface StatusDTO {
-  name: string;
-  created?: string;
-  modified?: string;
-}
-
-export interface RoleDTO {
-  name: string;
-  displayName?: string;
-  created?: string;
-  modified?: string;
-}
-
-export interface ContactReasonDTO {
-  id?: string;
-  reason: string;
-  created?: string;
-  modified?: string;
-}
-
-export interface MetadataResponseDTO {
-  categories?: CategoryDTO[];
-  externalIdTypes?: ExternalIdTypeDTO[];
-  labels?: LabelsDTO;
-  statuses?: StatusDTO[];
-  roles?: RoleDTO[];
-  contactReasons?: ContactReasonDTO[];
+export interface ErrandCountDTO {
+  count: number;
 }
 
 export interface ErrandsQueryDTO {
@@ -109,6 +30,7 @@ export interface ErrandsQueryDTO {
   size?: number;
   sort?: string;
   status?: string;
+  lifecycle?: "DRAFT" | "ACTIVE";
 }
 
 export interface StakeholderDTO {
@@ -128,6 +50,8 @@ export interface StakeholderDTO {
   phoneNumbers?: string[];
   title?: string;
   department?: string;
+  serveringsstalle?: string;
+  organizationNumber?: string;
 }
 
 export interface ClassificationDTO {
@@ -140,6 +64,7 @@ export interface ParameterDTO {
   displayName?: string;
   group?: string;
   values?: string[];
+  version?: number;
 }
 
 export interface ExternalTagDTO {
@@ -153,6 +78,30 @@ export interface JsonParameterDTO {
   schemaId: string;
 }
 
+export interface ErrandLabelDTO {
+  id?: string;
+  classification?: string;
+  displayName?: string;
+  resourcePath?: string;
+  resourceName?: string;
+}
+
+export interface ErrandActionDTO {
+  id?: string;
+  actionName?: string;
+  executeAfter?: string;
+  actionConfigId?: string;
+  displayValue?: string;
+}
+
+export interface ErrandPhaseDTO {
+  phaseId?: string;
+  name?: string;
+  displayName?: string;
+  started?: string;
+  ended?: string;
+}
+
 export interface ErrandDTO {
   id?: string;
   errandNumber?: string;
@@ -163,8 +112,8 @@ export interface ErrandDTO {
   parameters?: ParameterDTO[];
   jsonParameters?: JsonParameterDTO[];
   classification?: ClassificationDTO;
-  labels?: LabelDTO[];
   status?: string;
+  lifecycle?: "DRAFT" | "ACTIVE";
   resolution?: string;
   description?: string;
   channel?: string;
@@ -178,6 +127,11 @@ export interface ErrandDTO {
   created?: string;
   modified?: string;
   touched?: string;
+  labels?: ErrandLabelDTO[];
+  phases?: ErrandPhaseDTO[];
+  activePhaseId?: string;
+  actions?: ErrandActionDTO[];
+  version?: number;
 }
 
 export interface SortObjectDTO {
@@ -209,42 +163,168 @@ export interface PageErrandDTO {
   empty?: boolean;
 }
 
-export interface OrgManagerDTO {
-  personId?: string;
-  givenname?: string;
-  lastname?: string;
-  emailAddress?: string;
+export interface SchemaResponseDTO {
+  schema: object;
+  uiSchema: object;
+  schemaId: string;
+  name?: string;
+  version?: string;
 }
 
-export interface UserEmploymentDTO {
-  orgId?: number;
-  orgName?: string;
-  topOrgId?: number;
-  isMainEmployment?: boolean;
-  manager?: OrgManagerDTO;
+export interface TypeDTO {
+  name: string;
+  displayName?: string;
+  escalationEmail?: string;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
 }
 
-export interface FacilityInfoDTO {
-  orgId?: number;
-  orgName?: string;
-  parentOrgId?: number;
-  parentOrgName?: string;
-  manager?: OrgManagerDTO;
-  floor?: string;
-  hasSubUnits?: boolean;
+export interface CategoryDTO {
+  id?: string;
+  name?: string;
+  displayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  types?: TypeDTO[];
+  created?: string;
+  modified?: string;
 }
 
-export interface OrgTreeNodeDTO {
-  orgId?: number;
-  orgName?: string;
-  parentId?: number;
-  level?: number;
-  isLeafLevel?: boolean;
-  organizations?: OrgTreeNodeDTO[];
+export interface ExternalIdTypeDTO {
+  id?: string;
+  name: string;
+  displayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
 }
 
-export interface OrgLeafNodeDTO {
-  orgId: number;
-  orgName: string;
-  parentId?: number;
+export interface LabelAttributeDTO {
+  key: string;
+  value: string;
+}
+
+export interface LabelDTO {
+  id?: string;
+  classification: string;
+  displayName?: string;
+  resourcePath?: string;
+  resourceName: string;
+  deprecated?: boolean;
+  labels?: LabelDTO[];
+  attributes?: LabelAttributeDTO[];
+}
+
+export interface LabelsDTO {
+  labelStructure?: LabelDTO[];
+}
+
+export interface StatusDTO {
+  id?: string;
+  name: string;
+  displayName?: string;
+  externalDisplayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
+}
+
+export interface RoleDTO {
+  id?: string;
+  name: string;
+  displayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
+}
+
+export interface ContactReasonDTO {
+  id?: string;
+  reason: string;
+  displayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
+}
+
+export interface PhaseTransitionDTO {
+  id?: string;
+  targetPhaseId: string;
+  targetPhaseName?: string;
+  targetPhaseDisplayName?: string;
+  description?: string;
+  deprecated?: boolean;
+}
+
+export interface PhaseDTO {
+  id?: string;
+  name: string;
+  displayName?: string;
+  description?: string;
+  phaseOrder?: number;
+  allowedStatuses?: string[];
+  transitions?: PhaseTransitionDTO[];
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
+}
+
+export interface AttachmentPurposeDTO {
+  id?: string;
+  name: string;
+  displayName?: string;
+  sortOrder?: number;
+  deprecated?: boolean;
+  created?: string;
+  modified?: string;
+}
+
+export interface MetadataResponseDTO {
+  namespace?: string;
+  categories?: CategoryDTO[];
+  externalIdTypes?: ExternalIdTypeDTO[];
+  labels?: LabelsDTO;
+  statuses?: StatusDTO[];
+  roles?: RoleDTO[];
+  attachmentPurposes?: AttachmentPurposeDTO[];
+  contactReasons?: ContactReasonDTO[];
+  phases?: PhaseDTO[];
+}
+
+export interface ErrandAttachmentPurposeDTO {
+  id?: string;
+  name?: string;
+  displayName?: string;
+}
+
+export interface ErrandAttachmentDTO {
+  id: string;
+  fileName: string;
+  mimeType?: string;
+  created?: string;
+  purpose?: ErrandAttachmentPurposeDTO;
+}
+
+export interface CreateErrandAttachmentDTO {
+  category?: string;
+}
+
+export interface UpdateErrandAttachmentDTO {
+  /** @minLength 1 */
+  category: string;
+}
+
+export interface User {
+  name: string;
+  initials: string;
+}
+
+export interface UserApiResponse {
+  data: User;
+  message: string;
 }

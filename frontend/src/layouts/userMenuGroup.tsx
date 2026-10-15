@@ -8,8 +8,8 @@ import { ChevronRight, Languages, Monitor } from 'lucide-react';
 
 interface UserMenuOptions {
   /**
-   * Språkvalet finns både här och som egen knapp i sidhuvudet. Båda navigerar, så båda
-   * måste ge sidan samma chans att rädda undan det som bara ligger i minnet.
+   * The language choice exists both here and as its own header button. Both navigate, so both
+   * must give the page the same chance to save what lives only in memory.
    */
   onBeforeLanguageSwitch?: () => void;
 }

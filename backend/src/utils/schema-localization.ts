@@ -1,19 +1,19 @@
 /**
- * Lokalisering av schema och ui-schema.
+ * Localisation of schema and ui schema.
  *
- * Visningstexten för avvikelseformuläret ligger i ui-schemat, inte i JSON-schemat — där
- * finns bara datadefinitionerna. Översättningarna lagras därför som ett `x-i18n`-block
- * bredvid den svenska texten, och löses upp här innan svaret går ut.
+ * Display text lives in the ui schema, not the JSON schema, which holds only the data
+ * definitions. Translations are therefore stored as an `x-i18n` block next to the Swedish
+ * text and resolved here before the response goes out.
  *
- * Att lagra dem i ui-schemat och inte i JSON-schemat är avsiktligt: ui-schemat skrivs med
- * PUT och lämnar schemats ID orört, medan varje ändring i JSON-schemat kräver en ny version.
- * Ärenden pinnas till sitt schema-ID, så en rättad översättning får inte skapa en ny version.
+ * Keeping them in the ui schema is deliberate: it is written with PUT and leaves the schema ID
+ * untouched, while any change to the JSON schema requires a new version. Errands are pinned to
+ * their schema ID, so fixing a translation must not create one.
  *
- * Verifierat mot jsonschema-API:t i test: okända nycklar som `x-i18n` bevaras i ui-schemats
- * lagrade värde, både på fält- och rotnivå.
+ * Verified against the jsonschema API in test: unknown keys like `x-i18n` survive in the ui
+ * schema's stored value, at both field and root level.
  */
 
-/** Nyckeln översättningarna lagras under. Får aldrig följa med ut i svaret. */
+/** The key translations are stored under. Must never reach the response. */
 export const LOCALE_EXTENSION_KEY = 'x-i18n';
 
 export const DEFAULT_LOCALE = 'sv';
@@ -26,10 +26,10 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => type
 const isSupportedLocale = (value: string): value is SupportedLocale => (SUPPORTED_LOCALES as readonly string[]).includes(value);
 
 /**
- * Plockar första begripliga språket ur en Accept-Language-header. Frontend skickar en ren
- * språkkod, men headern kan komma från andra klienter i standardform ("en-GB,en;q=0.9"),
- * så både region och kvalitetsvikt tolereras. Okända språk faller tillbaka på svenska
- * i stället för att avvisas — ett formulär ska aldrig sluta ladda för att språket är okänt.
+ * Picks the first understandable language from an Accept-Language header. The frontend sends a
+ * bare language code, but other clients may send the standard form ("en-GB,en;q=0.9"), so both
+ * region and quality weight are tolerated. Unknown languages fall back to Swedish rather than
+ * being rejected — a form must never stop loading because the language is unknown.
  */
 export const localeFromAcceptLanguage = (header: string | undefined): SupportedLocale => {
   for (const part of (header ?? '').split(',')) {
@@ -46,12 +46,12 @@ export const localeFromAcceptLanguage = (header: string | undefined): SupportedL
 };
 
 /**
- * Går igenom strukturen och ersätter varje nod som bär `x-i18n` med sin översatta variant.
- * Blocket tas alltid bort, även när språket saknas — annars skulle den svenska texten och
- * alla andra språk läcka ut till klienten som död vikt i varje svar.
+ * Walks the structure and replaces every node carrying `x-i18n` with its translated variant.
+ * The block is always removed, even when the language is missing — otherwise the Swedish text
+ * and every other language would leak to the client as dead weight in each response.
  *
- * Sammanslagningen är ytlig per nod: översättningsblocket ersätter hela nycklar som
- * `ui:title`. Det räcker för visningstext och gör resultatet förutsägbart.
+ * The merge is shallow per node: the translation block replaces whole keys such as `ui:title`.
+ * That is enough for display text and keeps the result predictable.
  */
 export const resolveLocaleExtensions = (value: unknown, locale: string): unknown => {
   if (Array.isArray(value)) {
@@ -85,10 +85,10 @@ export const localizeUiSchema = (uiSchema: Record<string, unknown>, locale: stri
   resolveLocaleExtensions(uiSchema, locale) as Record<string, unknown>;
 
 /**
- * JSON-schemats rubrik är den enda visningstexten utanför ui-schemat, och den kan bara ändras
- * genom en ny schemaversion. Den översätts därför via ett `ui:title` i ui-schemats rot, som
- * skrivs in i schemakopian här. Utan det steget skulle felsammanfattningen i formuläret
- * namnge schemat på svenska i ett engelskt gränssnitt.
+ * The JSON schema title is the only display text outside the ui schema, and it can only change
+ * with a new schema version. It is therefore translated via a `ui:title` at the ui schema root,
+ * written into the schema copy here. Without that step the form's error summary would name the
+ * schema in Swedish inside an English interface.
  */
 export const applyUiSchemaTitleToSchema = (schema: Record<string, unknown>, localizedUiSchema: Record<string, unknown>): Record<string, unknown> => {
   const uiTitle = localizedUiSchema['ui:title'];

@@ -1,28 +1,28 @@
  @supports not (font-variation-settings: 'wght') {
     @font-face {
         font-family: 'Raleway';
-        src: url('/fonts/Raleway-Regular.ttf');
+        src: url('./Raleway-Regular.ttf');
         font-display: swap;
         font-weight: 400;
     }
   
     @font-face {
         font-family: 'Raleway';
-        src: url('/fonts/Raleway-Medium.ttf');
+        src: url('./Raleway-Medium.ttf');
         font-display: swap;
         font-weight: 500;
     }
 
     @font-face {
         font-family: 'Raleway';
-        src: url('/fonts/Raleway-SemiBold.ttf');
+        src: url('./Raleway-SemiBold.ttf');
         font-display: swap;
         font-weight: 600;
     }
 
     @font-face {
         font-family: 'Raleway';
-        src: url('/fonts/Raleway-Bold.ttf');
+        src: url('./Raleway-Bold.ttf');
         font-display: swap;
         font-weight: 700;
     }
@@ -31,8 +31,8 @@
 @supports (font-variation-settings: 'wght') {
     @font-face {
         font-family: 'Raleway';
-        src: url('/fonts/Raleway-VariableFont_wght.ttf') format('truetype supports variations') tech('variations'),
-             url('/fonts/Raleway-VariableFont_wght.ttf') format('truetype-variations');
+        src: url('./Raleway-VariableFont_wght.ttf') format('truetype supports variations') tech('variations'),
+             url('./Raleway-VariableFont_wght.ttf') format('truetype-variations');
         font-weight: 100 1000;
         font-stretch: 25% 151%;
     }

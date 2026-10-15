@@ -1,13 +1,60 @@
-import { RoleDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
+import { OrganizationDTO, RoleDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import type { TFunction } from 'i18next';
 import { appConfig } from 'src/config/appconfig';
 import * as yup from 'yup';
 
+export const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
+
+/** SupportManagement's externalIdType for an organisation, as opposed to a private person. */
+export const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
+/** SupportManagement's externalIdType for a private person. */
+export const PERSON_EXTERNAL_ID_TYPE = 'PRIVATE';
+
+/** Every non-owner stakeholder this app files is a private person, however they were added. */
+export const asPersonStakeholder = (stakeholder: StakeholderDTO): StakeholderDTO => ({
+  ...stakeholder,
+  externalIdType: PERSON_EXTERNAL_ID_TYPE,
+});
+
+export const isOrganizationStakeholder = (stakeholder: StakeholderDTO): boolean =>
+  stakeholder.externalIdType === ORGANIZATION_EXTERNAL_ID_TYPE;
+
 export const shouldShowContactDetails = (roles?: string[]) =>
-  !(roles?.includes('PRIMARY') && appConfig.features.reducedStakeholderInfo);
+  !(roles?.includes(PRIMARY_STAKEHOLDER_ROLE) && appConfig.features.reducedStakeholderInfo);
+
+/** The errand owner: the organisation or private person the errand is registered for. */
+export const getPrimaryStakeholder: (stakeholders: StakeholderDTO[] | undefined) => StakeholderDTO | undefined = (
+  stakeholders
+) => stakeholders?.find((s) => s.role === PRIMARY_STAKEHOLDER_ROLE);
+
+// externalId must carry the LegalEntity party id: it is the field the backend scopes errands by,
+// so an owner written any other way makes the errand unreadable to the citizen who filed it.
+export const organizationAsPrimaryStakeholder = (organization: OrganizationDTO): StakeholderDTO => ({
+  role: PRIMARY_STAKEHOLDER_ROLE,
+  externalId: organization.partyId,
+  externalIdType: ORGANIZATION_EXTERNAL_ID_TYPE,
+  organizationName: organization.organizationName,
+});
+
+/** The logged in citizen as owner: a private applicant. externalId is their party id, as above. */
+export const citizenAsPrimaryStakeholder = (self: StakeholderDTO): StakeholderDTO => ({
+  ...self,
+  role: PRIMARY_STAKEHOLDER_ROLE,
+  externalIdType: PERSON_EXTERNAL_ID_TYPE,
+});
+
+/** Drops the errand owner, leaving the other stakeholders untouched. */
+export const withoutPrimaryStakeholder = (stakeholders: StakeholderDTO[] | undefined): StakeholderDTO[] =>
+  (stakeholders ?? []).filter((s) => s.role !== PRIMARY_STAKEHOLDER_ROLE);
+
+/** Sets the errand owner, leaving the other stakeholders untouched. An errand has one owner. */
+export const withPrimaryStakeholder = (
+  stakeholders: StakeholderDTO[] | undefined,
+  owner: StakeholderDTO
+): StakeholderDTO[] => [...withoutPrimaryStakeholder(stakeholders), owner];
 
 export const emptyStakeholder: StakeholderDTO = {
-  externalIdType: 'PERSON',
+  externalIdType: PERSON_EXTERNAL_ID_TYPE,
   externalId: '',
   personNumber: '',
   firstName: '',
@@ -44,9 +91,9 @@ export function phoneNumberFormatter(phoneNumber: string | undefined | null): st
 }
 
 /**
- * Fabrik i stället för ett färdigt schema: yup binder felmeddelandena när schemat byggs,
- * så ett schema på modulnivå skulle låsa fast språket vid det som råkade gälla när modulen
- * lästes in. Anropas via useMemo på det aktiva språket.
+ * A factory rather than a ready-made schema: yup binds the error messages when the schema is
+ * built, so a module-level schema would pin the language to whatever applied at import time.
+ * Called through useMemo on the active language.
  */
 export const createStakeholderSchema = (t: TFunction) =>
   yup.object({

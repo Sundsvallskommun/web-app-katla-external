@@ -8,8 +8,8 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
 
-// Versala månadsnamn är husets stil; dayjs svenska locale skriver dem gement.
-// Engelskans månadsnamn är redan versala och behöver ingen motsvarande justering.
+// Capitalised month names are house style; the dayjs Swedish locale writes them lowercase.
+// English month names are already capitalised and need no equivalent fix.
 dayjs.updateLocale('sv', {
   months: [
     'Januari',
@@ -29,9 +29,9 @@ dayjs.updateLocale('sv', {
 });
 
 /**
- * Håller dayjs globala locale i takt med gränssnittets språk. Designsystemets datumfält
- * formaterar via dayjs, så utan den här synkroniseringen skulle de fortsätta visa svenska
- * månads- och veckodagsnamn i ett engelskt gränssnitt.
+ * Keeps the global dayjs locale in step with the interface language. The design system's date
+ * fields format through dayjs, so without this they would keep showing Swedish month and weekday
+ * names in an English interface.
  */
 export const setDayjsLocale = (locale: string): void => {
   dayjs.locale(locale);

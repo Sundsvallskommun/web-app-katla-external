@@ -1,9 +1,8 @@
-import { acknowledgeNotification, createErrand, getErrands } from '@services/errand-service/errand-service';
+import { createErrand, getErrands } from '@services/errand-service/errand-service';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const apiMocks = vi.hoisted(() => ({
   get: vi.fn(),
-  patch: vi.fn(),
   post: vi.fn(),
 }));
 
@@ -31,29 +30,5 @@ describe('Errand service contracts', () => {
     apiMocks.post.mockRejectedValue(error);
 
     await expect(createErrand({ title: 'User input' })).rejects.toBe(error);
-  });
-
-  it('rejects when notification acknowledgement fails upstream', async () => {
-    const error = new Error('Acknowledge failed');
-    apiMocks.patch.mockRejectedValue(error);
-
-    await expect(acknowledgeNotification({ id: 'notification-id' })).rejects.toBe(error);
-  });
-
-  it('rejects a false acknowledgement response', async () => {
-    apiMocks.patch.mockResolvedValue({ data: { data: false, message: 'Not acknowledged' } });
-
-    await expect(acknowledgeNotification({ id: 'notification-id' })).rejects.toThrow(
-      'Notification was not acknowledged'
-    );
-  });
-
-  it('returns success only for an explicitly acknowledged notification', async () => {
-    apiMocks.patch.mockResolvedValue({ data: { data: true, message: 'Success' } });
-
-    await expect(acknowledgeNotification({ id: 'notification-id' })).resolves.toBe(true);
-    expect(apiMocks.patch).toHaveBeenCalledWith('supportmanagement/notifications', [
-      { id: 'notification-id', acknowledged: true },
-    ]);
   });
 });

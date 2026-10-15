@@ -12,9 +12,7 @@
   "errand": "Case: ",
   "draft": "Draft: ",
   "search": {
-    "PERSON": "Search by personal identity number",
-    "EMPLOYEE": "Search by username",
-    "AUTODETECT": "Search by personal identity number or username"
+    "PERSON": "Search by personal identity number"
   },
   "save_message": {
     "draft": "Draft saved",
@@ -22,47 +20,20 @@
     "error": "Something went wrong while saving the case"
   },
   "about": {
-    "title": "About the case",
-    "event_type_label": "Select event type",
-    "event_type_deviation": "Deviation",
-    "event_type_misconduct": "Misconduct",
-    "misconduct_alert_title": "Misconduct",
-    "misconduct_alert_description": "The case is sent to an independent investigator. Your manager is informed about the case but does not decide the outcome.",
-    "event_concerns_label": "The event concerns",
-    "event_concerns_individual": "An individual client",
-    "event_concerns_group": "Group/the entire operation",
-    "event_concerns_other": "Other",
-    "event_concerns_describe_note": "(Describe further in the \"What happened?\" section)",
-    "event_type_required": "Select an event type",
-    "event_concerns_required": "Select what the event concerns",
-    "event_concerns_group_facility_required": "Select a location where the deviation occurred when the event concerns a group/the entire operation",
-    "facility_incomplete": "Complete the location selection by choosing a unit – the location controls who can see the case"
-  },
-  "reporter": {
-    "title": "Reporter",
-    "description": "The reporter is the person who initiated the case and our primary contact while the case is being processed. If you are reporting on behalf of another colleague, add that person under other reporter."
-  },
-  "user": {
-    "title": "Client",
-    "description": "A client is the individual affected by the case.",
-    "not_required_title": "No client is needed for this case",
-    "not_required_description": "Since the event does not concern an individual client, you do not need to specify a client. You can continue to the next step."
-  },
-  "other_reporter": {
-    "title": "Other reporter",
-    "description": "Specify the colleague you are reporting on behalf of."
+    "title": "What do you want to apply for or report?",
+    "description": "First choose the category of your case, Alcohol or Tobacco, and then what the case concerns. You can search or browse the list of case types.",
+    "category_label": "Category",
+    "category_placeholder": "Select a category…",
+    "type_label": "Case type",
+    "type_placeholder": "Select a case type…",
+    "type_placeholder_no_category": "Select a category first",
+    "type_search_placeholder": "Search case types"
   },
   "other_parties": {
     "title": "Other parties",
-    "description": "A party can be a contact person, doctor or a relative whose role is important to the case. If you are reporting on behalf of a colleague, you should add that colleague as another party."
-  },
-  "deviation_information": {
-    "title": "Details about the deviation",
-    "loading_form": "Loading form..."
+    "description": "Enter contact persons or other people who are relevant to the case."
   },
   "stakeholder": {
-    "person": "Person",
-    "employee": "Employee",
     "no_person_found": "No person was found",
     "missing_person_number": "Personal identity number missing",
     "missing_address": "Address missing",
@@ -75,9 +46,10 @@
     "person_role": "The person's role",
     "add_person": "Add person",
     "add_manually": "Add manually",
+    "add_self": "Add myself",
+    "self_lookup_failed": "Your details could not be retrieved. Try again or add yourself manually.",
     "edit_details": "Edit details",
     "remove": "Remove",
-    "reporting_for_colleague": "I am reporting on behalf of another colleague",
     "modal": {
       "edit_title": "Edit person",
       "add_title": "Add person manually",
@@ -120,7 +92,49 @@
     "complete": "Complete",
     "incomplete": "Incomplete"
   },
-  "sequence_of_events": {
-    "title": "Sequence of events"
+  "owner": {
+    "title": "Contact details",
+    "role_label": "Case owner",
+    "description": "The case owner is the company, organisation or private person that is applying and our primary contact while the case is processed.",
+    "select_label": "Select the company you represent",
+    "no_organizations": "You have no companies or organisations to register the case for. You can apply as a private person.",
+    "select_placeholder": "Select a company or organisation",
+    "serveringsstalle": "Serving location",
+    "modal": {
+      "title": "Edit case owner",
+      "organization_number": "Organisation number",
+      "organization_name": "Organisation name",
+      "add": "Add",
+      "already_added": "That detail has already been added.",
+      "remove_value": "Remove {{value}}",
+      "save": "Save changes",
+      "person_number": "Personal identity number",
+      "name": "Name"
+    },
+    "self_lookup_failed": "Your details could not be retrieved. Try again."
+  },
+  "errand_details": {
+    "title": "Case details",
+    "loading_form": "Loading form..."
+  },
+  "section_placeholder": "This section will be filled with alcohol serving fields at a later stage.",
+  "attachments": {
+    "title": "Attachments",
+    "required_heading": "This errand type requires the following attachments:",
+    "missing": "missing",
+    "no_errand_type": "Select an errand type to see which attachments are needed.",
+    "allowed_formats": "Allowed file types: images (jpeg, png, gif, tiff, bmp) and documents (pdf, Word, Excel, OpenDocument, txt).",
+    "uploaded_at": "Submitted {{date}}",
+    "not_sent_yet": "Will be submitted when the errand is saved",
+    "open": "Open",
+    "remove": "Remove",
+    "load_error": "The attachments could not be loaded.",
+    "upload_error": "The errand was saved, but one of the attachments could not be submitted.",
+    "category_error": "The attachment type could not be saved.",
+    "remove_error": "The attachment could not be removed.",
+    "open_error": "The attachment could not be opened.",
+    "choose_category": "Select attachment type",
+    "loading_types": "Loading attachments...",
+    "types_error": "Which attachments are required could not be loaded."
   }
 }

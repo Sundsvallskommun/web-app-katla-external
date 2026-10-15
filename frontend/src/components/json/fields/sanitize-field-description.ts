@@ -29,12 +29,12 @@ export interface SanitizedFieldDescription {
   hasNewTabLink: boolean;
 }
 
-/** Sanerar schemaägd text utan att vara beroende av webbläsarglobaler. */
+/** Sanitises schema-owned text without depending on browser globals. */
 export function sanitizeFieldDescription(unsafeHtml: string, newTabAnnouncementId: string): SanitizedFieldDescription {
   let hasNewTabLink = false;
-  // Ett pass räcker: transformen bygger länkattributen från grunden och kopierar
-  // bara href, så inkommande rel eller aria-describedby kan aldrig överleva.
-  // Scheman filtreras av allowedSchemes efter transformen.
+  // One pass is enough: the transform rebuilds the link attributes from scratch and copies only
+  // href, so an incoming rel or aria-describedby can never survive.
+  // allowedSchemes filters the schemes after the transform.
   const options: SanitizeHTML.IOptions = {
     allowedTags: [...FIELD_DESCRIPTION_TAGS],
     allowedAttributes: {
@@ -47,8 +47,8 @@ export function sanitizeFieldDescription(unsafeHtml: string, newTabAnnouncementI
         const safeAttributes: Record<string, string> = {};
         if (attributes.href) safeAttributes.href = attributes.href;
 
-        // Endast det kanoniska HTML-nyckelordet öppnar en ny flik. Namngivna mål
-        // och varianter med annan skiftlägesform tas bort i stället för att litas på.
+        // Only the canonical HTML keyword opens a new tab. Named targets and differently cased
+        // variants are dropped rather than trusted.
         if (attributes.target !== '_blank' || !attributes.href) return { tagName, attribs: safeAttributes };
 
         hasNewTabLink = true;

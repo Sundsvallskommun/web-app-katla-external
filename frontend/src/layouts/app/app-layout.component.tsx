@@ -1,7 +1,7 @@
 'use client';
 
-// Sidoeffekt: registrerar dayjs-plugins och locale-data högst upp i trädet, innan någon
-// vy hinner formatera ett datum. Själva språkvalet sätts av LocalizationProvider.
+// Side effect: registers dayjs plugins and locale data at the top of the tree, before any view
+// formats a date. LocalizationProvider sets the language itself.
 import '@utils/dayjs-locale';
 
 import { useUserStore } from '@services/user-service/user-service';

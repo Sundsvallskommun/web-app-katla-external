@@ -7,7 +7,7 @@ const outputContent = `export const envs = {
   protectedRoutes: '${process.env.NEXT_PUBLIC_PROTECTED_ROUTES || ''}',
   adminUrl: '${process.env.ADMIN_URL || ''}',
   basePath: '${process.env.NEXT_PUBLIC_BASE_PATH || ''}',
-  apiUrl: '${process.env.NEXT_PUBLIC_API_URL || ''}',
+  apiUrl: '${process.env.API_URL_INTERNAL || process.env.NEXT_PUBLIC_API_URL || ''}',
   sessionCookieName: '${process.env.NEXT_PUBLIC_SESSION_COOKIE_NAME || 'connect.sid'}',
 };\n`;
 

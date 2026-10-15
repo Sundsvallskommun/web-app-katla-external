@@ -18,7 +18,7 @@ interface RequestTracker {
 export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptions = {}) {
   const { t } = useTranslation();
   const { sortColumn, sortOrder, page, size } = useSortStore();
-  const { statuses } = useFilterStore();
+  const { statuses, lifecycle } = useFilterStore();
   const { metadataError } = useLoadMetadata();
 
   const [rows, setRows] = useState<ErrandDTO[]>([]);
@@ -30,7 +30,7 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
   const mobilePageRef = useRef(0);
   const requestGenerationRef = useRef(0);
   const requestTrackerRef = useRef<RequestTracker>({ generation: 0, pending: 0 });
-  // Spegelvärde av mobilePageRef för läsning under rendering (react-hooks/refs)
+  // Mirror of mobilePageRef for reading during render (react-hooks/refs).
   const [mobilePage, setMobilePage] = useState(0);
 
   const beginRequest = useCallback((generation: number): boolean => {
@@ -51,27 +51,27 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
     if (requestTrackerRef.current.pending === 0) setIsLoading(false);
   }, []);
 
-  // Desktop använder sidan från storen, mobil börjar alltid på 0
+  // Desktop uses the page from the store; mobile always starts at 0.
   const effectivePage = mode === 'mobile' ? 0 : page;
 
-  // Huvudhämtningen — utlöses av ändringar i storen (sortering, filter, paginering).
-  // Mobil hämtar alltid från sida 0 och nollställer ackumulerade rader.
+  // The main fetch, triggered by store changes (sorting, filtering, paging). Mobile always
+  // fetches from page 0 and resets the accumulated rows.
   useEffect(() => {
     const generation = requestGenerationRef.current + 1;
     requestGenerationRef.current = generation;
     requestTrackerRef.current = { generation, pending: 0 };
     mobilePageRef.current = 0;
     setMobilePage(0);
-    // Rader och totaler hör till exakt denna queryidentitet. Rensa dem för både
-    // desktop och mobil innan en ny sida/filter/sortering/storlek begärs, så att
-    // en misslyckad ersättning aldrig kan visas som resultat för den nya queryn.
+    // Rows and totals belong to this exact query identity. Clear them for both desktop and
+    // mobile before requesting a new page/filter/sort/size, so a failed replacement can never
+    // be shown as the new query's result.
     setRows([]);
     setTotalPages(1);
     setTotalElements(0);
     setErrandsError(null);
     beginRequest(generation);
     let active = true;
-    void getErrands({ sortColumn, sortOrder, page: effectivePage, size, statuses })
+    void getErrands({ sortColumn, sortOrder, page: effectivePage, size, statuses, lifecycle })
       .then((data) => {
         if (!active || requestGenerationRef.current !== generation) return;
         setRows(data.content ?? []);
@@ -94,7 +94,7 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
         requestTrackerRef.current = { generation: invalidatedGeneration, pending: 0 };
       }
     };
-  }, [beginRequest, finishRequest, sortColumn, sortOrder, effectivePage, size, statuses, t]);
+  }, [beginRequest, finishRequest, sortColumn, sortOrder, effectivePage, size, statuses, lifecycle, t]);
 
   const hasMore = mode === 'mobile' ? mobilePage + 1 < totalPages : page + 1 < totalPages;
 
@@ -111,7 +111,7 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
 
     mobilePageRef.current = nextPage;
     setMobilePage(nextPage);
-    void getErrands({ sortColumn, sortOrder, page: nextPage, size, statuses })
+    void getErrands({ sortColumn, sortOrder, page: nextPage, size, statuses, lifecycle })
       .then((data) => {
         if (requestGenerationRef.current !== generation) return;
         setRows((prev) => [...prev, ...(data.content ?? [])]);
@@ -121,7 +121,7 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
       })
       .catch(() => {
         if (requestGenerationRef.current !== generation) return;
-        // Rulla tillbaka sidmarkören så att användaren kan försöka med samma sida igen.
+        // Roll the page cursor back so the user can retry the same page.
         mobilePageRef.current = previousPage;
         setMobilePage(previousPage);
         setErrandsError(t('api_errors.errands'));
@@ -129,7 +129,7 @@ export function useOverviewErrands({ mode = 'desktop' }: UseOverviewErrandsOptio
       .finally(() => {
         finishRequest(generation);
       });
-  }, [beginRequest, finishRequest, mode, totalPages, sortColumn, sortOrder, size, statuses, t]);
+  }, [beginRequest, finishRequest, mode, totalPages, sortColumn, sortOrder, size, statuses, lifecycle, t]);
 
   return { rows, isLoading, totalPages, totalElements, hasMore, loadMore, page, errandsError, metadataError };
 }

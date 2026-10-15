@@ -1,9 +1,11 @@
 import { test as base } from '@playwright/test';
 
 import { getMe } from '../fixtures/getMe';
+import { getMyOrganizations } from '../fixtures/getMyOrganizations';
+import { ownerStakeholderFor } from '../fixtures/getOwnerStakeholder';
 import { jsonRoute } from './routes';
 
-// Samma värde som CookieConsentUtils.defaultCookieConsentName i @sk-web-gui/react
+// The same value as CookieConsentUtils.defaultCookieConsentName in @sk-web-gui/react.
 export const COOKIE_CONSENT_NAME = 'SKCookieConsent';
 export const DEFAULT_COOKIE_VALUE = 'necessary%2Cstats';
 
@@ -11,25 +13,33 @@ const DEFAULT_BASE_URL = 'http://localhost:3000';
 
 interface AppFixtures {
   /**
-   * Bygger en absolut URL under den konfigurerade basstigen.
+   * Builds an absolute URL under the configured base path.
    *
-   * page.goto('/nagon/sida') löses mot baseURL med URL-semantik, där en absolut
-   * sökväg ersätter hela sökvägen. Basstigen i baseURL försvinner därmed och
-   * appen svarar 404 så snart NEXT_PUBLIC_BASE_PATH är satt. Gå alltid via den
-   * här hjälparen i stället för att skicka en sökväg direkt till goto().
+   * page.goto('/some/page') resolves against baseURL with URL semantics, where an absolute path
+   * replaces the whole path. The base path in baseURL is then lost and the app answers 404 as
+   * soon as NEXT_PUBLIC_BASE_PATH is set. Always go through this helper rather than passing a
+   * path straight to goto().
    */
   appUrl: (path: string) => string;
 }
 
-// Motsvarar Cypress globala beforeEach: cookie-samtycke satt och inloggad användare mockad.
-// Fixture-callbacken heter `run` (inte Playwright-konventionens `use`) för att inte
-// trigga react-hooks/rules-of-hooks, som tolkar `use(...)` som Reacts use-hook.
+// Sets cookie consent and mocks a logged-in user, their organisations and an empty attachment
+// list for every test. The fixture callback is named
+// `run` rather than Playwright's conventional `use` so it does not trip
+// react-hooks/rules-of-hooks, which reads `use(...)` as React's use hook.
 export const test = base.extend<AppFixtures>({
   page: async ({ page, context, baseURL }, run) => {
     await context.addCookies([
       { name: COOKIE_CONSENT_NAME, value: DEFAULT_COOKIE_VALUE, url: baseURL ?? DEFAULT_BASE_URL },
     ]);
     await page.route('**/api/me', jsonRoute(getMe));
+    await page.route('**/api/my-organizations', jsonRoute(getMyOrganizations));
+    await page.route('**/api/my-organizations/*/stakeholder', (route) => {
+      const partyId = new URL(route.request().url()).pathname.split('/').at(-2);
+      const organization = getMyOrganizations.organizations.find((candidate) => candidate.partyId === partyId);
+      return organization ? jsonRoute(ownerStakeholderFor(organization))(route) : jsonRoute({}, 404)(route);
+    });
+    await page.route('**/supportmanagement/errand/*/attachments', jsonRoute([]));
     await run(page);
   },
   appUrl: async ({ baseURL }, run) => {

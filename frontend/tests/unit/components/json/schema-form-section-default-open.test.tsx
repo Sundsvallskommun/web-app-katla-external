@@ -29,7 +29,7 @@ const uiSchemaWith = (defaultOpen?: boolean): UiSchema<Record<string, unknown>> 
 });
 
 function SectionForm({ defaultOpen, schemaId }: { defaultOpen?: boolean; schemaId: string }) {
-  const methods = useForm({ defaultValues: { status: 'DRAFT' } });
+  const methods = useForm();
 
   return (
     <FormProvider {...methods}>
@@ -39,10 +39,9 @@ function SectionForm({ defaultOpen, schemaId }: { defaultOpen?: boolean; schemaI
 }
 
 /**
- * Sektionerna ska vara öppna om inget annat sägs, samma standard som ErrandDisclosure
- * använder för de handkodade avsnitten. Innan den här ändringen var standarden den
- * omvända, vilket gjorde att ett ui-schema utan defaultOpen gav stängda sektioner i
- * Ärendeuppgifter men öppna i Grundinformation.
+ * Sections are open unless stated otherwise, matching the default ErrandDisclosure uses for the
+ * hand-coded sections. The reverse default would leave a ui schema without defaultOpen giving
+ * closed sections in one tab and open ones in the other.
  */
 describe('SchemaForm section default open state', () => {
   it('opens a section when the UI schema does not say otherwise', () => {
@@ -54,7 +53,7 @@ describe('SchemaForm section default open state', () => {
   it('still honours an explicit defaultOpen:false', () => {
     render(<SectionForm schemaId="explicitly-closed-schema:1" defaultOpen={false} />);
 
-    // En stängd sektion avmonterar sitt innehåll i stället för att dölja det.
+    // A closed section unmounts its content rather than hiding it.
     expect(screen.queryByRole('textbox', { name: /Beskrivning/ })).not.toBeInTheDocument();
   });
 

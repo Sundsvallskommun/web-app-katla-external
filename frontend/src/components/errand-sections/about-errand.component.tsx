@@ -1,127 +1,175 @@
+'use client';
+
 import { ErrandDisclosure } from '@components/disclosure/errand-information-disclosure.component';
+import { useIsContentLocked } from '@contexts/errand-content-lock-context';
 import { useFormValidation } from '@contexts/form-validation-context';
-import { ErrandDTO } from '@data-contracts/backend/data-contracts';
-import { Alert } from '@sk-web-gui/alert';
-import { FormControl, FormErrorMessage, FormLabel, RadioButton } from '@sk-web-gui/react';
+import { LabelDTO } from '@data-contracts/backend/data-contracts';
+import { ErrandFormDTO } from '@interfaces/errand-form';
+import { Combobox, CustomOnChangeEvent, FormControl, FormErrorMessage, FormLabel, Select } from '@sk-web-gui/react';
 import { INVALID_FIELD_ATTRIBUTE } from '@utils/focus-first-error';
+import {
+  byDisplayName,
+  getSelectableLabels,
+  getSelectableTypesForCategory,
+  getSelectedLabels,
+  toErrandLabels,
+} from '@utils/label-tree';
 import { Info } from 'lucide-react';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useMetadataStore } from 'src/stores/metadata-store';
+
+const CATEGORY_FIELD_ID = 'errand-category';
+const TYPE_FIELD_ID = 'errand-type';
+
+/** The combobox emits a subtype id, or a leaf type's own id. */
+const selectedId = (event: CustomOnChangeEvent): string =>
+  Array.isArray(event.target.value) ? (event.target.value[0] ?? '') : event.target.value;
 
 export const AboutErrandContent: React.FC = () => {
   const { t } = useTranslation();
-  const { getValues, setValue, watch } = useFormContext<ErrandDTO>();
+  const { setValue, watch } = useFormContext<ErrandFormDTO>();
   const { showValidation } = useFormValidation();
+  const isLocked = useIsContentLocked();
+  const labelStructure = useMetadataStore((state) => state.metadata?.labels?.labelStructure);
 
-  const parameters = watch('parameters') ?? [];
-  const eventType = parameters.find((p) => p.key === 'eventType')?.values?.[0] ?? '';
-  const eventConcerns = parameters.find((p) => p.key === 'eventConcerns')?.values?.[0] ?? '';
+  const selected = getSelectedLabels(watch('labels'));
 
-  const stakeholders = watch('stakeholders') ?? [];
+  const categories = useMemo(() => [...(labelStructure ?? [])].sort(byDisplayName), [labelStructure]);
+  // Unfiltered: a deprecated category must still resolve to its types.
+  const selectedCategory = categories.find((category) => category.id === selected.CATEGORY?.id);
 
-  // Märker fälten så att felnavigeringen kan flytta fokus hit när ärendet inte går att registrera.
-  const missingEventType = showValidation && !eventType;
-  const missingEventConcerns = showValidation && !eventConcerns;
+  const selectableCategories = getSelectableLabels(categories, [selected.CATEGORY?.id]);
+  const selectableTypes = getSelectableTypesForCategory(selectedCategory, [
+    selected.TYPE?.id,
+    selected.SUBTYPE?.id,
+  ]).sort(byDisplayName);
 
-  const setParameter = (key: string, value: string) => {
-    const currentParameters = getValues('parameters') ?? [];
-    const otherParams = currentParameters.filter((p) => p.key !== key);
-    setValue('parameters', [...otherParams, { key, values: [value] }]);
+  const selectCategory = (id: string) => {
+    const category = categories.find((candidate) => candidate.id === id);
+    setValue('labels', category ? toErrandLabels(category) : [], { shouldDirty: true });
   };
 
-  const setEventConcerns = (value: string) => {
-    setParameter('eventConcerns', value);
-    if (value !== 'ENSKILD_BRUKARE') {
-      setValue(
-        'stakeholders',
-        stakeholders.filter((s) => s.role !== 'PRIMARY')
-      );
+  const selectType = (id: string) => {
+    if (!selectedCategory) return;
+
+    const leafType = selectableTypes.find((type) => type.id === id);
+    if (leafType) {
+      setValue('labels', toErrandLabels(selectedCategory, leafType), { shouldDirty: true });
+      return;
+    }
+
+    for (const type of selectableTypes) {
+      const subtype = type.labels?.find((candidate) => candidate.id === id);
+      if (subtype) {
+        setValue('labels', toErrandLabels(selectedCategory, type, subtype), { shouldDirty: true });
+        return;
+      }
     }
   };
 
+  const categoryHasError = showValidation && !selected.CATEGORY;
+  const typeHasError = showValidation && !!selected.CATEGORY && !selected.TYPE;
+
+  if (isLocked) {
+    return (
+      <dl data-cy="errand-categorization-summary" className="flex flex-col gap-[2.4rem] pb-[2.4rem]">
+        <div>
+          <dt className="font-bold">{t('errand-information:about.category_label')}</dt>
+          <dd>{selected.CATEGORY?.displayName ?? '—'}</dd>
+        </div>
+        <div>
+          <dt className="font-bold">{t('errand-information:about.type_label')}</dt>
+          <dd>{(selected.SUBTYPE ?? selected.TYPE)?.displayName ?? '—'}</dd>
+        </div>
+      </dl>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-[2.4rem] pb-[2.4rem]">
-      <FormControl required id="event-type" {...(missingEventType ? { [INVALID_FIELD_ATTRIBUTE]: 'event-type' } : {})}>
-        <FormLabel>{t('errand-information:about.event_type_label')}</FormLabel>
-        <RadioButton.Group data-cy="event-type-group" className="mb-18">
-          <RadioButton
-            data-cy="event-type-deviation"
-            checked={eventType === 'AVVIKELSE'}
-            value="AVVIKELSE"
-            onChange={() => {
-              setParameter('eventType', 'AVVIKELSE');
-            }}
-          >
-            {t('errand-information:about.event_type_deviation')}
-          </RadioButton>
-          <RadioButton
-            data-cy="event-type-misconduct"
-            checked={eventType === 'MISSFORHALLANDE'}
-            value="MISSFORHALLANDE"
-            onChange={() => {
-              setParameter('eventType', 'MISSFORHALLANDE');
-            }}
-          >
-            {t('errand-information:about.event_type_misconduct')}
-          </RadioButton>
-        </RadioButton.Group>
-        {missingEventType && <FormErrorMessage>{t('errand-information:about.event_type_required')}</FormErrorMessage>}
-        {eventType === 'MISSFORHALLANDE' && (
-          <Alert type="info" data-cy="misconduct-alert">
-            <Alert.Icon />
-            <Alert.Content>
-              <Alert.Content.Title>{t('errand-information:about.misconduct_alert_title')}</Alert.Content.Title>
-              <Alert.Content.Description>
-                {t('errand-information:about.misconduct_alert_description')}
-              </Alert.Content.Description>
-            </Alert.Content>
-          </Alert>
+      <span className="text-dark-secondary">{t('errand-information:about.description')}</span>
+      <FormControl
+        required
+        invalid={categoryHasError}
+        className="w-full sm:w-[calc(50%-10px)]"
+        {...(categoryHasError ? { [INVALID_FIELD_ATTRIBUTE]: CATEGORY_FIELD_ID } : {})}
+      >
+        <FormLabel htmlFor={CATEGORY_FIELD_ID}>{t('errand-information:about.category_label')}</FormLabel>
+        <Select
+          id={CATEGORY_FIELD_ID}
+          data-cy="errand-category-select"
+          className="w-full"
+          value={selected.CATEGORY?.id ?? ''}
+          aria-invalid={categoryHasError}
+          onChange={(event) => {
+            selectCategory(event.target.value);
+          }}
+        >
+          <Select.Option value="">{t('errand-information:about.category_placeholder')}</Select.Option>
+          {selectableCategories.map((category) => (
+            <Select.Option key={category.id} value={category.id}>
+              {category.displayName}
+            </Select.Option>
+          ))}
+        </Select>
+        {categoryHasError && (
+          <FormErrorMessage data-cy="errand-category-error" className="text-error">
+            {t('validation:categorization.category_required')}
+          </FormErrorMessage>
         )}
       </FormControl>
 
       <FormControl
         required
-        id="event-concerns"
-        {...(missingEventConcerns ? { [INVALID_FIELD_ATTRIBUTE]: 'event-concerns' } : {})}
+        invalid={typeHasError}
+        className="w-full sm:w-[calc(80%-10px)]"
+        {...(typeHasError ? { [INVALID_FIELD_ATTRIBUTE]: TYPE_FIELD_ID } : {})}
       >
-        <FormLabel>{t('errand-information:about.event_concerns_label')}</FormLabel>
-        <span className="text-dark-secondary text-small mb-8">
-          {t('errand-information:about.event_concerns_describe_note')}
-        </span>
-        <RadioButton.Group data-cy="event-concerns-group" className="mb-18">
-          <RadioButton
-            data-cy="event-concerns-individual"
-            checked={eventConcerns === 'ENSKILD_BRUKARE'}
-            value="ENSKILD_BRUKARE"
-            onChange={() => {
-              setEventConcerns('ENSKILD_BRUKARE');
-            }}
-          >
-            {t('errand-information:about.event_concerns_individual')}
-          </RadioButton>
-          <RadioButton
-            data-cy="event-concerns-group-activity"
-            checked={eventConcerns === 'GRUPP_VERKSAMHET'}
-            value="GRUPP_VERKSAMHET"
-            onChange={() => {
-              setEventConcerns('GRUPP_VERKSAMHET');
-            }}
-          >
-            {t('errand-information:about.event_concerns_group')}
-          </RadioButton>
-          <RadioButton
-            data-cy="event-concerns-other"
-            checked={eventConcerns === 'ANNAT'}
-            value="ANNAT"
-            onChange={() => {
-              setEventConcerns('ANNAT');
-            }}
-          >
-            {t('errand-information:about.event_concerns_other')}
-          </RadioButton>
-        </RadioButton.Group>
-        {missingEventConcerns && (
-          <FormErrorMessage>{t('errand-information:about.event_concerns_required')}</FormErrorMessage>
+        <FormLabel htmlFor={TYPE_FIELD_ID}>{t('errand-information:about.type_label')}</FormLabel>
+        <Combobox
+          data-cy="errand-type-combobox"
+          className="w-full"
+          disabled={!selectedCategory}
+          placeholder={
+            selectedCategory ?
+              t('errand-information:about.type_placeholder')
+            : t('errand-information:about.type_placeholder_no_category')
+          }
+          searchPlaceholder={t('errand-information:about.type_search_placeholder')}
+          value={selected.SUBTYPE?.id ?? selected.TYPE?.id ?? ''}
+          onSelect={(event) => {
+            selectType(selectedId(event));
+          }}
+        >
+          {/* The root's disabled only governs the popup; the input needs its own. */}
+          <Combobox.Input
+            id={TYPE_FIELD_ID}
+            data-cy="errand-type-input"
+            className="w-full"
+            disabled={!selectedCategory}
+          />
+          <Combobox.List data-cy="errand-type-list">
+            {selectableTypes.map((type) =>
+              (type.labels?.length ?? 0) > 0 ?
+                <Combobox.Optgroup key={type.id} label={type.displayName}>
+                  {[...(type.labels ?? [])].sort(byDisplayName).map((subtype: LabelDTO) => (
+                    <Combobox.Option key={subtype.id} value={subtype.id ?? ''}>
+                      {subtype.displayName ?? subtype.resourceName}
+                    </Combobox.Option>
+                  ))}
+                </Combobox.Optgroup>
+              : <Combobox.Option key={type.id} value={type.id ?? ''}>
+                  {type.displayName ?? type.resourceName}
+                </Combobox.Option>
+            )}
+          </Combobox.List>
+        </Combobox>
+        {typeHasError && (
+          <FormErrorMessage data-cy="errand-type-error" className="text-error">
+            {t('validation:categorization.type_required')}
+          </FormErrorMessage>
         )}
       </FormControl>
     </div>

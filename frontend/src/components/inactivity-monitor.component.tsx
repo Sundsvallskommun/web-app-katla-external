@@ -16,14 +16,14 @@ const INACTIVITY_COUNTDOWN_TIMEOUT = process.env.NEXT_PUBLIC_INACTIVITY_COUNTDOW
 // Feature is only enabled if both environment variables are set
 const INACTIVITY_ENABLED = !!(INACTIVITY_WARNING_TIMEOUT && INACTIVITY_COUNTDOWN_TIMEOUT) || TEST_MODE;
 
-// (x ?? '') || '0' bevarar ||-semantiken: även tom sträng ska falla tillbaka till '0'
+// (x ?? '') || '0' keeps || semantics: an empty string also falls back to '0'.
 const INACTIVITY_WARNING_TIME = TEST_MODE ? 0 : parseInt((INACTIVITY_WARNING_TIMEOUT ?? '') || '0', 10);
 const WARNING_COUNTDOWN_TIME = TEST_MODE ? 3600000 : parseInt((INACTIVITY_COUNTDOWN_TIMEOUT ?? '') || '0', 10);
 
 export const InactivityMonitor: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  // Bugfix: hooken anropades tidigare villkorligt efter early return – måste alltid köras
+  // The hook must always run; it must not sit behind an early return.
   const { t } = useTranslation('session');
 
   const [showWarning, setShowWarning] = useState(false);

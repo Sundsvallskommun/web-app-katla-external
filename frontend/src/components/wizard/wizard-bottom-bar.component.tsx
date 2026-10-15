@@ -1,103 +1,58 @@
 import i18nConfig from '@app/i18nConfig';
 import { CancelErrandDialog } from '@components/cancel-errand-dialog.component';
-import {
-  errandFormDataContractErrorMessage,
-  jsonParametersToErrandFormData,
-  validateErrandFormData,
-} from '@components/json/utils/schema-utils';
 import { useFormValidation } from '@contexts/form-validation-context';
 import { ErrandFormDTO } from '@interfaces/errand-form';
 import { CenterDiv } from '@layouts/center-div.component';
-import { createErrand, updateErrand } from '@services/errand-service/errand-service';
-import { Button, Dialog, useSnackbar } from '@sk-web-gui/react';
+import { Button, Dialog } from '@sk-web-gui/react';
+import { appURL } from '@utils/app-url';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
+import { servicePath } from 'src/constants/services';
 import { useActiveWizardSteps } from 'src/hooks/use-active-wizard-steps';
-import { usePrepareErrand } from 'src/hooks/use-prepare-errand';
+import { useReportValidationError } from 'src/hooks/use-report-validation-error';
+import { useSaveErrand } from 'src/hooks/use-save-errand';
+import { useService } from 'src/hooks/use-service';
+import { useMetadataStore } from 'src/stores/metadata-store';
 import { useWizardStore } from 'src/stores/wizard-store';
 
 import { validateStep } from './wizard-step-validator';
 
 export const WizardBottomBar: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const { t: tForms, i18n } = useTranslation('forms');
   const locale = i18n.resolvedLanguage ?? i18nConfig.defaultLocale;
-  const toastMessage = useSnackbar();
-  const router = useRouter();
-  const { getValues, reset, watch } = useFormContext<ErrandFormDTO>();
-  const { setShowValidation, focusFirstError } = useFormValidation();
+  const { getValues } = useFormContext<ErrandFormDTO>();
+  const { setShowValidation } = useFormValidation();
+  const reportValidationError = useReportValidationError();
+  const { validate, saveDraft, register } = useSaveErrand();
   const { currentStep, goNext, goBack, setStepErrors } = useWizardStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
-  const { prepareErrandForApi, getFacilityStatus } = usePrepareErrand();
 
+  const namespace = useMetadataStore((state) => state.metadata?.namespace);
   const steps = useActiveWizardSteps();
-  const errandId = watch('id');
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
   const draftEnabled = appConfig.features.draftEnabled;
 
-  const onSaveDraft = async () => {
-    try {
-      const errandData = prepareErrandForApi(getValues(), 'DRAFT');
-      const errand = await (errandId ? updateErrand(errandId, errandData) : createErrand(errandData));
-      const errandFormData = jsonParametersToErrandFormData(errand.jsonParameters);
-      toastMessage({ position: 'bottom', status: 'success', message: t('errand-information:save_message.draft') });
-      reset({ ...errand, errandFormData });
-      router.push(`/arende/${errand.errandNumber}/grundinformation`);
-    } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
-    }
-  };
+  // The wizard only registers new errands, so a saved draft is always opened.
+  const onSaveDraft = () => saveDraft({ navigate: true });
 
-  const onRegister = async (logout?: boolean) => {
+  const onRegister = (logout?: boolean) => {
     setIsOpen(false);
-    try {
-      const errandData = prepareErrandForApi(getValues(), 'NEW');
-      const errand = await (errandId ? updateErrand(errandId, errandData) : createErrand(errandData));
-      const errandFormData = jsonParametersToErrandFormData(errand.jsonParameters);
-      toastMessage({
-        position: 'bottom',
-        status: 'success',
-        message: t('errand-information:save_message.register'),
-      });
-      reset({ ...errand, errandFormData });
-      if (logout) {
-        router.push('/logout');
-      } else {
-        router.push(`/arende/${errand.errandNumber}/grundinformation`);
-      }
-    } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
-    }
-  };
-
-  // Felmeddelandet berättar vad som saknas och fokus flyttas till fältet, så att det går att
-  // åtgärda direkt även när fältet ligger långt ner i steget.
-  const reportValidationError = (message: string) => {
-    toastMessage({ position: 'bottom', status: 'error', message });
-    focusFirstError();
+    return register({ logout });
   };
 
   const handleNext = async () => {
     const step = steps[currentStep];
-    const errors = await validateStep(step, getValues(), step.id === 'deviation' ? tForms : t, locale);
+    const errors = await validateStep(step, getValues(), { t, tForms, locale, namespace });
     setStepErrors(currentStep, errors);
 
     if (errors.length > 0) {
-      setShowValidation(true);
       reportValidationError(errors[0]);
       return;
     }
@@ -107,38 +62,7 @@ export const WizardBottomBar: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    setShowValidation(true);
-
-    const values = getValues();
-    const eventType = values.parameters?.find((p) => p.key === 'eventType')?.values?.[0];
-    const eventConcerns = values.parameters?.find((p) => p.key === 'eventConcerns')?.values?.[0];
-
-    if (!eventType) {
-      reportValidationError(t('errand-information:about.event_type_required'));
-      return;
-    }
-    if (!eventConcerns) {
-      reportValidationError(t('errand-information:about.event_concerns_required'));
-      return;
-    }
-    const formDataErrors = await validateErrandFormData(values.errandFormData, tForms, locale);
-    if (formDataErrors.length > 0) {
-      reportValidationError(formDataErrors[0]);
-      return;
-    }
-
-    const facilityStatus = getFacilityStatus(values.errandFormData);
-    if (eventConcerns === 'GRUPP_VERKSAMHET' && facilityStatus === 'NONE') {
-      reportValidationError(t('errand-information:about.event_concerns_group_facility_required'));
-      return;
-    }
-    // En plats som inte är vald hela vägen ner ger fel label, och därmed fel behörighet
-    if (facilityStatus === 'INCOMPLETE') {
-      reportValidationError(t('errand-information:about.facility_incomplete'));
-      return;
-    }
-
-    setIsOpen(true);
+    if (await validate('register')) setIsOpen(true);
   };
 
   return (
@@ -213,7 +137,7 @@ export const WizardBottomBar: React.FC = () => {
           setIsCancelOpen(false);
         }}
         onConfirm={() => {
-          router.push('/oversikt');
+          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
 

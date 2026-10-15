@@ -1,0 +1,698 @@
+{
+  "flowID": "2153",
+  "queryKeyByID": {
+    "80358": "kontaktuppgifter_80358",
+    "80359": "hamtning_av_foretagsuppgifter_80359",
+    "80360": "valj_foretag_80360",
+    "80557": "ar_du_firmatecknare_80557",
+    "80558": "ladda_upp_fullmakt_80558",
+    "80361": "ditt_foretag_80361",
+    "80362": "foretagsform_80362",
+    "80363": "ar_fakturaadressen_samma_som_foretagets_80363",
+    "80364": "fakturamottagare_80364",
+    "80365": "fakturareferens_80365",
+    "80366": "bifoga_aktuellt_registreringsbevis_fran_80366",
+    "80367": "bifoga_uppgifter_om_agarforhallanden_80367",
+    "80368": "bifoga_registerutdrag_fran_skatteverket_80368",
+    "80369": "verksamhetsbeskrivning_80369",
+    "80370": "verksamhetsbeskrivning_80370",
+    "80371": "bifoga_verksamhetsbeskrivning_80371",
+    "80555": "vad_vill_du_gora_80555",
+    "80375": "tidsperiod_for_forsaljningen_80375",
+    "80556": "startdatum_forsaljning_80556",
+    "80376": "period_for_tidsbegransad_forsaljning_80376",
+    "80377": "forsaljningsstallet_80377",
+    "80378": "ar_forsaljningsstallets_besoksadress_sam_80378",
+    "80379": "besoksadress_80379",
+    "80380": "jag_kommer_ocksa_bedriva_distansforsaljn_80380",
+    "80381": "hemsida_80381",
+    "80382": "registreringen_omfattar_forsaljning_av_s_80382",
+    "80687": "finansiering_80687",
+    "80688": "egna_medel_80688",
+    "80689": "bifoga_kontoutdrag_80689",
+    "80690": "banklan_80690",
+    "80691": "bifoga_lanebevis_for_banklan_80691",
+    "80692": "privatlan_80692",
+    "80693": "bifoga_lanebevis_for_privatlan_80693",
+    "80694": "annan_finansiering_80694",
+    "80695": "bifoga_lanebevis_for_annan_finansiering_80695",
+    "80696": "ovriga_upplysningar_angaende_finansierin_80696",
+    "80383": "bifoga_registrering_fran_lansstyrelsen_80383",
+    "80384": "finns_avtal_med_tillverkare_partihandlar_80384",
+    "80385": "bifoga_avtal_80385",
+    "80386": "bifoga_produktlista_80386",
+    "80387": "bifoga_underlag_som_styrker_dispositions_80387",
+    "80388": "egenkontrollprogram_80388"
+  },
+  "rules": [
+    {
+      "evaluatorID": "87426",
+      "name": "visa hämta",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80359",
+      "sourceKey": "hamtning_av_foretagsuppgifter_80359",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [
+        "80360"
+      ],
+      "targetKeys": [
+        "valj_foretag_80360"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48717"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87427",
+      "name": "visa fyll i",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80359",
+      "sourceKey": "hamtning_av_foretagsuppgifter_80359",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [
+        "80361",
+        "80362",
+        "80557"
+      ],
+      "targetKeys": [
+        "ditt_foretag_80361",
+        "foretagsform_80362",
+        "ar_du_firmatecknare_80557"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48718"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87428",
+      "name": "vikta uppgifter",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "80359",
+      "sourceKey": "hamtning_av_foretagsuppgifter_80359",
+      "sourceTitle": "Hämtning av företagsuppgifter",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "48717",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "48718",
+          "weight": "2"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "87626",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80557",
+      "sourceKey": "ar_du_firmatecknare_80557",
+      "sourceTitle": "Är du firmatecknare?",
+      "targetQueryIDs": [
+        "80558"
+      ],
+      "targetKeys": [
+        "ladda_upp_fullmakt_80558"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48855"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87429",
+      "name": "sätt vikt företag",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "80362",
+      "sourceKey": "foretagsform_80362",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "företag",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "48719",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "48720",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "48721",
+          "weight": "10"
+        },
+        {
+          "alternativeID": "48722",
+          "weight": "3"
+        },
+        {
+          "alternativeID": "48723",
+          "weight": "4"
+        },
+        {
+          "alternativeID": "48724",
+          "weight": "5"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "87430",
+      "name": "visa uppladdningsfråga bolagsverket",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80362",
+      "sourceKey": "foretagsform_80362",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "80366"
+      ],
+      "targetKeys": [
+        "bifoga_aktuellt_registreringsbevis_fran_80366"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48719",
+        "48720",
+        "48722",
+        "48723",
+        "48724"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87431",
+      "name": "visa filuppladdning ägandeförhållande",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80362",
+      "sourceKey": "foretagsform_80362",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "80367"
+      ],
+      "targetKeys": [
+        "bifoga_uppgifter_om_agarforhallanden_80367"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48719",
+        "48722",
+        "48723",
+        "48724"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87432",
+      "name": "visa filuppladdningsfråga skatteverket",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80362",
+      "sourceKey": "foretagsform_80362",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "80368"
+      ],
+      "targetKeys": [
+        "bifoga_registerutdrag_fran_skatteverket_80368"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48719",
+        "48720",
+        "48721",
+        "48722",
+        "48723",
+        "48724"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87433",
+      "name": "visa verksamhetsbeskrivning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80362",
+      "sourceKey": "foretagsform_80362",
+      "sourceTitle": "Företagsform",
+      "targetQueryIDs": [
+        "80369"
+      ],
+      "targetKeys": [
+        "verksamhetsbeskrivning_80369"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48719",
+        "48720",
+        "48721",
+        "48722",
+        "48723",
+        "48724"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87434",
+      "name": "visa om uppgifter = 1||2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "80363",
+      "sourceKey": "ar_fakturaadressen_samma_som_foretagets_80363",
+      "sourceTitle": "Är fakturaadressen samma som företagets adress?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "87435",
+      "name": "visa obligatorisk följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80363",
+      "sourceKey": "ar_fakturaadressen_samma_som_foretagets_80363",
+      "sourceTitle": "Är fakturaadressen samma som företagets adress?",
+      "targetQueryIDs": [
+        "80364"
+      ],
+      "targetKeys": [
+        "fakturamottagare_80364"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48726"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87436",
+      "name": "visa om uppgifter = 1||2",
+      "type": "WeightQueryStateEvaluationProviderModule",
+      "sourceQueryID": "80365",
+      "sourceKey": "fakturareferens_80365",
+      "sourceTitle": "Fakturareferens",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "uppgifter",
+      "weightExpression": null,
+      "resultingQueryState": "VISIBLE"
+    },
+    {
+      "evaluatorID": "87437",
+      "name": "visa följdfråga skriv",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80369",
+      "sourceKey": "verksamhetsbeskrivning_80369",
+      "sourceTitle": "Verksamhetsbeskrivning",
+      "targetQueryIDs": [
+        "80370"
+      ],
+      "targetKeys": [
+        "verksamhetsbeskrivning_80370"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48727"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87438",
+      "name": "visa följdfråga filuppladdning",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80369",
+      "sourceKey": "verksamhetsbeskrivning_80369",
+      "sourceTitle": "Verksamhetsbeskrivning",
+      "targetQueryIDs": [
+        "80371"
+      ],
+      "targetKeys": [
+        "bifoga_verksamhetsbeskrivning_80371"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48728"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87623",
+      "name": "Visa gemensamma frågor",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80555",
+      "sourceKey": "vad_vill_du_gora_80555",
+      "sourceTitle": "Vad vill du göra?",
+      "targetQueryIDs": [
+        "80375",
+        "80377",
+        "80378",
+        "80380",
+        "80384",
+        "80386",
+        "80387",
+        "80388"
+      ],
+      "targetKeys": [
+        "tidsperiod_for_forsaljningen_80375",
+        "forsaljningsstallet_80377",
+        "ar_forsaljningsstallets_besoksadress_sam_80378",
+        "jag_kommer_ocksa_bedriva_distansforsaljn_80380",
+        "finns_avtal_med_tillverkare_partihandlar_80384",
+        "bifoga_produktlista_80386",
+        "bifoga_underlag_som_styrker_dispositions_80387",
+        "egenkontrollprogram_80388"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30343",
+        "30344",
+        "30345"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87624",
+      "name": "sätt vikt caseType",
+      "type": "SetWeightEvaluationProviderModule",
+      "sourceQueryID": "80555",
+      "sourceKey": "vad_vill_du_gora_80555",
+      "sourceTitle": "Vad vill du göra?",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": "caseType",
+      "useOnlyHighestWeight": false,
+      "alternativeWeights": [
+        {
+          "alternativeID": "30343",
+          "weight": "1"
+        },
+        {
+          "alternativeID": "30344",
+          "weight": "2"
+        },
+        {
+          "alternativeID": "30345",
+          "weight": "4"
+        }
+      ]
+    },
+    {
+      "evaluatorID": "87440",
+      "name": "visa tidsbegränsad",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80375",
+      "sourceKey": "tidsperiod_for_forsaljningen_80375",
+      "sourceTitle": "Tidsperiod för försäljningen",
+      "targetQueryIDs": [
+        "80376"
+      ],
+      "targetKeys": [
+        "period_for_tidsbegransad_forsaljning_80376"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48733"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87625",
+      "name": "visa tillsvidare",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80375",
+      "sourceKey": "tidsperiod_for_forsaljningen_80375",
+      "sourceTitle": "Tidsperiod för försäljningen",
+      "targetQueryIDs": [
+        "80556"
+      ],
+      "targetKeys": [
+        "startdatum_forsaljning_80556"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48732"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87441",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80378",
+      "sourceKey": "ar_forsaljningsstallets_besoksadress_sam_80378",
+      "sourceTitle": "Är försäljningsställets besöksadress samma som bolagets adress?",
+      "targetQueryIDs": [
+        "80379"
+      ],
+      "targetKeys": [
+        "besoksadress_80379"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48735"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87442",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80380",
+      "sourceKey": "jag_kommer_ocksa_bedriva_distansforsaljn_80380",
+      "sourceTitle": "Jag kommer också bedriva distansförsäljning",
+      "targetQueryIDs": [
+        "80381"
+      ],
+      "targetKeys": [
+        "hemsida_80381"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48736"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87443",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80382",
+      "sourceKey": "registreringen_omfattar_forsaljning_av_s_80382",
+      "sourceTitle": "Registreringen omfattar försäljning av särskilt farliga kemiska produkter, e-cigaretter och e-vätskor (dödskallemärkta).",
+      "targetQueryIDs": [
+        "80383"
+      ],
+      "targetKeys": [
+        "bifoga_registrering_fran_lansstyrelsen_80383"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48738"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87622",
+      "name": "visa om caseType = 1||1",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "80382",
+      "sourceKey": "registreringen_omfattar_forsaljning_av_s_80382",
+      "sourceTitle": "Registreringen omfattar försäljning av särskilt farliga kemiska produkter, e-cigaretter och e-vätskor (dödskallemärkta).",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{caseType} != 4 && $weight{caseType} > 0",
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "87780",
+      "name": "visa egna medel",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "80688",
+        "80689"
+      ],
+      "targetKeys": [
+        "egna_medel_80688",
+        "bifoga_kontoutdrag_80689"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30356"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87781",
+      "name": "visa banklån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "80690",
+        "80691"
+      ],
+      "targetKeys": [
+        "banklan_80690",
+        "bifoga_lanebevis_for_banklan_80691"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30357"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87782",
+      "name": "visa privatlån",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "80692",
+        "80693"
+      ],
+      "targetKeys": [
+        "privatlan_80692",
+        "bifoga_lanebevis_for_privatlan_80693"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30358"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87783",
+      "name": "visa annan finansiering",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "80694",
+        "80695"
+      ],
+      "targetKeys": [
+        "annan_finansiering_80694",
+        "bifoga_lanebevis_for_annan_finansiering_80695"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30359"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87785",
+      "name": "visa övriga uppgifter",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [
+        "80696"
+      ],
+      "targetKeys": [
+        "ovriga_upplysningar_angaende_finansierin_80696"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "30356",
+        "30357",
+        "30358",
+        "30359"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE",
+      "doNotResetQueryState": false
+    },
+    {
+      "evaluatorID": "87786",
+      "name": "visa om caseType > 0",
+      "type": "WeightCalculatedQueryStateEvaluationProviderModule",
+      "sourceQueryID": "80687",
+      "sourceKey": "finansiering_80687",
+      "sourceTitle": "Finansiering",
+      "targetQueryIDs": [],
+      "targetKeys": [],
+      "weightType": null,
+      "weightExpression": "$weight{caseType} > 0",
+      "resultingQueryState": "VISIBLE_REQUIRED"
+    },
+    {
+      "evaluatorID": "87444",
+      "name": "visa följdfråga",
+      "type": "QueryStateEvaluationProviderModule",
+      "sourceQueryID": "80384",
+      "sourceKey": "finns_avtal_med_tillverkare_partihandlar_80384",
+      "sourceTitle": "Finns avtal med tillverkare, partihandlare eller importör",
+      "targetQueryIDs": [
+        "80385"
+      ],
+      "targetKeys": [
+        "bifoga_avtal_80385"
+      ],
+      "selectionMode": "ANY",
+      "requiredAlternativeIDs": [
+        "48740"
+      ],
+      "freeTextAlternative": false,
+      "resultingQueryState": "VISIBLE_REQUIRED",
+      "doNotResetQueryState": false
+    }
+  ],
+  "skippedQueries": []
+}

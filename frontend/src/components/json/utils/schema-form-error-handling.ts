@@ -19,8 +19,8 @@ const hasFormat = (e: RJSFValidationError): e is Omit<RJSFValidationError, 'para
 };
 
 /**
- * Nycklarna är namnrymdskvalificerade eftersom transformeraren anropas både från formuläret
- * och från sammanfattande validering, som har sina t-funktioner bundna till olika namnrymder.
+ * The keys are namespace-qualified because the transformer is called both from the form and
+ * from summary validation, whose t functions are bound to different namespaces.
  */
 const validationKey = (key: string) => `validation:${key}`;
 
@@ -50,8 +50,8 @@ function isSchemaObject(value: unknown): value is RJSFSchema {
 }
 
 /**
- * Villkorade fält kan bo i if/then-grenar i stället för direkt under `properties`,
- * så uppslaget följer samma grenar som formuläret renderar fält ur.
+ * Conditional fields can live in if/then branches rather than directly under `properties`, so
+ * the lookup follows the same branches the form renders fields from.
  */
 function propertySchemaOf(schema: RJSFSchema, property: string): RJSFSchema | undefined {
   const direct = propertiesOf(schema)?.[property];
@@ -68,8 +68,8 @@ function propertySchemaOf(schema: RJSFSchema, property: string): RJSFSchema | un
 }
 
 /**
- * Översätter en felsökväg (t.ex. `.facility.orgName`) till fältets rubrik i schemat,
- * så att ett sammanfattande felmeddelande kan peka ut fältet med samma namn som formuläret visar.
+ * Turns an error path (e.g. `.facility.orgName`) into the field's title from the schema, so a
+ * summary error can name the field exactly as the form shows it.
  */
 export function fieldTitleFromSchema(schema: RJSFSchema, property: string | undefined): string | undefined {
   const path = (property ?? '').split('.').filter(Boolean);

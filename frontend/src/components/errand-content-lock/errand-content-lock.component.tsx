@@ -1,6 +1,6 @@
 'use client';
 
-import { ErrandContentLockContext, useErrandLockedByStatus } from '@contexts/errand-content-lock-context';
+import { ErrandContentLockContext, useErrandLocked } from '@contexts/errand-content-lock-context';
 import { cx } from '@sk-web-gui/react';
 import { ReactNode } from 'react';
 
@@ -11,8 +11,8 @@ interface ErrandContentLockProps {
 }
 
 export const ErrandContentLock: React.FC<ErrandContentLockProps> = ({ children, className, disabled = false }) => {
-  const lockedByStatus = useErrandLockedByStatus();
-  const isLocked = disabled || lockedByStatus;
+  const lockedByErrand = useErrandLocked();
+  const isLocked = disabled || lockedByErrand;
 
   return (
     <ErrandContentLockContext.Provider value={isLocked}>

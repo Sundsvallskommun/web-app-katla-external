@@ -1,21 +1,15 @@
-import i18nConfig from '@app/i18nConfig';
 import { CancelErrandDialog } from '@components/cancel-errand-dialog.component';
-import {
-  errandFormDataContractErrorMessage,
-  jsonParametersToErrandFormData,
-  validateErrandFormData,
-} from '@components/json/utils/schema-utils';
-import { useFormValidation } from '@contexts/form-validation-context';
 import { ErrandFormDTO } from '@interfaces/errand-form';
-import { createErrand, updateErrand } from '@services/errand-service/errand-service';
-import { Button, Dialog, useSnackbar } from '@sk-web-gui/react';
+import { Button, Dialog } from '@sk-web-gui/react';
+import { appURL } from '@utils/app-url';
 import { Inbox } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-import { usePrepareErrand } from 'src/hooks/use-prepare-errand';
+import { servicePath } from 'src/constants/services';
+import { useSaveErrand } from 'src/hooks/use-save-errand';
+import { useService } from 'src/hooks/use-service';
 
 import { CenterDiv } from './center-div.component';
 
@@ -25,111 +19,25 @@ interface ErrandButtonGroupProps {
 
 export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErrand }) => {
   const { t } = useTranslation();
-  const { t: tForms, i18n } = useTranslation('forms');
-  const locale = i18n.resolvedLanguage ?? i18nConfig.defaultLocale;
-  const toastMessage = useSnackbar();
-  const router = useRouter();
-  const context = useFormContext<ErrandFormDTO>();
-  const { getValues, reset, watch } = context;
-  const { setShowValidation, focusFirstError } = useFormValidation();
+  const service = useService();
+  const { watch } = useFormContext<ErrandFormDTO>();
+  const { validate, saveDraft, register } = useSaveErrand();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isCancelOpen, setIsCancelOpen] = useState<boolean>(false);
-  const { prepareErrandForApi, getFacilityStatus } = usePrepareErrand();
 
-  const errandStatus = watch('status');
-  const errandId = watch('id');
-
-  const isDraft = errandStatus === 'DRAFT';
+  const isDraft = watch('lifecycle') === 'DRAFT';
   const showButtons = isNewErrand || isDraft;
   const draftEnabled = appConfig.features.draftEnabled;
 
-  const onSaveDraft = async () => {
-    try {
-      const errandData = prepareErrandForApi(getValues(), 'DRAFT');
-      const errand = await (errandId ? updateErrand(errandId, errandData) : createErrand(errandData));
-      const errandFormData = jsonParametersToErrandFormData(errand.jsonParameters);
-      toastMessage({ position: 'bottom', status: 'success', message: t('errand-information:save_message.draft') });
-      reset({ ...errand, errandFormData });
+  const onSaveDraft = () => saveDraft({ navigate: isNewErrand });
 
-      if (isNewErrand) {
-        router.push(`/arende/${errand.errandNumber}/grundinformation`);
-      }
-    } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
-    }
-  };
-
-  const onRegister = async (logout?: boolean) => {
+  const onRegister = (logout?: boolean) => {
     setIsOpen(false);
-
-    try {
-      const errandData = prepareErrandForApi(getValues(), 'NEW');
-      const errand = await (errandId ? updateErrand(errandId, errandData) : createErrand(errandData));
-      const errandFormData = jsonParametersToErrandFormData(errand.jsonParameters);
-      toastMessage({ position: 'bottom', status: 'success', message: t('errand-information:save_message.register') });
-      reset({ ...errand, errandFormData });
-
-      if (logout) {
-        router.push(`/logout`);
-      } else {
-        router.push(`/arende/${errand.errandNumber}/grundinformation`);
-      }
-    } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
-    }
-  };
-
-  // Felmeddelandet berättar vad som saknas och fokus flyttas till fältet, så att det går att
-  // åtgärda direkt även när fältet ligger långt ner eller i ett hopfällt avsnitt.
-  const reportValidationError = (message: string) => {
-    toastMessage({ position: 'bottom', status: 'error', message });
-    focusFirstError();
+    return register({ logout });
   };
 
   const onValidateBeforeRegister = async () => {
-    // Aktivera validering för JSON-formulär
-    setShowValidation(true);
-
-    // Validera att eventType och eventConcerns är valda
-    const values = getValues();
-    const eventType = values.parameters?.find((p) => p.key === 'eventType')?.values?.[0];
-    const eventConcerns = values.parameters?.find((p) => p.key === 'eventConcerns')?.values?.[0];
-    if (!eventType) {
-      reportValidationError(t('errand-information:about.event_type_required'));
-      return;
-    }
-    if (!eventConcerns) {
-      reportValidationError(t('errand-information:about.event_concerns_required'));
-      return;
-    }
-    // Validera errandFormData innan affärsregler läser värden ur JSON-strukturen.
-    const formDataErrors = await validateErrandFormData(values.errandFormData, tForms, locale);
-
-    if (formDataErrors.length > 0) {
-      reportValidationError(formDataErrors[0]);
-      return;
-    }
-
-    const facilityStatus = getFacilityStatus(values.errandFormData);
-    if (eventConcerns === 'GRUPP_VERKSAMHET' && facilityStatus === 'NONE') {
-      reportValidationError(t('errand-information:about.event_concerns_group_facility_required'));
-      return;
-    }
-    // En plats som inte är vald hela vägen ner ger fel label, och därmed fel behörighet
-    if (facilityStatus === 'INCOMPLETE') {
-      reportValidationError(t('errand-information:about.facility_incomplete'));
-      return;
-    }
-
-    setIsOpen(true);
+    if (await validate('register')) setIsOpen(true);
   };
 
   if (!showButtons) {
@@ -175,7 +83,7 @@ export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErran
           setIsCancelOpen(false);
         }}
         onConfirm={() => {
-          router.push('/oversikt');
+          window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
       <Dialog show={isOpen}>

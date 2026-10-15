@@ -12,9 +12,7 @@
   "errand": "Ärende: ",
   "draft": "Utkast: ",
   "search": {
-    "PERSON": "Sök på personnummer",
-    "EMPLOYEE": "Sök på användarnamn",
-    "AUTODETECT": "Sök på personnummer eller användarnamn"
+    "PERSON": "Sök på personnummer"
   },
   "save_message": {
     "draft": "Utkast sparades",
@@ -22,47 +20,20 @@
     "error": "Något gick fel när ärendet sparades"
   },
   "about": {
-    "title": "Om ärendet",
-    "event_type_label": "Välj händelsetyp",
-    "event_type_deviation": "Avvikelse",
-    "event_type_misconduct": "Missförhållande",
-    "misconduct_alert_title": "Missförhållande",
-    "misconduct_alert_description": "Ärendet skickas till en oberoende utredare. Din chef får veta om ärendet men beslutar inte om resultatet.",
-    "event_concerns_label": "Händelsen berör",
-    "event_concerns_individual": "Enskild brukare",
-    "event_concerns_group": "Grupp/hela verksamheten",
-    "event_concerns_other": "Annat",
-    "event_concerns_describe_note": "(Beskriv mer i avsnittet \"Vad har hänt?\")",
-    "event_type_required": "Välj en händelsetyp",
-    "event_concerns_required": "Välj vad händelsen berör",
-    "event_concerns_group_facility_required": "Välj en plats där avvikelsen inträffat när händelsen berör grupp/hela verksamheten",
-    "facility_incomplete": "Slutför platsvalet genom att välja enhet – platsen styr vilka som får se ärendet"
-  },
-  "reporter": {
-    "title": "Rapportör",
-    "description": "Rapportören är den person som initierat ärendet och vår primära kontakt när ärendet handläggs. Om du rapporterar åt en annan kollega, lägger du den personen under annan rapportör."
-  },
-  "user": {
-    "title": "Brukare",
-    "description": "En brukare är den individ som berörs av ärendet.",
-    "not_required_title": "Brukare behövs inte för detta ärende",
-    "not_required_description": "Eftersom händelsen inte berör en enskild brukare behöver du inte ange en brukare. Du kan gå vidare till nästa steg."
-  },
-  "other_reporter": {
-    "title": "Annan rapportör",
-    "description": "Ange den kollega som du rapporterar åt."
+    "title": "Vad vill du ansöka/anmäla om?",
+    "description": "Välj först kategori för ditt ärende, Alkohol eller Tobak, och sedan vad ärendet gäller. Du kan söka eller bläddra i ärendetyplistan.",
+    "category_label": "Kategori",
+    "category_placeholder": "Välj kategori…",
+    "type_label": "Ärendetyp",
+    "type_placeholder": "Välj ärendetyp…",
+    "type_placeholder_no_category": "Välj kategori först",
+    "type_search_placeholder": "Sök ärendetyp"
   },
   "other_parties": {
     "title": "Övriga parter",
-    "description": "En part kan vara en kontaktperson, läkare eller en anhörig vars roll är viktig för ärendet. Om du rapporterar åt en kollega så ska du ange kollegan som övrig part."
-  },
-  "deviation_information": {
-    "title": "Uppgifter kring avvikelsen",
-    "loading_form": "Laddar formulär..."
+    "description": "Ange kontaktpersoner eller andra personer som är av vikt för ärendet."
   },
   "stakeholder": {
-    "person": "Person",
-    "employee": "Anställd",
     "no_person_found": "Ingen person hittades",
     "missing_person_number": "Personnummer saknas",
     "missing_address": "Adress saknas",
@@ -75,9 +46,10 @@
     "person_role": "Personens roll",
     "add_person": "Lägg till person",
     "add_manually": "Lägg till manuellt",
+    "add_self": "Lägg till mig själv",
+    "self_lookup_failed": "Dina uppgifter kunde inte hämtas. Försök igen eller lägg till dig manuellt.",
     "edit_details": "Redigera uppgifter",
     "remove": "Ta bort",
-    "reporting_for_colleague": "Jag rapporterar åt en annan kollega",
     "modal": {
       "edit_title": "Redigera person",
       "add_title": "Lägg till person manuellt",
@@ -120,7 +92,49 @@
     "complete": "Komplett",
     "incomplete": "Ej komplett"
   },
-  "sequence_of_events": {
-    "title": "Händelseförlopp"
+  "owner": {
+    "title": "Kontaktuppgifter",
+    "role_label": "Ärendeägare",
+    "description": "Ärendeägaren är det företag, den organisation eller den privatperson som ansöker och är vår primära kontakt när ärendet handläggs.",
+    "select_label": "Välj företag du representerar",
+    "no_organizations": "Du har inga företag eller organisationer att registrera ärendet för. Du kan ansöka som privatperson.",
+    "select_placeholder": "Välj företag eller organisation",
+    "serveringsstalle": "Serveringsställe",
+    "modal": {
+      "title": "Redigera ärendeägare",
+      "organization_number": "Organisationsnummer",
+      "organization_name": "Organisationsnamn",
+      "add": "Lägg till",
+      "already_added": "Uppgiften är redan tillagd.",
+      "remove_value": "Ta bort {{value}}",
+      "save": "Ändra uppgifter",
+      "person_number": "Personnummer",
+      "name": "Namn"
+    },
+    "self_lookup_failed": "Dina uppgifter kunde inte hämtas. Försök igen."
+  },
+  "errand_details": {
+    "title": "Ärendeuppgifter",
+    "loading_form": "Laddar formulär..."
+  },
+  "section_placeholder": "Det här avsnittet fylls med fält för alkoholservering i ett senare steg.",
+  "attachments": {
+    "title": "Bilagor",
+    "required_heading": "Till den här ärendetypen behöver du bifoga:",
+    "missing": "saknas",
+    "no_errand_type": "Välj ärendetyp först, så visas vilka bilagor som behövs.",
+    "allowed_formats": "Tillåtna filtyper: bilder (jpeg, png, gif, tiff, bmp) samt dokument (pdf, Word, Excel, OpenDocument, txt).",
+    "uploaded_at": "Inskickad {{date}}",
+    "not_sent_yet": "Skickas in när ärendet sparas",
+    "open": "Öppna",
+    "remove": "Ta bort",
+    "load_error": "Bilagorna kunde inte hämtas.",
+    "upload_error": "Ärendet sparades, men någon av bilagorna kunde inte skickas in.",
+    "remove_error": "Bilagan kunde inte tas bort.",
+    "category_error": "Bilagetypen kunde inte sparas.",
+    "open_error": "Bilagan kunde inte öppnas.",
+    "choose_category": "Välj bilagetyp",
+    "loading_types": "Laddar bilagor...",
+    "types_error": "Det gick inte att hämta vilka bilagor som krävs."
   }
 }

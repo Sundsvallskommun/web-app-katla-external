@@ -16,30 +16,12 @@
   "field_description": {
     "new_tab_announcement": "Öppnas i en ny flik"
   },
-  "facility_search": {
-    "section_title": "Mer information om platsen",
-    "add_label": "Lägg till plats där avvikelsen inträffat",
-    "card_header": "Plats där avvikelsen inträffat",
-    "label": "Plats",
-    "placeholder": "Sök plats",
-    "label_hint": "Sök på anläggning, avdelning eller någon överordnad organisationsnivå.",
-    "department_label": "Avdelning",
-    "select_sub_place": "Välj enhet inom {{place}}",
-    "sub_place_required": "Du behöver välja en enhet för att platsen ska bli komplett.",
-    "no_place_structure": "Platsstrukturen kunde inte laddas. Ladda om sidan eller kontakta administratör.",
-    "suggestion_header": "Förslag utifrån din anställning",
-    "suggestion_description": "Platsen är föreslagen utifrån din anställning och är inte vald ännu. Kontrollera att den stämmer för den här händelsen — rapporterar du åt en annan verksamhet ska du söka fram rätt plats i stället.",
-    "suggestion_confirm": "Använd den här platsen",
-    "change": "Ändra plats",
-    "unit_manager": "Enhetschef",
-    "unit_label": "Enhet där avvikelsen inträffade",
-    "floor": "Våning/Avdelning",
-    "select_floor": "Välj...",
-    "no_manager": "Ingen enhetschef hittades. Kontrollera platsvalet eller kontakta administratör.",
-    "no_results": "Inga resultat hittades",
-    "no_subunits": "Inga underenheter",
-    "loading_subunits": "Laddar underenheter...",
-    "your_units": "Dina enheter",
-    "loading": "Laddar..."
+  "array": {
+    "add": "Lägg till",
+    "row": "Rad {{position}}",
+    "remove": "Ta bort rad {{position}}",
+    "copy": "Kopiera rad {{position}}",
+    "move_up": "Flytta rad {{position}} uppåt",
+    "move_down": "Flytta rad {{position}} nedåt"
   }
 }

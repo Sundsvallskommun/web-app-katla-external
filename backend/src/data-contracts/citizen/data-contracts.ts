@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -60,6 +61,18 @@ export interface CitizenWithChangedAddress {
   typeOfSchool?: string | null;
   custodianFor?: CustodyChildrenPupil[] | null;
   addresses?: CitizenAddress[] | null;
+}
+
+export interface CustodyChild {
+  /** @format uuid */
+  personId?: string;
+  personNumber?: string | null;
+  givenname?: string | null;
+  middlename?: string | null;
+  lastname?: string | null;
+  notNR?: string | null;
+  classified?: string | null;
+  protectedNR?: string | null;
 }
 
 export interface CustodyChildrenPupil {

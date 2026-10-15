@@ -11,6 +11,7 @@ const environmentKeys = [
   'ADMIN_URL',
   'NEXT_PUBLIC_BASE_PATH',
   'NEXT_PUBLIC_API_URL',
+  'API_URL_INTERNAL',
 ] as const;
 
 describe('middleware environment generation', () => {
@@ -78,5 +79,14 @@ describe('middleware environment generation', () => {
     );
 
     await expect(runGenerator()).resolves.toContain("apiUrl: 'https://fallback.example.com/api'");
+  });
+
+  it('prefers API_URL_INTERNAL over NEXT_PUBLIC_API_URL for apiUrl', async () => {
+    await writeFile(
+      join(workingDirectory, '.env'),
+      ['NEXT_PUBLIC_API_URL=https://public.example.com/api', 'API_URL_INTERNAL=http://localhost:3001/api'].join('\n')
+    );
+
+    await expect(runGenerator()).resolves.toContain("apiUrl: 'http://localhost:3001/api'");
   });
 });

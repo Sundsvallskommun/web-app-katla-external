@@ -1,12 +1,9 @@
 import { getActiveWizardSteps, WizardStep } from '@components/wizard/wizard-steps';
-import { ErrandDTO } from '@data-contracts/backend/data-contracts';
 import { useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { appConfig } from 'src/config/appconfig';
 
 export function useActiveWizardSteps(): WizardStep[] {
-  const { watch } = useFormContext<ErrandDTO>();
-  const parameters = watch('parameters') ?? [];
-  const eventConcerns = parameters.find((p) => p.key === 'eventConcerns')?.values?.[0] ?? '';
+  const otherPartiesEnabled = appConfig.features.otherPartiesDisclosure;
 
-  return useMemo(() => getActiveWizardSteps(eventConcerns), [eventConcerns]);
+  return useMemo(() => getActiveWizardSteps(otherPartiesEnabled), [otherPartiesEnabled]);
 }

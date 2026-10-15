@@ -18,9 +18,9 @@ const LocalizationProvider = memo<LocalizationProviderProps>(({ children, locale
 
   void initLocalization(locale, namespaces, i18n, resources);
 
-  // dayjs locale är en processglobal. Sätts den under render delas den mellan samtidiga
-  // SSR-requests, så en engelsk begäran kan slå om språket mitt i renderingen av en
-  // svensk. I en effekt körs den bara på klienten, där globalen tillhör en enda användare.
+  // The dayjs locale is a process global. Set during render it is shared between concurrent SSR
+  // requests, so an English request could flip the language midway through rendering a Swedish
+  // one. In an effect it runs only on the client, where the global belongs to one user.
   useEffect(() => {
     setDayjsLocale(locale);
   }, [locale]);

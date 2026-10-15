@@ -1,5 +1,6 @@
 import { HttpException } from '@/exceptions/HttpException';
 import { SchemaResponseDTO } from '@/responses/schema.response';
+import { assertSchemaContract } from '@/utils/schema-contract';
 
 const requireIdentifier = (value: unknown, context: string): string => {
   if (typeof value !== 'string' || value.trim().length === 0) {
@@ -23,10 +24,15 @@ export const mapSchemaResponse = (schema: unknown, requestedSchemaId?: string): 
     throw new HttpException(502, 'Invalid JSON schema response: schema id does not match request');
   }
 
+  const schemaValue = requireObject(schemaPayload.value, 'JSON schema response');
+  assertSchemaContract(schemaValue, responseSchemaId);
+
   return {
-    schema: requireObject(schemaPayload.value, 'JSON schema response'),
+    schema: schemaValue,
     uiSchema: {},
     schemaId: responseSchemaId,
+    name: typeof schemaPayload.name === 'string' ? schemaPayload.name : undefined,
+    version: typeof schemaPayload.version === 'string' ? schemaPayload.version : undefined,
   };
 };
 

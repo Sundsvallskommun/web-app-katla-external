@@ -25,8 +25,8 @@ describe('Locale resources', () => {
     }
   });
 
-  // Nyckeldrift mellan språken är tyst i körtid – i18next faller tillbaka på svenska och
-  // ingen märker något förrän en användare ser fel språk mitt i ett flöde.
+  // Key drift between languages is silent at runtime: i18next falls back to Swedish and nobody
+  // notices until a user sees the wrong language mid-flow.
   describe.each(translatedLocales)('%s', (locale) => {
     it('has exactly the same namespace files as the default locale', () => {
       expect(fs.readdirSync(path.join(localesDir, locale)).sort()).toEqual(namespaceFiles);
@@ -54,7 +54,7 @@ describe('localeFromPath', () => {
   });
 
   it('falls back to the default locale when the path has no locale prefix', () => {
-    // Standardspråket prefixas inte, så oprefixade sökvägar är det normala fallet.
+    // The default locale is not prefixed, so unprefixed paths are the normal case.
     expect(localeFromPath('/oversikt')).toBe(i18nConfig.defaultLocale);
     expect(localeFromPath('/')).toBe(i18nConfig.defaultLocale);
     expect(localeFromPath(null)).toBe(i18nConfig.defaultLocale);
@@ -68,8 +68,8 @@ describe('localeFromPath', () => {
 });
 
 describe('pathWithoutLocale', () => {
-  // Proxyn jämför skyddade rutter mot den språkskalade sökvägen. Missas skalningen
-  // slutar /en/... matcha ruttlistan och autentiseringskontrollen hoppas över.
+  // The proxy compares protected routes against the stripped path. Miss the stripping and
+  // /en/... stops matching the route list, skipping the auth check.
   it('strips a supported locale prefix', () => {
     expect(pathWithoutLocale('/en/oversikt')).toBe('/oversikt');
     expect(pathWithoutLocale('/sv/arende/KATLA-1')).toBe('/arende/KATLA-1');
@@ -95,9 +95,9 @@ describe('pathWithoutLocale', () => {
 });
 
 describe('metadata path lookup', () => {
-  // paths.json nycklas utan språkprefix. x-path bär prefixet för alla språk utom
-  // standardspråket, så utan skalning missar uppslaget på varje engelsk sida och
-  // titeln faller tillbaka på den härledda sökvägen ("En, Login").
+  // paths.json is keyed without a language prefix. x-path carries the prefix for every language
+  // but the default, so without stripping the lookup misses on every English page and the title
+  // falls back to the derived path ("En, Login").
   it('resolves the same paths.json key regardless of language', () => {
     const paths = JSON.parse(fs.readFileSync(path.join(localesDir, 'sv', 'paths.json'), 'utf8')) as Record<
       string,
@@ -115,8 +115,8 @@ describe('metadata path lookup', () => {
 
 describe('pathWithLocale', () => {
   it('always adds an explicit prefix, including for the default locale', () => {
-    // Prefixet på standardspråket är avsiktligt: proxyn skriver om NEXT_LOCALE utifrån
-    // sökvägen och skalar sedan bort prefixet, vilket är det som gör valet beständigt.
+    // The prefix on the default locale is deliberate: the proxy rewrites NEXT_LOCALE from the
+    // path and then strips it, which is what makes the choice stick.
     expect(pathWithLocale('/en/oversikt', 'sv')).toBe('/sv/oversikt');
     expect(pathWithLocale('/oversikt', 'sv')).toBe('/sv/oversikt');
   });

@@ -7,22 +7,10 @@
     "open_menu": "Open menu",
     "close_menu": "Close menu",
     "close": "Close",
-    "go_to_start": "Katla - {{app}}. Go to the start page.",
+    "go_to_start": "{{app}}. Go to the start page.",
     "open_errand": "Open case {{errandNumber}}",
     "open_sidebar": "Open sidebar",
     "close_sidebar": "Close sidebar"
-  },
-  "notifications": {
-    "open": "Open notifications",
-    "open_with_count_one": "Open notifications ({{count}} unread)",
-    "open_with_count_other": "Open notifications ({{count}} unread)",
-    "panel": "Notifications",
-    "close": "Close notifications",
-    "loading": "Loading notifications",
-    "new": "New",
-    "previous": "Earlier",
-    "none_new": "No new notifications",
-    "none_previous": "No earlier notifications"
   },
   "language": {
     "label": "Language",

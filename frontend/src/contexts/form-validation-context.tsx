@@ -5,7 +5,7 @@ import { createContext, useContext } from 'react';
 export interface FormValidationContextType {
   showValidation: boolean;
   setShowValidation: (show: boolean) => void;
-  /** Flyttar fokus till första fältet som visar ett valideringsfel och rullar fram det. */
+  /** Moves focus to the first field showing a validation error and scrolls it into view. */
   focusFirstError: () => void;
 }
 

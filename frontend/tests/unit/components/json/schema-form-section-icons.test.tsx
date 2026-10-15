@@ -35,7 +35,7 @@ function uiSchemaWithIcon(icon: string): UiSchema<Record<string, unknown>> {
 }
 
 function SectionIconForm({ icon, schemaId }: { icon: string; schemaId: string }) {
-  const methods = useForm({ defaultValues: { status: 'DRAFT' } });
+  const methods = useForm();
 
   return (
     <FormProvider {...methods}>

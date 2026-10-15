@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import initLocalization from '../i18n';
 import { pathWithoutLocale } from '../locale-path';
 
-/** Behåller null-fallet, som skiljer "ingen sökväg" från rotsökvägen i titellogiken. */
+/** Keeps the null case, which separates "no path" from the root path in the title logic. */
 const pathWithoutLocaleOrNull = (path: string | null): string | null =>
   path === null ? null : pathWithoutLocale(path);
 
@@ -19,12 +19,12 @@ const namespaces = [
   'paths',
   'layout',
   'login',
-  'example',
   'filtering',
   'errand-information',
   'session',
   'validation',
   'forms',
+  'start',
 ];
 
 const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
@@ -37,9 +37,9 @@ const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
 export const generateMetadata = async ({ params }: LocaleLayoutProps) => {
   const { locale } = await params;
   const { t } = await initLocalization(locale, namespaces);
-  // Nycklarna i paths.json är språkoberoende, medan x-path bär språkprefixet för alla
-  // språk utom standardspråket. Utan skalningen missar uppslaget på varje /en-sida och
-  // titeln faller tillbaka på den härledda sökvägen ("En, Login").
+  // Keys in paths.json are locale-independent, while x-path carries the locale prefix for every
+  // language but the default. Without stripping it the lookup misses on every /en page and the
+  // title falls back to the derived path ("En, Login").
   const path = pathWithoutLocaleOrNull((await headers()).get('x-path'));
 
   const pathName =

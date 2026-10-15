@@ -1,0 +1,20 @@
+{
+  "name": "katla-aot",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "type-check": "yarn --cwd frontend type-check && yarn --cwd backend type-check",
+    "lint": "yarn --cwd frontend lint && yarn --cwd backend lint",
+    "lint:strict": "yarn --cwd frontend lint:strict && yarn --cwd backend lint:strict",
+    "format": "yarn --cwd frontend format && yarn --cwd backend format",
+    "format:check": "yarn --cwd frontend format:check && yarn --cwd backend format:check",
+    "test": "yarn --cwd frontend test && yarn --cwd backend test",
+    "verify": "yarn type-check && yarn lint:strict && yarn format:check && yarn test"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16"
+  }
+}

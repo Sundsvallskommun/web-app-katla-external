@@ -1,15 +1,13 @@
 import { Profile as SamlProfile } from '@node-saml/passport-saml';
 
+/**
+ * The citizen-facing IdP profile. This app logs in citizens, not employees, so there are no
+ * group or role claims here — only the identity attributes and the citizen identifier.
+ */
 export interface Profile extends SamlProfile {
-  // Field names depend on federation system used
-  givenName?: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'?: string;
-  sn?: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'?: string;
-  email?: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
-  groups?: string;
-  'http://schemas.xmlsoap.org/claims/Group'?: string[];
+  /** The citizen's person number, exchanged for a party id via Citizen at login. */
+  citizenIdentifier?: string;
+  firstname?: string;
+  Surname?: string;
   attributes?: Record<string, unknown>;
-  'urn:oid:0.9.2342.19200300.100.1.1'?: string;
 }

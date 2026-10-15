@@ -4,6 +4,7 @@ import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useMetadataStore } from 'src/stores/metadata-store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { createErrandMock, routerPushMock, snackbarMock, updateErrandMock } = vi.hoisted(() => ({
@@ -23,15 +24,12 @@ vi.mock('@services/errand-service/errand-service', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
+  useParams: () => ({ service: 'alkoholtillstand' }),
   useRouter: () => ({ push: routerPushMock }),
 }));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { resolvedLanguage: 'sv' } }),
-}));
-
-vi.mock('src/config/appconfig', () => ({
-  appConfig: { features: { draftEnabled: true } },
 }));
 
 vi.mock('@sk-web-gui/react', () => {
@@ -61,10 +59,17 @@ vi.mock('@sk-web-gui/react', () => {
 function TestForm() {
   const methods = useForm<ErrandFormDTO>({
     defaultValues: {
-      status: 'DRAFT',
+      // Registration refuses an errand without an owner before it looks at the form data.
+      stakeholders: [{ role: 'PRIMARY', externalId: 'f1e2d3c4-0000-4000-8000-000000000001' }],
+      // Labels select the schema; without them the broken entry is filtered out before the save.
+      labels: [
+        { id: 'alkohol', classification: 'CATEGORY', resourceName: 'ALCOHOL' },
+        { id: 'servering', classification: 'TYPE', resourceName: 'SERVING_PERMIT_APPLICATION' },
+        { id: 'stadigvarande', classification: 'SUBTYPE', resourceName: 'PERMANENT_SERVING' },
+      ],
       errandFormData: [
         {
-          schemaName: 'avvikelse-plats-handelse',
+          schemaName: 'aot_alcohol_serving_permit_application_permanent_serving',
           schemaId: 'schema-v1',
           data: '{invalid-json',
         },
@@ -83,6 +88,7 @@ function TestForm() {
 
 describe('ErrandButtonGroup JSON save contract', () => {
   beforeEach(() => {
+    useMetadataStore.setState({ metadata: { namespace: 'AOT' } });
     createErrandMock.mockReset();
     routerPushMock.mockReset();
     snackbarMock.mockReset();
@@ -92,7 +98,7 @@ describe('ErrandButtonGroup JSON save contract', () => {
   it('handles invalid persisted JSON without calling the save API', async () => {
     render(<TestForm />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'errand-information:save_draft' }));
+    fireEvent.click(screen.getByRole('button', { name: 'errand-information:register' }));
 
     await waitFor(() => {
       expect(snackbarMock).toHaveBeenCalledWith(

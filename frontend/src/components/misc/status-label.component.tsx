@@ -1,13 +1,21 @@
+import { ErrandLifecycle } from '@interfaces/errand-form';
 import { Label, LabelProps } from '@sk-web-gui/react';
 import { Check, CirclePause, Clock10, Pen, SquarePen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export const StatusLabel: React.FC<{ status?: string }> = ({ status }) => {
+interface StatusLabelProps {
+  status?: string;
+  lifecycle?: ErrandLifecycle;
+}
+
+export const StatusLabel: React.FC<StatusLabelProps> = ({ status, lifecycle }) => {
   const { t } = useTranslation();
+  // A draft is shown as such whatever its status: nothing has happened to it yet.
+  const shown = lifecycle === 'DRAFT' ? 'DRAFT' : status;
   let color: LabelProps['color'],
     inverted = false,
     icon: React.ReactNode = null;
-  switch (status) {
+  switch (shown) {
     case 'SOLVED':
       color = 'primary';
       icon = <Check size={16} />;
@@ -78,9 +86,9 @@ export const StatusLabel: React.FC<{ status?: string }> = ({ status }) => {
 
   return (
     <Label rounded inverted={inverted} color={color} className={`max-h-full h-auto text-center whitespace-nowrap`}>
-      {/* Statuskoden är språkneutral. Statusar utan egen text (t.ex. UPSTART) visar bara
-          färg och ikon, precis som tidigare. */}
-      {icon} {t(`common:status.${status ?? ''}`, { defaultValue: '' })}
+      {/* The status code is language-neutral. Statuses without their own text (UPSTART, say)
+          show only colour and icon. */}
+      {icon} {t(`common:status.${shown ?? ''}`, { defaultValue: '' })}
     </Label>
   );
 };

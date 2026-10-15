@@ -25,8 +25,8 @@ class ApiTokenService {
   }
 
   /**
-   * Ersätt endast den token som faktiskt avvisades. Om ett annat anrop redan
-   * har hunnit uppdatera den delade cachen återanvänds den nyare tokenen.
+   * Replace only the token that was actually rejected. If another call has already refreshed
+   * the shared cache, reuse the newer token.
    */
   public async refreshToken(rejectedToken: string): Promise<string> {
     if (c_access_token !== '' && c_access_token !== rejectedToken && Date.now() < c_token_expires) {

@@ -1,3 +1,4 @@
+import { SectionStatus, SectionStatusLabel } from '@components/disclosure/section-status-label.component';
 import { ErrandContentLock } from '@components/errand-content-lock/errand-content-lock.component';
 import { Checkbox, Disclosure, Divider, Label } from '@sk-web-gui/react';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
@@ -11,7 +12,18 @@ export const ErrandDisclosure: React.FC<{
   errandInformationSection?: boolean;
   disabled?: boolean;
   initialOpen?: boolean;
-}> = ({ header, icon, children, errandInformationSection, disabled = false, initialOpen = true }) => {
+  status?: SectionStatus;
+  statusDataCy?: string;
+}> = ({
+  header,
+  icon,
+  children,
+  errandInformationSection,
+  disabled = false,
+  initialOpen = true,
+  status,
+  statusDataCy,
+}) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(disabled ? false : initialOpen);
   const [doneMark, setDoneMark] = useState(false);
@@ -47,7 +59,8 @@ export const ErrandDisclosure: React.FC<{
       <Disclosure.Header>
         <Disclosure.Icon icon={icon} />
         <Disclosure.Title>{header}</Disclosure.Title>
-        {doneMark && (
+        {status && <SectionStatusLabel status={status} data-cy={statusDataCy} />}
+        {doneMark && status !== 'complete' && (
           <Label inverted rounded color="gronsta">
             {t('errand-information:section.complete')}
           </Label>

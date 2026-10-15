@@ -1,6 +1,7 @@
 'use client';
 
-import { getErrandsCount } from '@services/errand-service/errand-service';
+import { ErrandLifecycle } from '@interfaces/errand-form';
+import { ErrandQuery, getErrandsCount } from '@services/errand-service/errand-service';
 import { CircleCheckBig, ClipboardPen, SquarePen } from 'lucide-react';
 import { createElement, ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ import { useSortStore } from 'src/stores/sort-store';
 export interface StatusButton {
   label: string;
   statuses: string[];
+  lifecycle?: ErrandLifecycle;
   icon: ReactElement;
   errandsCount: number;
 }
@@ -20,7 +22,7 @@ export function useStatusButtons() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
-  const { activeStatus, setActiveStatus, setStatuses } = useFilterStore();
+  const { activeStatus, setActiveStatus, setStatuses, setLifecycle } = useFilterStore();
   const {
     newErrandCount,
     draftErrandCount,
@@ -47,7 +49,8 @@ export function useStatusButtons() {
     },
     {
       label: t('filtering:errands.draft'),
-      statuses: ['DRAFT'],
+      statuses: [],
+      lifecycle: 'DRAFT',
       icon: createElement(SquarePen),
       errandsCount: draftErrandCount,
     },
@@ -60,20 +63,20 @@ export function useStatusButtons() {
   ];
 
   const statusButtons =
-    draftEnabled ? allStatusButtons : allStatusButtons.filter((button) => !button.statuses.includes('DRAFT'));
+    draftEnabled ? allStatusButtons : allStatusButtons.filter((button) => button.lifecycle !== 'DRAFT');
 
   useEffect(() => {
     let active = true;
     setIsLoading(true);
-    const requests: { status: string; apply: (count: number) => void }[] = [
-      { status: 'NEW', apply: setNewErrandCount },
-      { status: 'SOLVED', apply: setClosedErrandCount },
+    const requests: { query: ErrandQuery; apply: (count: number) => void }[] = [
+      { query: { statuses: ['NEW'] }, apply: setNewErrandCount },
+      { query: { statuses: ['SOLVED'] }, apply: setClosedErrandCount },
     ];
     if (draftEnabled) {
-      requests.push({ status: 'DRAFT', apply: setDraftErrandCount });
+      requests.push({ query: { lifecycle: 'DRAFT' }, apply: setDraftErrandCount });
     }
 
-    void Promise.allSettled(requests.map(({ status }) => getErrandsCount({ statuses: [status] })))
+    void Promise.allSettled(requests.map(({ query }) => getErrandsCount(query)))
       .then((results) => {
         if (!active) return;
         results.forEach((result, index) => {
@@ -93,6 +96,7 @@ export function useStatusButtons() {
   const onSelectStatus = (button: StatusButton) => {
     setActiveStatus(button.label);
     setStatuses(button.statuses);
+    setLifecycle(button.lifecycle);
     reset();
   };
 

@@ -11,6 +11,22 @@ import { StakeholderDTO } from '@/responses/supportmanagement.response';
 import ApiService from '@/services/api.service';
 import { addHyphenToPersonNumber } from '@/utils/stakeholder-mapping';
 
+const toStakeholder = (citizen: CitizenExtended, personNumber: string, externalId: string | undefined): StakeholderDTO => {
+  const address = citizen.addresses?.[0];
+
+  return {
+    externalId,
+    city: address?.city ?? undefined,
+    firstName: citizen.givenname ?? undefined,
+    lastName: citizen.lastname ?? undefined,
+    address: address?.address ?? undefined,
+    zipCode: address?.postalCode ?? undefined,
+    personNumber: addHyphenToPersonNumber(personNumber),
+    careOf: address?.co ?? undefined,
+    country: address?.country ?? undefined,
+  };
+};
+
 @Controller()
 export class CitizenController {
   private apiService = new ApiService();
@@ -27,25 +43,24 @@ export class CitizenController {
       const personInformationUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${personNumberRes.data}`;
       const res = await this.apiService.get<CitizenExtended>({ url: personInformationUrl }, req);
       if (!res.data) throw new HttpException(500, 'No data from API');
+      if (!res.data.addresses?.[0]) throw new HttpException(500, 'No address data from API');
 
-      const address = res.data.addresses?.[0];
-      if (!address) throw new HttpException(500, 'No address data from API');
-
-      const stakeholder: StakeholderDTO = {
-        externalId: res.data.personId,
-        city: address.city ?? undefined,
-        firstName: res.data.givenname ?? undefined,
-        lastName: res.data.lastname ?? undefined,
-        address: address.address ?? undefined,
-        zipCode: address.postalCode ?? undefined,
-        personNumber: addHyphenToPersonNumber(personNumber),
-        careOf: address.co ?? undefined,
-        country: address.country ?? undefined,
-      };
-
-      return stakeholder;
+      return toStakeholder(res.data, personNumber, res.data.personId);
     } catch {
       return null;
     }
+  }
+
+  // The session already holds the party id, so no guid lookup: the citizen can only ever
+  // resolve themself here. A missing address is not an error; the citizen fills it in.
+  @Get('/citizen/me')
+  @OpenAPI({ summary: 'Get the logged in citizen as a stakeholder' })
+  @UseBefore(authMiddleware)
+  async getMe(@Req() req: RequestWithUser): Promise<StakeholderDTO> {
+    const { partyId, personNumber } = req.user;
+    const res = await this.apiService.get<CitizenExtended>({ url: `${this.apiBase}/${MUNICIPALITY_ID}/${partyId}` }, req);
+    if (!res.data) throw new HttpException(502, 'No data from Citizen API');
+
+    return toStakeholder(res.data, personNumber, partyId);
   }
 }

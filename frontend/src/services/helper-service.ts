@@ -2,9 +2,9 @@ import dayjs from 'dayjs';
 import type { TFunction } from 'i18next';
 
 /**
- * Formaterar en tidpunkt relativt idag. `t` är obligatorisk – med en valfri svensk
- * reservtext hade en glömd inkoppling gett svenska ord i ett engelskt gränssnitt utan
- * att något test eller någon typkontroll märkt det.
+ * Formats a timestamp relative to today. `t` is required: with an optional Swedish fallback, a
+ * forgotten wire-up would put Swedish words in an English interface with neither a test nor the
+ * type checker noticing.
  */
 export function prettyTime(time: string, t: TFunction) {
   if (!time) {

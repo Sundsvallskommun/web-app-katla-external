@@ -3,11 +3,11 @@ import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
 declare global {
-  // Hjälpfunktion för tester som behöver simulera ändrad fönsterstorlek
+  // Helper for tests that need to simulate a window resize.
   function resizeWindow(width: number, height: number): void;
 }
 
-// Förhindrar att axios gör riktiga XHR-anrop i jsdom-miljön
+// Stops axios from making real XHR calls in jsdom.
 (globalThis as { XMLHttpRequest?: typeof XMLHttpRequest }).XMLHttpRequest = undefined;
 
 const createMemoryStorage = (): Storage => {
@@ -31,8 +31,8 @@ const createMemoryStorage = (): Storage => {
   };
 };
 
-// Node 26 exponerar valfria storage-globaler som är undefined utan konfigurerad backing-fil.
-// Tillhandahåll webbläsarkompatibel in-memory-storage så att persisterade Zustand-stores fungerar i jsdom.
+// Node 26 exposes optional storage globals that are undefined without a configured backing file.
+// Provide browser-compatible in-memory storage so persisted Zustand stores work in jsdom.
 Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
   value: createMemoryStorage(),
@@ -48,7 +48,7 @@ globalThis.resizeWindow = (width: number, height: number) => {
   window.dispatchEvent(new Event('resize'));
 };
 
-// Mock av IntersectionObserver som saknas i jsdom
+// Mock for IntersectionObserver, which jsdom lacks.
 class IntersectionObserverMock {
   observe = vi.fn();
   disconnect = vi.fn();

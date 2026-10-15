@@ -1,34 +1,12 @@
-import { MUNICIPALITY_ID } from '@/config';
-import { ContactChannel, Parameter, Stakeholder } from '@/data-contracts/supportmanagement/data-contracts';
-import { HttpException } from '@/exceptions/HttpException';
-import { RequestWithUser } from '@/interfaces/auth.interface';
+import { ContactChannel, Parameter, Stakeholder } from '@/data-contracts/support-management-alkt-sprint/data-contracts';
 import { StakeholderDTO } from '@/responses/supportmanagement.response';
-import ApiService from '@/services/api.service';
 
-import { apiURL } from './util';
+/** Parameter key for the serving location. */
+const SERVERINGSSTALLE_PARAMETER = 'serveringsstalle';
+/** Parameter key Draken reads the organisation number from. */
+export const ORGANIZATION_NUMBER_PARAMETER = 'organizationNumber';
 
-const getCitizenPersonNumber = (value: unknown): string => {
-  if (typeof value === 'string') return value;
-
-  // Citizen dokumenterar svaret som en sträng, men gatewayen kan JSON-parsa
-  // det tolvsiffriga värdet som ett tal. Acceptera bara heltal som kan
-  // konverteras utan precisionsförlust.
-  if (typeof value === 'number' && Number.isSafeInteger(value)) return String(value);
-
-  throw new HttpException(502, 'Invalid person number response from Citizen API');
-};
-
-export async function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder, req: RequestWithUser): Promise<StakeholderDTO> {
-  const apiService = new ApiService();
-  const citizenUrl = `${MUNICIPALITY_ID}/${stakeholder.externalId}/personnumber`;
-  const baseURL = apiURL('citizen');
-  let personNumber = '';
-
-  if (stakeholder.externalId) {
-    const citizenResponse = await apiService.get<unknown>({ url: citizenUrl, baseURL }, req);
-    personNumber = getCitizenPersonNumber(citizenResponse.data);
-  }
-
+export function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder): StakeholderDTO {
   const { contactChannels, parameters, ...rest } = stakeholder;
 
   const { emails, phoneNumbers } = (contactChannels ?? []).reduce<{
@@ -48,9 +26,11 @@ export async function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder, r
 
   return {
     ...rest,
-    personNumber: addHyphenToPersonNumber(personNumber),
     title: parameters?.find(p => p.key === 'title')?.displayName ?? undefined,
     department: parameters?.find(p => p.key === 'department')?.displayName ?? undefined,
+    // values, not displayName: this one carries data the citizen entered, not a label.
+    serveringsstalle: parameters?.find(p => p.key === SERVERINGSSTALLE_PARAMETER)?.values?.[0] ?? undefined,
+    organizationNumber: parameters?.find(p => p.key === ORGANIZATION_NUMBER_PARAMETER)?.values?.[0] ?? undefined,
     emails: emails.length ? emails : undefined,
     phoneNumbers: phoneNumbers.length ? phoneNumbers : undefined,
   };
@@ -58,7 +38,7 @@ export async function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder, r
 
 export function mapStakeholderDTOToStakeholder(stakeholder: StakeholderDTO): Stakeholder {
   delete stakeholder.personNumber;
-  const { emails, phoneNumbers, title, department, ...rest } = stakeholder;
+  const { emails, phoneNumbers, title, department, serveringsstalle, organizationNumber: _organizationNumber, ...rest } = stakeholder;
 
   const contactChannels: ContactChannel[] = [
     ...(emails?.map(email => ({
@@ -83,6 +63,12 @@ export function mapStakeholderDTOToStakeholder(stakeholder: StakeholderDTO): Sta
     parameters.push({
       key: 'department',
       displayName: department,
+    });
+  }
+  if (serveringsstalle) {
+    parameters.push({
+      key: SERVERINGSSTALLE_PARAMETER,
+      values: [serveringsstalle],
     });
   }
 

@@ -5,8 +5,8 @@
     "closed": "closed cases"
   },
   "search": "Search",
-  "new_errand": "Report",
-  "new_errand_mobile": "New report",
+  "new_errand": "New case",
+  "new_errand_mobile": "New case",
   "show_filter": "Show filter",
   "hide_filter": "Hide filter",
   "filter_panel": "Case filter",

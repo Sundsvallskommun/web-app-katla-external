@@ -10,6 +10,7 @@ import { capitalize } from 'lodash';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isProduction } from 'src/config/appconfig';
 
 // Turn on/off automatic login
 const autoLogin = false;
@@ -36,11 +37,11 @@ export const LoginContent: React.FC = () => {
     const searchPath = searchParams.get('path');
     const nonLoginPath = !/\/login/.exec(pathName) && pathName; // Contains path as long as it's not /login
     const nonLoginSearch = (!searchPath?.match(/\/login|\/logout/) && searchPath) ?? false; // Contains redirect path as long as it's not /login or /logout
-    // Falsklogik bevarad: falla vidare vid false/tom sträng, inte enbart vid null/undefined
+    // Falsy semantics kept: fall through on false or an empty string, not only null/undefined.
     const path =
       nonLoginPath ? nonLoginPath
       : nonLoginSearch ? nonLoginSearch
-      : `${process.env.NEXT_PUBLIC_BASE_PATH}/oversikt`;
+      : `${process.env.NEXT_PUBLIC_BASE_PATH}/`;
 
     const url = new URL(apiURL('/saml/login'));
     const queries = new URLSearchParams({
@@ -48,8 +49,8 @@ export const LoginContent: React.FC = () => {
       failureRedirect: `${appURL()}/login`,
     });
     url.search = queries.toString();
-    // NOTE: send user to login with SSO
-    router.push(url.toString());
+    // Top-level navigation, not router.push: the SameSite=Lax session cookie must ride along.
+    window.location.assign(url.toString());
   };
 
   useEffect(() => {
@@ -109,6 +110,21 @@ export const LoginContent: React.FC = () => {
             </Button>
           </div>
           {errorMessage && <FormErrorMessage className="text-error mt-lg">{errorMessage}</FormErrorMessage>}
+          {!isProduction() && (
+            <div className="flex flex-col items-center gap-16 mt-lg">
+              <span className="text-small">{t('login:test_environment_logout_help')}</span>
+              <Button
+                data-cy="login-logout-button"
+                variant="tertiary"
+                size="md"
+                onClick={() => {
+                  router.push('/logout');
+                }}
+              >
+                {capitalize(t('common:logout'))}
+              </Button>
+            </div>
+          )}
         </>
       }
     </>

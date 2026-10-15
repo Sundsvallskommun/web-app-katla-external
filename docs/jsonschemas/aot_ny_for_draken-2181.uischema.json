@@ -1,0 +1,1538 @@
+{
+  "kontaktuppgifter_6115": {
+    "foretrader_du_ett_foretag_81698": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Med företag menas aktiebolag, enskild firma, förening/stiftelse, handelsbolag eller kommanditbolag.</p>"
+      }
+    },
+    "kontaktuppgifter_81699": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kontaktuppgifter_81700": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "hamtning_av_foretagsuppgifter_81701": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här kan du välja att hämta dina företagsuppgifter från Bolagsverket, SCB och Skatteverket, så att du slipper fylla i dem.<br />\nLäs mer på sidan <a href=\"http://bolagsverket.se/sammansatt-bastjanst-foretagsuppgifter\" target=\"_blank\"><u><font color=\"#0066cc\">Så här hämtas dina företagsuppgifter</font></u></a>.<br />\nDu kan också välja att fylla i uppgifter om ditt företag manuellt.</p>\n\n<p><strong>Vill du hämta uppgifter om ditt företag?</strong></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "valj_foretag_81702": {
+      "ui:readonly": true,
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Välj det företag som ansökan gäller.<br />\nSaknas företaget så kan du backa och välja att fylla i uppgifterna manuellt.</p>\n\n<p>Vill du ändra uppgifter om ditt företag?<br />\nDet gör du på <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a>.<br />\nOm du som enskild näringsidkare vill ändra folkbokföringsadressen gör du det hos <a href=\"http://www.skatteverket.se/privat.4.76a43be412206334b89800052864.html\" target=\"_blank\"><u><font color=\"#0066cc\">Skatteverket</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_du_firmatecknare_81703": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_fullmakt_81704": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ditt_foretag_81705": {
+      "ui:order": [
+        "foretagets_namn_50389",
+        "organisationsnummer_50390",
+        "utdelningsadress_50391",
+        "postnummer_50392",
+        "postort_50393",
+        "foretagets_telefonnummer_50394",
+        "foretagets_e_postadress_50395"
+      ],
+      "organisationsnummer_50390": {
+        "ui:options": {
+          "placeholder": "XXXXXX-XXXX"
+        }
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "foretagsform_81706": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_fakturaadressen_samma_som_foretagets_81707": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "fakturamottagare_81708": {
+      "ui:order": [
+        "c_o_50396",
+        "utdelningsadress_50397",
+        "postnummer_50398",
+        "postort_50399"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "fakturareferens_81709": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_aktuellt_registreringsbevis_fran_81710": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Här bifogar du företagets registreringsbevis från Bolagsverket.<br />\nHar du inte något registreringsbevis tillgängligt så kan du hämta ett på <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_uppgifter_om_agarforhallanden_81711": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Nedan bifogar du handlingar som styrker vilka fysiska personer som finns bakom organisationsnumret. Syftet med denna informationsinsamling är att identifiera de personer som har betydande inflytande över verksamheten så dessa kan inkluderas i prövningen.</p>\n\n<p><br />\n<strong>Aktiebolag</strong>: Dokumentation som visar aktiefördelningen mellan ägare, exempelvis en aktiebok. Det är bolagets styrelse som ska hålla en aktuell aktiebok över aktier och aktieägare. </p>\n\n<p><strong>Handelsbolag/kommanditbolag</strong>: Dokumentation som visar ägarfördelningen i bolaget, exempelvis ett bolagsavtal.</p>\n\n<p><strong>Förening/stiftelse</strong>:  Stadgar eller protokoll från konstituerande möte som visar vilka som är firmatecknare.</p>\n\n<p><strong>Koncern</strong>: Information om ägarförhållanden för koncernbolaget, förutom den handling som gäller för bolagsformen enligt ovan.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_registerutdrag_fran_skatteverket_81712": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Här kan du bifoga ett registerutdrag från Skatteverket.<br />\nAv registerutdraget framgår det om du eller ditt företag är godkänt för F-skatt eller FA-skatt (F-skatt med villkor). Av utdraget framgår det också om du eller ditt företag är momsregistrerat och/eller registrerat som arbetsgivare. Här hämtar du ett registerutdrag: <a href=\"https://www.verksamt.se/\" target=\"_blank\"><u><font color=\"#0066cc\">verksamt.se</font></u></a></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetsbeskrivning_81713": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetsbeskrivning_81714": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_verksamhetsbeskrivning_81715": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ui:order": [
+      "foretrader_du_ett_foretag_81698",
+      "kontaktuppgifter_81699",
+      "kontaktuppgifter_81700",
+      "hamtning_av_foretagsuppgifter_81701",
+      "valj_foretag_81702",
+      "ar_du_firmatecknare_81703",
+      "ladda_upp_fullmakt_81704",
+      "ditt_foretag_81705",
+      "foretagsform_81706",
+      "ar_fakturaadressen_samma_som_foretagets_81707",
+      "fakturamottagare_81708",
+      "fakturareferens_81709",
+      "bifoga_aktuellt_registreringsbevis_fran_81710",
+      "bifoga_uppgifter_om_agarforhallanden_81711",
+      "bifoga_registerutdrag_fran_skatteverket_81712",
+      "verksamhetsbeskrivning_81713",
+      "verksamhetsbeskrivning_81714",
+      "bifoga_verksamhetsbeskrivning_81715"
+    ]
+  },
+  "ansokan_6116": {
+    "vad_vill_du_ansoka_om_eller_anmala_81716": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kunskap_om_alkohollagen_81718": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att få ett serveringstillstånd behöver du eller annan person som är ansvarig i företaget ha kunskap om ansvarsfull alkoholservering och alkohollagen. Denna kunskap kan du visa på flera sätt.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "personnummer_81719": {
+      "ui:order": [
+        "personnummer_50400"
+      ],
+      "personnummer_50400": {
+        "ui:options": {
+          "placeholder": "ÅÅÅÅMMDDXXXX"
+        }
+      },
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange personnummer på den person i företaget som har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 3 åren.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "organisationsnummer_81720": {
+      "ui:order": [
+        "organisationsnummer_50401"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Vilket företag med gällande serveringstillstånd driver du eller annan person som är ansvarig i företaget idag?<br />\nOm du eller annan företrädare för organisationen har ett serveringstillstånd idag som minst motsvarar den aktuella ansökan, och det inte finns skäl att ifrågasätta kunskaperna, kan det vara så att kunskaperna inte behöver styrkas med ett kunskapsprov.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vill_du_anmala_personer_i_foretaget_till_81721": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Om ditt ärende gäller en ansökan om stadigvarande serveringstillstånd så kan inte tillståndet beviljas innan minst en av de personer som du uppger här har genomfört och fått godkänt på kunskapsprovet.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "harmed_anmaler_jag_foljande_person_perso_81723": {
+      "items": {
+        "ui:order": [
+          "fornamn_5744",
+          "efternamn_5745",
+          "personnummer_5746",
+          "telefonnummer_5747",
+          "e_postadress_5748"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetens_inriktning_81726": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här ska du ange vilken inriktning du har med din verksamhet. Du ska också förtydliga din inriktning genom att skriva in ytterligare information om verksamheten nedan. Det är ett underlag för kommunens bedömning av din tillståndsansökan. När det gäller den alkoholpolitiska prövningen kontaktar kommunen även andra instanser för deras synpunkter på verksamheten.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "har_ni_81727": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_verksamhetens_inriktning_81728": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här ska du med egna ord förtydliga inriktningen på din verksamhet.<br />\nExempel på information som är viktig att ange är typ av restaurang, vilka öppettider som gäller, eventuella åldersgränser eller särskild \"profil\" på verksamheten (sportbar, live-musik etc). Ange även verksamhetens primära målgrupp.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ska_servering_av_alkohol_ske_till_allman_81729": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsperiod_for_allmanheten_81730": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ange_period_for_servering_till_allmanhet_81731": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringstider_inomhus_allmanheten_81732": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringstider_utomhus_allmanheten_81733": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsperiod_for_slutet_sallskap_81734": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ange_period_for_servering_till_slutet_sa_81735": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringstider_inomhus_slutet_sallskap_81736": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringstider_utomhus_slutet_sallskap_81737": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "vilka_alkoholdrycker_ska_serveras_81738": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_utbudet_av_mat_81739": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>En förutsättning för att få servera alkoholdrycker är att det även serveras mat. Utbudet av mat ska vara tillrett, tillräckligt och tillgängligt. Detta innebär att du ska ha mat som du har kapacitet att tillreda på plats i restaurangen och matutbudet ska även alltid vara tillgängligt för gästerna i verksamheten. Du kan välja att bifoga en meny om du har en sådan. Annars kan du välja att skriva in denna i formuläret. Om du har en annan, enklare meny efter kl. 23 ska du även bifoga den eller skriva in denna i formuläret nedan. Exempel på rätter i en enklare meny är hamburgare, sallad, paj, varma smörgåsar och bakad potatis.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_meny_81740": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "meny_81741": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>(den mat som kommer att serveras)</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "finansiering_81743": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "egna_medel_81744": {
+      "items": {
+        "ui:order": [
+          "bank_5749",
+          "kontonummer_5750",
+          "belopp_kronor_5751"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_kontoutdrag_81745": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "banklan_81746": {
+      "items": {
+        "ui:order": [
+          "langivare_5752",
+          "belopp_kronor_5753"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_banklan_81747": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "privatlan_81748": {
+      "items": {
+        "ui:order": [
+          "langivare_5754",
+          "belopp_kronor_5755"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_privatlan_81749": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "annan_finansiering_81750": {
+      "items": {
+        "ui:order": [
+          "lanetyp_5756",
+          "langivare_5757",
+          "belopp_kronor_5758"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_annan_finansiering_81751": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ovriga_upplysningar_angaende_finansierin_81752": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsstallets_namn_81754": {
+      "ui:order": [
+        "namn_50402"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_serveringsstallets_besoksadress_samma_81755": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsstallets_besoksadress_81756": {
+      "ui:order": [
+        "gatuadress_50403",
+        "postnummer_50404",
+        "postort_50405"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kontaktuppgifter_till_serveringsstallet_81757": {
+      "ui:order": [
+        "telefonnummer_50406",
+        "e_postadress_50407",
+        "hemsida_50408"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsansvarig_personal_81758": {
+      "items": {
+        "ui:order": [
+          "fornamn_5759",
+          "efternamn_5760",
+          "personnummer_5761"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeDescriptionHtml": "<p>Under öppettider måste det alltid finnas en serveringsansvarig person på plats i verksamheten. Om inte någon av företagets företrädare är på plats måste en annan utsedd och anmäld serveringsansvarig vara på plats. Nedan anger du namn och personnummer till den person eller de personer som är ansvariga för servering av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.<br />\nHar du inte anställt personal ännu kan du fylla i serveringsansvarig personal vid ett senare tillfälle.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "sittplatser_i_lokalen_81759": {
+      "ui:order": [
+        "antal_sittplatser_inomhus_50409",
+        "antal_sittplatser_pa_eventuell_uteserver_50410"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "maximalt_antal_personer_som_kommer_att_v_81760": {
+      "ui:order": [
+        "antal_personer_50411"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_planritning_81761": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Du behöver visa var i lokalen du kommer att servera alkohol genom att på en planritning visa vilken del som är serveringsyta. Planerar du att ha uteservering behöver planritningen även visa serveringsyta utomhus. Planerar du att servera alkohol på flera våningsplan behöver du visa serveringsyta för alla våningsplan. Du får inte servera alkohol utanför serveringsytan och dina gäster får inte heller ta med sig alkohol till de delar av lokalen som inte är serveringsyta. Serveringsytan ska vara överblickbar. Länkar till exempel på planritningar:  <a href=\"https://etjanster.inera.se/fileconnector/file/Sammys%20k%C3%B6k%20ny.pdf\" target=\"_blank\"><u><font color=\"#0066cc\">Exempel 1</font></u></a>. <a href=\"https://etjanster.inera.se/fileconnector/file/Exempelritning%20Servering.pdf\" target=\"_blank\"><u><font color=\"#0066cc\">Exempel 2</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_avtal_gallande_lokal_och_mark_81762": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>För att kommunen ska kunna pröva ansökningar om serveringstillstånd behöver kommunen säkerställa att ditt företag har rätt att använda lokalen inklusive platsen för eventuell uteservering. Du gör detta genom att ladda upp ett hyreskontrakt, ett arrendeavtal eller köpeavtal (inklusive bilagor) för lokalen som verksamheten ska bedrivas i.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_avtal_gallande_verksamheten_81763": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Har ditt företag köpt den verksamhet som du nu söker tillstånd för behöver du bifoga köpeavtalet (inklusive bilagor) för verksamheten, eller ett arrendeavtal (inklusive bilagor) om ditt företag arrenderar verksamheten.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_brandskyddsdokumentation_81764": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Om du vill bifoga brandskyddsdokumentation från brandkonsult eller motsvarande kan du bifoga den här.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ange_mellan_vilka_datum_det_tillfalliga_81766": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ovriga_uppgifter_gallande_datum_81767": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "klockslag_for_serveringen_81768": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange när servering önskas påbörjas, samt avslutas (standard är 11:00-01:00 om inte annat beslutas).</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vilka_alkoholdrycker_ska_serveras_81769": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "meny_81770": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Vilken mat och dryck kommer att serveras. Ange även alkoholfria alternativ samt prissättning. </p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "gaster_81771": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "gastlista_eller_medlemslista_81772": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beraknat_antal_gaster_81773": {
+      "ui:order": [
+        "antal_50412"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "hur_har_gasterna_bjudits_in_81774": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "vad_ar_det_for_typ_av_tillstallning_81775": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsstalle_81776": {
+      "ui:order": [
+        "serveringsstallets_namn_50413",
+        "gatuadress_50414",
+        "postnummer_50415",
+        "postort_50416",
+        "telefonnummer_50417"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Om ingen fast telefon finns, lämna mobilnummer till företrädare.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsansvarig_personal_81777": {
+      "items": {
+        "ui:order": [
+          "fornamn_5762",
+          "efternamn_5763",
+          "personnummer_5764"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeDescriptionHtml": "<p>Nedan anger du namn och personnummer till den person eller de personer som ska vara ansvariga för serveringen av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "sittplatser_i_lokalen_81778": {
+      "ui:order": [
+        "antal_sittplatser_i_bordsavdelning_matsa_50418"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "maximalt_antal_personer_som_kommer_att_v_81779": {
+      "ui:order": [
+        "antal_personer_50419"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "finns_polistillstand_81780": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_polistillstand_81781": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "jag_vill_81784": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kommer_ni_att_servera_mat_81785": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_utbudet_av_mat_81786": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_meny_81787": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "meny_81788": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "egenkontrollprogram_vid_servering_av_fol_81789": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig serveringsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p>${serveringfolkolegenkontrollprogram}</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_egenkontrollprogram_for_servering_81790": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsstallets_namn_81791": {
+      "ui:order": [
+        "namn_50420"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Det namn som du skyltar med till kund.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_serveringsstallets_besoksadress_samma_81792": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "serveringsstallets_besoksadress_81793": {
+      "ui:order": [
+        "gatuadress_50421",
+        "postnummer_50422",
+        "postort_50423"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kontaktuppgifter_till_serveringsstallet_81794": {
+      "ui:order": [
+        "telefonnummer_50424",
+        "e_postadress_50425",
+        "hemsida_50426",
+        "telefon_50427"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "sittplatser_i_lokalen_81795": {
+      "ui:order": [
+        "antal_sittplatser_inomhus_50428",
+        "antal_sittplatser_pa_eventuell_uteserver_50429"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "maximalt_antal_personer_som_kommer_att_v_81796": {
+      "ui:order": [
+        "antal_personer_50430"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_livsmedelsregistrering_fran_miljo_81797": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p><a href=\"https://e-tjanster.sundsvall.se/registrering-livsmedelsanlaggning\">https://e-tjanster.sundsvall.se/registrering-livsmedelsanlaggning</a></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "forsaljningsstalle_81799": {
+      "ui:order": [
+        "forsaljningsstallets_namn_50431",
+        "gatuadress_50432",
+        "postnummer_50433",
+        "postort_50434",
+        "telefonnummer_50435",
+        "e_postadress_50436"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "alkoholdrycker_81800": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "forsaljningsperiod_81801": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ange_period_for_forsaljning_81802": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "forsaljningstider_81803": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "besoksarrangemang_81804": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_besoksarrangemanget_81805": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_beskrivning_pa_besoksarrangema_81806": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_egenkontrollprogram_81807": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ritning_for_forsaljningslokal_81808": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "hyresavtal_eller_agarbevis_81809": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "gardsforsaljningstillstand_81810": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_forsaljningsplats_81811": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kunskap_om_alkohollagen_81813": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att få ett cateringtillstånd behöver du eller annan person som är ansvarig i företaget ha kunskap om ansvarsfull alkoholservering och alkohollagen. Denna kunskap kan du visa på flera sätt.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "personnummer_81814": {
+      "ui:order": [
+        "personnummer_50437"
+      ],
+      "personnummer_50437": {
+        "ui:options": {
+          "placeholder": "ÅÅÅÅMMDDXXXX"
+        }
+      },
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange personnummer på den person i företaget som har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 3 åren.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "organisationsnummer_81815": {
+      "ui:order": [
+        "organisationsnummer_50438"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Vilket företag med gällande serveringstillstånd driver du eller annan person som är ansvarig i företaget idag?<br />\nOm du eller annan företrädare för organisationen har ett serveringstillstånd idag som minst motsvarar den aktuella ansökan, och det inte finns skäl att ifrågasätta kunskaperna, kan det vara så att kunskaperna inte behöver styrkas med ett kunskapsprov.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vill_du_anmala_personer_i_foretaget_till_81816": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Om ditt ärende gäller en ansökan om stadigvarande cateringtillstånd så kan inte tillståndet beviljas innan minst en av de personer som du uppger här har genomfört och fått godkänt på kunskapsprovet.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "harmed_anmaler_jag_foljande_person_perso_81818": {
+      "items": {
+        "ui:order": [
+          "fornamn_5765",
+          "efternamn_5766",
+          "personnummer_5767",
+          "telefonnummer_5768",
+          "e_postadress_5769"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "vilka_alkoholdrycker_ska_serveras_81819": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "finansiering_81820": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "egna_medel_81821": {
+      "items": {
+        "ui:order": [
+          "bank_5770",
+          "kontonummer_5771",
+          "belopp_kronor_5772"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_kontoutdrag_81822": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "banklan_81823": {
+      "items": {
+        "ui:order": [
+          "langivare_5773",
+          "belopp_kronor_5774"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_banklan_81824": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "privatlan_81825": {
+      "items": {
+        "ui:order": [
+          "langivare_5775",
+          "belopp_kronor_5776"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_privatlan_81826": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "annan_finansiering_81827": {
+      "items": {
+        "ui:order": [
+          "lanetyp_5777",
+          "langivare_5778",
+          "belopp_kronor_5779"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_annan_finansiering_81828": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ovriga_upplysningar_angaende_finansierin_81829": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "har_ni_anmalt_koket_som_livsmedelsanlagg_81830": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "kapacitet_81832": {
+      "ui:order": [
+        "hur_manga_kan_ni_catra_for_50439",
+        "antal_anstallda_50440"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "koksinformation_81833": {
+      "ui:order": [
+        "adress_50441",
+        "postnummer_50442",
+        "ort_50443"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "planritning_kok_81834": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "brandskydd_kok_81835": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "hyresavtal_eller_upplatelseavtal_kok_81836": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "godkanna_cateringtillfalle_81837": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "label": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "kunskap_om_alkohollagen_81839": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att få ett serveringstillstånd behöver du eller annan person som är ansvarig i företaget ha kunskap om ansvarsfull alkoholservering och alkohollagen. Denna kunskap kan du visa på flera sätt.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "personnummer_81840": {
+      "ui:order": [
+        "personnummer_50444"
+      ],
+      "personnummer_50444": {
+        "ui:options": {
+          "placeholder": "ÅÅÅÅMMDDXXXX"
+        }
+      },
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange personnummer på den person i företaget som har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 3 åren.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "organisationsnummer_81841": {
+      "ui:order": [
+        "organisationsnummer_50445"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Vilket företag med gällande serveringstillstånd driver du eller annan person som är ansvarig i företaget idag?<br />\nOm du eller annan företrädare för organisationen har ett serveringstillstånd idag som minst motsvarar den aktuella ansökan, och det inte finns skäl att ifrågasätta kunskaperna, kan det vara så att kunskaperna inte behöver styrkas med ett kunskapsprov.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vill_du_anmala_personer_i_foretaget_till_81842": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Om ditt ärende gäller en ansökan om stadigvarande serveringstillstånd så kan inte tillståndet beviljas innan minst en av de personer som du uppger här har genomfört och fått godkänt på kunskapsprovet.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "harmed_anmaler_jag_foljande_person_perso_81844": {
+      "items": {
+        "ui:order": [
+          "fornamn_5780",
+          "efternamn_5781",
+          "personnummer_5782",
+          "telefonnummer_5783",
+          "e_postadress_5784"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "verksamhetens_inriktning_81846": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här ska du ange vilken inriktning du har med din verksamhet. Du ska också förtydliga din inriktning genom att skriva in ytterligare information om verksamheten nedan. Det är ett underlag för kommunens bedömning av din tillståndsansökan. När det gäller den alkoholpolitiska prövningen kontaktar kommunen även andra instanser för deras synpunkter på verksamheten.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "har_ni_81847": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "beskriv_verksamhetens_inriktning_81848": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Här ska du med egna ord förtydliga inriktningen på din verksamhet.<br />\nExempel på information som är viktig att ange är typ av restaurang, vilka öppettider som gäller, eventuella åldersgränser eller särskild \"profil\" på verksamheten (sportbar, live-musik etc). Ange även verksamhetens primära målgrupp.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "finansiering_81849": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "egna_medel_81850": {
+      "items": {
+        "ui:order": [
+          "bank_5785",
+          "kontonummer_5786",
+          "belopp_kronor_5787"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_kontoutdrag_81851": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "banklan_81852": {
+      "items": {
+        "ui:order": [
+          "langivare_5788",
+          "belopp_kronor_5789"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_banklan_81853": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "privatlan_81854": {
+      "items": {
+        "ui:order": [
+          "langivare_5790",
+          "belopp_kronor_5791"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_privatlan_81855": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "annan_finansiering_81856": {
+      "items": {
+        "ui:order": [
+          "lanetyp_5792",
+          "langivare_5793",
+          "belopp_kronor_5794"
+        ]
+      },
+      "ui:options": {
+        "orderable": false,
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_lanebevis_for_annan_finansiering_81857": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ovriga_upplysningar_angaende_finansierin_81858": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "sittplatser_i_lokalen_81859": {
+      "ui:order": [
+        "antal_sittplatser_inomhus_50446",
+        "antal_sittplatser_pa_eventuell_uteserver_50447"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "maximalt_antal_personer_som_kommer_att_v_81860": {
+      "ui:order": [
+        "antal_personer_50448"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_planritning_81861": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Du behöver visa var i lokalen du kommer att servera alkohol genom att på en planritning visa vilken del som är serveringsyta. Planerar du att ha uteservering behöver planritningen även visa serveringsyta utomhus. Planerar du att servera alkohol på flera våningsplan behöver du visa serveringsyta för alla våningsplan. Du får inte servera alkohol utanför serveringsytan och dina gäster får inte heller ta med sig alkohol till de delar av lokalen som inte är serveringsyta. Serveringsytan ska vara överblickbar. Länkar till exempel på planritningar:  <a href=\"https://etjanster.inera.se/fileconnector/file/Sammys%20k%C3%B6k%20ny.pdf\" target=\"_blank\"><u><font color=\"#0066cc\">Exempel 1</font></u></a>. <a href=\"https://etjanster.inera.se/fileconnector/file/Exempelritning%20Servering.pdf\" target=\"_blank\"><u><font color=\"#0066cc\">Exempel 2</font></u></a>.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_avtal_gallande_lokal_och_mark_81862": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>För att kommunen ska kunna pröva ansökningar om serveringstillstånd behöver kommunen säkerställa att ditt företag har rätt att använda lokalen inklusive platsen för eventuell uteservering. Du gör detta genom att ladda upp ett hyreskontrakt, ett arrendeavtal eller köpeavtal (inklusive bilagor) för lokalen som verksamheten ska bedrivas i.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_brandskyddsdokumentation_81863": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeDescriptionHtml": "<p>Om du vill bifoga brandskyddsdokumentation från brandkonsult eller motsvarande kan du bifoga den här.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "regler_for_serveringstillstand_till_priv_81865": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Som privatperson kan du endast ansöka tillstånd för att servera alkohol till ett slutet sällskap, vid ett enstaka tillfälle. Det kan exempelvis vara en privat fest eller ett bröllop. Vid utfärdande av nytt tillstånd tar ${mvhk} ut en ansökningsavgift, en så kallad <em>Prövningsavgift</em>.</p>\n\n<p>${serveringtillstandinfo}</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "forsaljning_av_alkoholdrycker_81866": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Som privatperson får du inte sälja alkoholdrycker i syfte att göra vinst. Du får däremot bjuda på alkoholdrycker, eller sälja dem till självkostnadspris, om alkoholdryckerna är inköpta på Systembolaget i Sverige.<br />\nAlkoholdrycker som du köpt utomlands är endast till för eget bruk och får inte förekomma alls på en tillställning där serveringstillstånd krävs. <a href=\"http://www.riksdagen.se/sv/dokument-lagar/dokument/svensk-forfattningssamling/alkohollag-20101622_sfs-2010-1622#K8\" target=\"_blank\">Se alkohollagen 4 kapitel 4§</a></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "ar_tillstallningen_i_ovrigt_kostnadsfri_81867": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "var_kommer_tillstallningen_att_aga_rum_81868": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "du_behover_inte_ansoka_om_serveringstill_81869": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "label": false,
+        "oeDescriptionHtml": "<p><span style=\"color:red; font-family:source sans pro; font-size:16pt; mso-ansi-language:SV; mso-bidi-font-family:\"Times New Roman\"; mso-bidi-language:AR-SA; mso-fareast-font-family:\"Times New Roman\"; mso-fareast-language:SV\"><strong>Du behöver inte ansöka om serveringstillstånd!</strong></span></p>\n\n<p>Enligt de uppgifter du fyllt i så behöver du inget serveringstillstånd från kommunen för att få servera alkoholdrycker på din tillställning.<br />\nDu får givetvis skicka in din ansökan ändå, men då kan det bli så att kommunen tar ut en avgift för hanteringen av ditt ärende.</p>\n\n<p><strong>Vill du ändå fortsätta att fylla i din ansökan och skicka in den till kommunen?</strong></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "bifoga_hyreskontrakt_81870": {
+      "ui:options": {
+        "accept": ".doc,.docx,.pdf",
+        "oeHiddenByDefault": true
+      }
+    },
+    "datum_for_serveringen_81871": {
+      "startDate": {
+        "ui:widget": "date"
+      },
+      "endDate": {
+        "ui:widget": "date"
+      },
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "klockslag_for_serveringen_81872": {
+      "startTime": {
+        "ui:widget": "time"
+      },
+      "endTime": {
+        "ui:widget": "time"
+      },
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Ange när servering önskas påbörjas, samt avslutas (standard är 11:00-01:00 om inte annat beslutas).</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vilka_alkoholdrycker_ska_serveras_81873": {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "meny_81874": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "rows": 5,
+        "oeDescriptionHtml": "<p><span class=\"html-description italic\">(den mat som kommer att serveras)</span></p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "beraknat_antal_gaster_81875": {
+      "ui:order": [
+        "antal_50449"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "vad_ar_det_for_typ_av_tillstallning_81876": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Till exempel bröllop, födelsedagsfest eller föreningsfest.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "vad_ar_det_for_typ_av_slutet_sallskap_81877": {
+      "ui:order": [
+        "till_exempel_50450"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "adress_81878": {
+      "ui:order": [
+        "c_o_50451",
+        "gatuadress_50452",
+        "postnummer_50453",
+        "postort_50454"
+      ],
+      "ui:options": {
+        "oeDescriptionHtml": "<p>Uppge adress till den lokal där tillställningen ska äga rum.</p>",
+        "oeHiddenByDefault": true
+      }
+    },
+    "sittplatser_i_lokalen_81879": {
+      "ui:order": [
+        "antal_sittplatser_i_bordsavdelning_matsa_50455"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "maximalt_antal_personer_som_kommer_att_v_81880": {
+      "ui:widget": "textarea",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ladda_upp_ritning_pa_lokalen_med_serveri_81881": {
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "har_du_kassaregister_81883": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ange_registreringskod_81884": {
+      "ui:order": [
+        "registreringskod_50456"
+      ],
+      "ui:options": {
+        "oeHiddenByDefault": true
+      }
+    },
+    "ui:order": [
+      "vad_vill_du_ansoka_om_eller_anmala_81716",
+      "kunskap_om_alkohollagen_81718",
+      "personnummer_81719",
+      "organisationsnummer_81720",
+      "vill_du_anmala_personer_i_foretaget_till_81721",
+      "harmed_anmaler_jag_foljande_person_perso_81723",
+      "verksamhetens_inriktning_81726",
+      "har_ni_81727",
+      "beskriv_verksamhetens_inriktning_81728",
+      "ska_servering_av_alkohol_ske_till_allman_81729",
+      "serveringsperiod_for_allmanheten_81730",
+      "ange_period_for_servering_till_allmanhet_81731",
+      "serveringstider_inomhus_allmanheten_81732",
+      "serveringstider_utomhus_allmanheten_81733",
+      "serveringsperiod_for_slutet_sallskap_81734",
+      "ange_period_for_servering_till_slutet_sa_81735",
+      "serveringstider_inomhus_slutet_sallskap_81736",
+      "serveringstider_utomhus_slutet_sallskap_81737",
+      "vilka_alkoholdrycker_ska_serveras_81738",
+      "beskriv_utbudet_av_mat_81739",
+      "bifoga_meny_81740",
+      "meny_81741",
+      "finansiering_81743",
+      "egna_medel_81744",
+      "bifoga_kontoutdrag_81745",
+      "banklan_81746",
+      "bifoga_lanebevis_for_banklan_81747",
+      "privatlan_81748",
+      "bifoga_lanebevis_for_privatlan_81749",
+      "annan_finansiering_81750",
+      "bifoga_lanebevis_for_annan_finansiering_81751",
+      "ovriga_upplysningar_angaende_finansierin_81752",
+      "serveringsstallets_namn_81754",
+      "ar_serveringsstallets_besoksadress_samma_81755",
+      "serveringsstallets_besoksadress_81756",
+      "kontaktuppgifter_till_serveringsstallet_81757",
+      "serveringsansvarig_personal_81758",
+      "sittplatser_i_lokalen_81759",
+      "maximalt_antal_personer_som_kommer_att_v_81760",
+      "bifoga_planritning_81761",
+      "bifoga_avtal_gallande_lokal_och_mark_81762",
+      "bifoga_avtal_gallande_verksamheten_81763",
+      "bifoga_brandskyddsdokumentation_81764",
+      "ange_mellan_vilka_datum_det_tillfalliga_81766",
+      "ovriga_uppgifter_gallande_datum_81767",
+      "klockslag_for_serveringen_81768",
+      "vilka_alkoholdrycker_ska_serveras_81769",
+      "meny_81770",
+      "gaster_81771",
+      "gastlista_eller_medlemslista_81772",
+      "beraknat_antal_gaster_81773",
+      "hur_har_gasterna_bjudits_in_81774",
+      "vad_ar_det_for_typ_av_tillstallning_81775",
+      "serveringsstalle_81776",
+      "serveringsansvarig_personal_81777",
+      "sittplatser_i_lokalen_81778",
+      "maximalt_antal_personer_som_kommer_att_v_81779",
+      "finns_polistillstand_81780",
+      "ladda_upp_polistillstand_81781",
+      "jag_vill_81784",
+      "kommer_ni_att_servera_mat_81785",
+      "beskriv_utbudet_av_mat_81786",
+      "bifoga_meny_81787",
+      "meny_81788",
+      "egenkontrollprogram_vid_servering_av_fol_81789",
+      "bifoga_egenkontrollprogram_for_servering_81790",
+      "serveringsstallets_namn_81791",
+      "ar_serveringsstallets_besoksadress_samma_81792",
+      "serveringsstallets_besoksadress_81793",
+      "kontaktuppgifter_till_serveringsstallet_81794",
+      "sittplatser_i_lokalen_81795",
+      "maximalt_antal_personer_som_kommer_att_v_81796",
+      "bifoga_livsmedelsregistrering_fran_miljo_81797",
+      "forsaljningsstalle_81799",
+      "alkoholdrycker_81800",
+      "forsaljningsperiod_81801",
+      "ange_period_for_forsaljning_81802",
+      "forsaljningstider_81803",
+      "besoksarrangemang_81804",
+      "beskriv_besoksarrangemanget_81805",
+      "ladda_upp_beskrivning_pa_besoksarrangema_81806",
+      "ladda_upp_egenkontrollprogram_81807",
+      "ritning_for_forsaljningslokal_81808",
+      "hyresavtal_eller_agarbevis_81809",
+      "gardsforsaljningstillstand_81810",
+      "beskriv_forsaljningsplats_81811",
+      "kunskap_om_alkohollagen_81813",
+      "personnummer_81814",
+      "organisationsnummer_81815",
+      "vill_du_anmala_personer_i_foretaget_till_81816",
+      "harmed_anmaler_jag_foljande_person_perso_81818",
+      "vilka_alkoholdrycker_ska_serveras_81819",
+      "finansiering_81820",
+      "egna_medel_81821",
+      "bifoga_kontoutdrag_81822",
+      "banklan_81823",
+      "bifoga_lanebevis_for_banklan_81824",
+      "privatlan_81825",
+      "bifoga_lanebevis_for_privatlan_81826",
+      "annan_finansiering_81827",
+      "bifoga_lanebevis_for_annan_finansiering_81828",
+      "ovriga_upplysningar_angaende_finansierin_81829",
+      "har_ni_anmalt_koket_som_livsmedelsanlagg_81830",
+      "kapacitet_81832",
+      "koksinformation_81833",
+      "planritning_kok_81834",
+      "brandskydd_kok_81835",
+      "hyresavtal_eller_upplatelseavtal_kok_81836",
+      "godkanna_cateringtillfalle_81837",
+      "kunskap_om_alkohollagen_81839",
+      "personnummer_81840",
+      "organisationsnummer_81841",
+      "vill_du_anmala_personer_i_foretaget_till_81842",
+      "harmed_anmaler_jag_foljande_person_perso_81844",
+      "verksamhetens_inriktning_81846",
+      "har_ni_81847",
+      "beskriv_verksamhetens_inriktning_81848",
+      "finansiering_81849",
+      "egna_medel_81850",
+      "bifoga_kontoutdrag_81851",
+      "banklan_81852",
+      "bifoga_lanebevis_for_banklan_81853",
+      "privatlan_81854",
+      "bifoga_lanebevis_for_privatlan_81855",
+      "annan_finansiering_81856",
+      "bifoga_lanebevis_for_annan_finansiering_81857",
+      "ovriga_upplysningar_angaende_finansierin_81858",
+      "sittplatser_i_lokalen_81859",
+      "maximalt_antal_personer_som_kommer_att_v_81860",
+      "bifoga_planritning_81861",
+      "bifoga_avtal_gallande_lokal_och_mark_81862",
+      "bifoga_brandskyddsdokumentation_81863",
+      "regler_for_serveringstillstand_till_priv_81865",
+      "forsaljning_av_alkoholdrycker_81866",
+      "ar_tillstallningen_i_ovrigt_kostnadsfri_81867",
+      "var_kommer_tillstallningen_att_aga_rum_81868",
+      "du_behover_inte_ansoka_om_serveringstill_81869",
+      "bifoga_hyreskontrakt_81870",
+      "datum_for_serveringen_81871",
+      "klockslag_for_serveringen_81872",
+      "vilka_alkoholdrycker_ska_serveras_81873",
+      "meny_81874",
+      "beraknat_antal_gaster_81875",
+      "vad_ar_det_for_typ_av_tillstallning_81876",
+      "vad_ar_det_for_typ_av_slutet_sallskap_81877",
+      "adress_81878",
+      "sittplatser_i_lokalen_81879",
+      "maximalt_antal_personer_som_kommer_att_v_81880",
+      "ladda_upp_ritning_pa_lokalen_med_serveri_81881",
+      "har_du_kassaregister_81883",
+      "ange_registreringskod_81884"
+    ]
+  },
+  "ui:order": [
+    "kontaktuppgifter_6115",
+    "ansokan_6116"
+  ]
+}

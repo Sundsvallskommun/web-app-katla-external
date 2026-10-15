@@ -1,0 +1,36 @@
+# Known-safe values for the PII guard in .husky/pre-commit: fake personnummer in
+# test data, example phone numbers in UI texts, and false positives.
+# Paths under **/data-contracts/** are excluded by the hook itself.
+#
+# One token per line, exactly as the scanner captures it. Lines starting with #
+# and blank lines are ignored.
+
+# --- Personnummer ---
+19900101-2385
+900101-2385
+199001011234
+199001012380
+199001012385
+199001012386
+199001612382
+199002312388
+199900002380
+209001012385
+111111-2222
+222222-3333
+333333-4444
+999999-8888
+# False positive: UUID fragment in docs/label-structure.json
+561314-5335
+
+# --- Phone numbers ---
+0701740635
++46701740635
++46701234567
+0731234567
++46731234567
+# False positive: substring of 0046731234567 in validation texts
+0467312345
+# False positive: substring of personnummer 209001012385
+0900101238
+060-123456

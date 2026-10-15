@@ -1,13 +1,54 @@
 import i18nConfig from '@app/i18nConfig';
-import type { JsonParameterDTO } from '@data-contracts/backend/data-contracts';
+import type { ErrandLabelDTO, JsonParameterDTO } from '@data-contracts/backend/data-contracts';
 import type { ErrandFormDataItem } from '@interfaces/errand-form';
 import type { RJSFSchema, RJSFValidationError, UiSchema } from '@rjsf/utils';
+import { getSelectedLabels } from '@utils/label-tree';
 import type { TFunction } from 'i18next';
 
 import { getJsonValueSchemaValidator } from '../schema/form-schema-validator';
 import { createJsonErrorTransformer, fieldTitleFromSchema } from './schema-form-error-handling';
 
-export const ERRAND_FORM_SCHEMA_NAMES = ['avvikelse-plats-handelse'] as const;
+/**
+ * Ärendeuppgifter is one schema per errand type, named after the app's SupportManagement namespace
+ * followed by the errand's whole categorization path, lower case: an AOT errand classified
+ * ALCOHOL / SERVING_PERMIT_APPLICATION / PERMANENT_SERVING is filled in with
+ * `aot_alcohol_serving_permit_application_permanent_serving`.
+ *
+ * Both halves earn their place. The jsonschema service partitions only by municipality, so every
+ * app in the kommun shares one flat name space and the namespace is the sole collision boundary.
+ * The full path rather than the leaf because a leaf name is only unique under its own parent —
+ * STADIGVARANDE sits under both ALKOHOL and TOBACCO in the label tree today.
+ *
+ * The generator names the schemas the same way, so neither side needs a lookup table.
+ *
+ * An errand type with no schema — tillsyn, or a type whose flow has not been migrated — has no
+ * form, which is why this returns a list rather than a name.
+ */
+export const schemaNamesForErrand = (
+  labels: ErrandLabelDTO[] | undefined,
+  namespace: string | undefined
+): readonly string[] => {
+  const { CATEGORY, TYPE, SUBTYPE } = getSelectedLabels(labels);
+  const path = [CATEGORY, TYPE, SUBTYPE]
+    .map((label) => label?.resourceName)
+    .filter((resourceName): resourceName is string => !!resourceName);
+
+  // A CATEGORY on its own is not an errand type, so it selects no schema.
+  if (!namespace || path.length < 2) return [];
+
+  return [[namespace, ...path].join('_').toLowerCase()];
+};
+
+/**
+ * The jsonschema service has no schema by that name. For an errand type whose flow has not been
+ * migrated that is the normal answer, not a failure: it means the type has no form yet.
+ */
+export class SchemaNotFoundError extends Error {
+  constructor(readonly schemaName: string) {
+    super(`No schema named ${schemaName}`);
+    this.name = 'SchemaNotFoundError';
+  }
+}
 
 export type ErrandFormDataContractErrorCode = 'invalid-json' | 'missing-schema-id' | 'missing-schema-name';
 
@@ -61,9 +102,9 @@ function requireSchemaId(schemaId: unknown, schemaName: string): string {
   return schemaId;
 }
 
-// Cachea schemat för att undvika upprepade hämtningar. Nyckeln bär språket eftersom
-// samma schema kan levereras med olika fältetiketter per språk – utan det skulle det
-// först hämtade språket serveras till alla efterföljande läsare.
+// Cache the schema to avoid repeated fetches. The key carries the language because the same
+// schema can be delivered with different field labels per language — without it the first
+// language fetched would be served to every later reader.
 const schemaCache = new Map<
   string,
   { schema: RJSFSchema; uiSchema?: UiSchema<Record<string, unknown>>; schemaId: string }
@@ -72,10 +113,10 @@ const schemaCache = new Map<
 const cacheKey = (locale: string, id: string): string => `${locale}:${id}`;
 
 /**
- * Schemats fältetiketter ägs av jsonschema-API:t, inte av frontend. Språket skickas därför
- * med i förfrågan i stället för att översättas här – en översättningstabell i frontend
- * skulle duplicera innehåll som versioneras i ett annat system och tyst driva isär vid
- * varje ny schemaversion. API:t svarar tills vidare på svenska oavsett begärt språk.
+ * The jsonschema API owns the schema's field labels, not the frontend. The language is sent
+ * with the request rather than translated here: a translation table in the frontend would
+ * duplicate content versioned in another system and drift silently at every new schema version.
+ * For now the API answers in Swedish whatever language is asked for.
  */
 const localeHeaders = (locale: string): HeadersInit => ({ 'Accept-Language': locale });
 
@@ -120,6 +161,9 @@ export async function loadFormSchema(
       credentials: 'include',
       headers: localeHeaders(locale),
     });
+    if (response.status === 404) {
+      throw new SchemaNotFoundError(schemaName);
+    }
     if (!response.ok) {
       throw new Error(`Failed to load schema: ${response.statusText}`);
     }
@@ -138,13 +182,14 @@ export async function loadFormSchema(
     }
     const schemaId = requireSchemaId(responseSchemaId, schemaName);
 
-    // Spara den exakta versionen under både sitt logiska namn och sitt oföränderliga ID.
+    // Store the exact version under both its logical name and its immutable ID.
     const result = { schema, uiSchema, schemaId };
     schemaCache.set(cacheKey(locale, schemaName), result);
     schemaCache.set(cacheKey(locale, schemaId), result);
 
     return result;
   } catch (error) {
+    if (error instanceof SchemaNotFoundError) throw error;
     console.error(`Failed to load schema: ${schemaName}`, error);
     if (error instanceof ErrandFormDataContractError) throw error;
     const errorMessage = t ? t('schema_load_error', { schemaName }) : `Could not load schema: ${schemaName}`;
@@ -224,16 +269,16 @@ function schemaValidationError(schemaName: string, t?: TFunction): string {
   return t ? t('schema_validation_error', { schemaName }) : `Could not validate ${schemaName}`;
 }
 
-// En post saknas tills användaren rört formuläret. Det är inte ett systemfel
-// utan ett ifyllnadskrav, och meddelandet måste säga det för att vara handlingsbart.
+// An entry is missing until the user touches the form. That is not a system error but something
+// left to fill in, and the message has to say so to be actionable.
 function requiredFormDataError(schemaName: string, t?: TFunction): string {
   return t ? t('required_form_data', { schemaName }) : `Fill in ${schemaName} before continuing`;
 }
 
 /**
- * AJV formulerar sina fel på engelska och namnger fältet med nyckeln ur schemat. Sammanfattningen
- * som visas för användaren återanvänder därför formulärets översatta meddelanden och fältrubriker,
- * så att felet går att koppla till fältet på skärmen.
+ * AJV phrases its errors in English and names the field by its schema key. The summary shown to
+ * the user therefore reuses the form's translated messages and field titles, so the error can be
+ * tied to the field on screen.
  */
 function schemaFieldValidationError(
   schema: RJSFSchema,
@@ -256,26 +301,34 @@ function schemaFieldValidationError(
 }
 
 /**
- * Validerar all ärendeformulärdata mot sina scheman.
- * Returnerar en lista med felmeddelanden, tom om allt är giltigt.
- * @param formDataEntries - Posterna som ska valideras
- * @param t - Valfri översättningsfunktion för felmeddelanden
+ * Validates all errand form data against its schemas. Returns a list of error messages, empty
+ * when everything is valid.
+ * @param formDataEntries - The entries to validate
+ * @param t - Optional translation function for error messages
  */
 export async function validateErrandFormData(
   formDataEntries: ErrandFormDataItem[] | undefined,
   t?: TFunction,
-  // Måste följa det aktiva språket. Annars valideras mot schemat i standardspråket medan
-  // formuläret renderas i ett annat, vilket ger både en onödig extra hämtning och
-  // fältrubriker på fel språk i felsammanfattningen.
-  locale = i18nConfig.defaultLocale
+  // Must follow the active language. Otherwise validation runs against the default-language
+  // schema while the form renders in another, giving both an extra fetch and field titles in the
+  // wrong language in the error summary.
+  locale = i18nConfig.defaultLocale,
+  // Injectable so the fail-closed rule can be covered even while the real list is empty.
+  requiredSchemaNames: readonly string[] = []
 ): Promise<string[]> {
   const errors: string[] = [];
-  const entries = formDataEntries ?? [];
-  const missingSchemaNames = ERRAND_FORM_SCHEMA_NAMES.filter(
+  const entries = errandFormDataForSchemas(formDataEntries, requiredSchemaNames);
+  const missingSchemaNames = requiredSchemaNames.filter(
     (schemaName) => !entries.some((entry) => entry.schemaName === schemaName)
   );
 
   for (const schemaName of missingSchemaNames) {
+    // An errand type whose flow has no schema has nothing to fill in, so it cannot be missing it.
+    try {
+      await loadFormSchema(schemaName, t, locale);
+    } catch (error) {
+      if (error instanceof SchemaNotFoundError) continue;
+    }
     errors.push(requiredFormDataError(schemaName, t));
   }
 
@@ -329,6 +382,16 @@ export function upsertErrandFormDataItem(
   };
   return nextEntries;
 }
+
+/**
+ * The entries the current errand type calls for. Changing ärendetyp leaves the previous type's
+ * answers in form state — deliberately, so switching back does not lose them — but they must not be
+ * validated or filed, or an alcohol errand carries a tobacco form's data and its required fields.
+ */
+export const errandFormDataForSchemas = (
+  formData: ErrandFormDataItem[] | undefined,
+  schemaNames: readonly string[]
+): ErrandFormDataItem[] => (formData ?? []).filter((entry) => schemaNames.includes(entry.schemaName));
 
 export function errandFormDataToJsonParameters(formData: ErrandFormDataItem[] | undefined): JsonParameterDTO[] {
   if (!formData) return [];

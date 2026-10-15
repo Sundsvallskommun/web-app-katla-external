@@ -20,5 +20,20 @@
     "person_number_invalid_date": "Ogiltigt datum i personnummer",
     "email_invalid": "Ogiltig e-postadress",
     "phone_invalid": "Fyll i ett giltigt mobilnummer, till exempel 0731234567, +46731234567 eller 0046731234567."
+  },
+  "owner": {
+    "required": "Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson."
+  },
+  "categorization": {
+    "category_required": "Välj vilken kategori ärendet gäller.",
+    "type_required": "Välj vilken ärendetyp ärendet gäller."
+  },
+  "attachments": {
+    "required": "Bilagan \"{{label}}\" saknas.",
+    "required_several": "Bilagorna {{labels}} saknas.",
+    "check_failed": "Bilagorna kunde inte kontrolleras. Försök igen."
+  },
+  "stops": {
+    "check_failed": "Svaren kunde inte kontrolleras. Försök igen."
   }
 }

@@ -1,10 +1,16 @@
 {
+  "/": {
+    "title": "E-services"
+  },
+  "/alkoholtillstand": {
+    "title": "New case",
+    "description": "Apply for a serving permit or report sales of tobacco and nicotine products."
+  },
+  "/alkoholtillstand/oversikt": {
+    "title": "Overview"
+  },
   "/login": {
     "title": "Login page",
     "description": "Description of the login page"
-  },
-  "/example": {
-    "title": "Example page",
-    "description": "Description of the example page"
   }
 }

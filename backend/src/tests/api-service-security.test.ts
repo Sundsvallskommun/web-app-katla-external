@@ -2,9 +2,13 @@ import type { AxiosRequestConfig } from 'axios';
 import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import { HttpException } from '@/exceptions/HttpException';
-import ApiService from '@/services/api.service';
+import ApiService, { NO_SESSION_SENDER } from '@/services/api.service';
 import ApiTokenService from '@/services/api-token.service';
 import { logger } from '@/utils/logger';
+
+import { mockCitizenPartyId } from './helpers/mock-data';
+
+const citizenSender = { user: { partyId: mockCitizenPartyId } };
 
 const axiosMocks = vi.hoisted(() => ({
   isAxiosError: vi.fn<(error: unknown) => boolean>(),
@@ -49,7 +53,7 @@ describe('ApiService security boundaries', () => {
     axiosMocks.request.mockRejectedValueOnce({ response });
     axiosMocks.isAxiosError.mockReturnValue(true);
 
-    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' })).rejects.toMatchObject({
+    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' }, citizenSender)).rejects.toMatchObject({
       status: 500,
     } satisfies Partial<HttpException>);
 
@@ -69,7 +73,9 @@ describe('ApiService security boundaries', () => {
       headers: { location: 'https://attacker.example/errands/123' },
     });
 
-    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' })).rejects.toMatchObject({ status: 502 });
+    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' }, citizenSender)).rejects.toMatchObject({
+      status: 502,
+    });
 
     expect(axiosMocks.request).toHaveBeenCalledTimes(1);
   });
@@ -81,7 +87,7 @@ describe('ApiService security boundaries', () => {
     });
     axiosMocks.request.mockResolvedValueOnce({ data: { id: '123' }, headers: {} });
 
-    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' })).resolves.toEqual({
+    await expect(new ApiService().post({ baseURL: 'https://api.example.test', url: '/errands' }, citizenSender)).resolves.toEqual({
       data: { id: '123' },
       message: 'success',
     });
@@ -99,7 +105,7 @@ describe('ApiService security boundaries', () => {
   it('sets a timeout on ordinary upstream requests', async () => {
     axiosMocks.request.mockResolvedValueOnce({ data: { ok: true }, headers: {} });
 
-    await new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, { session: {} });
+    await new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, citizenSender);
 
     const [requestConfig] = axiosMocks.request.mock.calls[0] ?? [];
     expect(requestConfig).toMatchObject({
@@ -110,10 +116,29 @@ describe('ApiService security boundaries', () => {
     });
   });
 
+  // X-Sent-By is the audit trail upstream keeps. A request that cannot name its citizen must fail
+  // here rather than reach upstream under a placeholder identity.
+  it('refuses to call upstream when the request carries no party id', async () => {
+    await expect(new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, { session: {} })).rejects.toMatchObject({
+      status: 500,
+    } satisfies Partial<HttpException>);
+
+    expect(axiosMocks.request).not.toHaveBeenCalled();
+  });
+
+  it('names the no-session callers explicitly rather than defaulting to a placeholder', async () => {
+    axiosMocks.request.mockResolvedValueOnce({ data: { ok: true }, headers: {} });
+
+    await new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, NO_SESSION_SENDER);
+
+    const [requestConfig] = axiosMocks.request.mock.calls[0] ?? [];
+    expect(requestConfig?.headers).toMatchObject({ 'X-Sent-By': 'type=partyId; no-session' });
+  });
+
   it('does not allow callers to disable the gateway timeout', async () => {
     axiosMocks.request.mockResolvedValueOnce({ data: { ok: true }, headers: {} });
 
-    await new ApiService().get({ baseURL: 'https://api.example.test', url: '/health', timeout: 0 }, { session: {} });
+    await new ApiService().get({ baseURL: 'https://api.example.test', url: '/health', timeout: 0 }, citizenSender);
 
     const [requestConfig] = axiosMocks.request.mock.calls[0] ?? [];
     expect(requestConfig?.timeout).toBe(30_000);
@@ -122,20 +147,23 @@ describe('ApiService security boundaries', () => {
   it('does not allow a caller to override gateway-owned security headers', async () => {
     axiosMocks.request.mockResolvedValueOnce({ data: { ok: true }, headers: {} });
 
-    await new ApiService().post({
-      baseURL: 'https://api.example.test',
-      url: '/errands',
-      headers: {
-        Authorization: 'Bearer caller-controlled-token',
-        'X-Request-Id': 'caller-controlled-request-id',
-        'X-Sent-By': 'caller-controlled-user',
+    await new ApiService().post(
+      {
+        baseURL: 'https://api.example.test',
+        url: '/errands',
+        headers: {
+          Authorization: 'Bearer caller-controlled-token',
+          'X-Request-Id': 'caller-controlled-request-id',
+          'X-Sent-By': 'caller-controlled-user',
+        },
       },
-    });
+      citizenSender,
+    );
 
     const [requestConfig] = axiosMocks.request.mock.calls[0] ?? [];
     expect(requestConfig?.headers).toMatchObject({
       Authorization: 'Bearer top-secret-bearer-token',
-      'X-Sent-By': 'type=adAccount; undefined',
+      'X-Sent-By': `type=partyId; ${mockCitizenPartyId}`,
     });
     expect(requestConfig?.headers?.['X-Request-Id']).not.toBe('caller-controlled-request-id');
   });
@@ -143,11 +171,14 @@ describe('ApiService security boundaries', () => {
   it('normalizes lowercase caller headers before applying gateway-owned values', async () => {
     axiosMocks.request.mockResolvedValueOnce({ data: { ok: true }, headers: {} });
 
-    await new ApiService().post({
-      baseURL: 'https://api.example.test',
-      url: '/errands',
-      headers: { authorization: 'Bearer lowercase-caller-token' },
-    });
+    await new ApiService().post(
+      {
+        baseURL: 'https://api.example.test',
+        url: '/errands',
+        headers: { authorization: 'Bearer lowercase-caller-token' },
+      },
+      citizenSender,
+    );
 
     const [requestConfig] = axiosMocks.request.mock.calls[0] ?? [];
     expect(requestConfig?.headers).toMatchObject({ Authorization: 'Bearer top-secret-bearer-token' });
@@ -156,7 +187,7 @@ describe('ApiService security boundaries', () => {
   it('converts status-shaped non-Axios rejections to the generic gateway error', async () => {
     axiosMocks.request.mockRejectedValueOnce({ status: 418, message: 'Caller-controlled rejection' });
 
-    await expect(new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, { session: {} })).rejects.toMatchObject({
+    await expect(new ApiService().get({ baseURL: 'https://api.example.test', url: '/health' }, citizenSender)).rejects.toMatchObject({
       status: 500,
       message: 'Internal server error from gateway',
     });
@@ -184,7 +215,7 @@ describe('ApiService security boundaries', () => {
           url: '/errands/123',
           propagateClientError: true,
         },
-        { session: {} },
+        citizenSender,
       ),
     ).rejects.toMatchObject({
       status: 409,
@@ -209,7 +240,7 @@ describe('ApiService security boundaries', () => {
     axiosMocks.request.mockRejectedValueOnce({ response });
     axiosMocks.isAxiosError.mockReturnValue(true);
 
-    await expect(new ApiService().patch({ baseURL: 'https://api.example.test', url: '/errands/123' }, { session: {} })).rejects.toMatchObject({
+    await expect(new ApiService().patch({ baseURL: 'https://api.example.test', url: '/errands/123' }, citizenSender)).rejects.toMatchObject({
       status: 500,
       message: 'Internal server error from gateway',
     });
@@ -235,7 +266,7 @@ describe('ApiService security boundaries', () => {
           url: '/errands/123',
           propagateClientError: true,
         },
-        { session: {} },
+        citizenSender,
       ),
     ).rejects.toMatchObject({
       status: 500,

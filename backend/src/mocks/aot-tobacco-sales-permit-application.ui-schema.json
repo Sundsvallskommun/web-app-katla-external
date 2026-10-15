@@ -1,0 +1,317 @@
+{
+  "ui:order": [
+    "arDuFirmatecknare",
+    "fakturaadressSammaSomForetaget",
+    "fakturamottagare",
+    "fakturareferens",
+    "verksamhetsbeskrivningsval",
+    "verksamhetsbeskrivning",
+    "tidsperiodForForsaljningen",
+    "startdatumForsaljning",
+    "periodTidsbegransadForsaljning",
+    "serveringsstalletsNamn",
+    "besoksadressSammaSomArendeagare",
+    "besoksadress",
+    "kontaktuppgifterTillServeringsstallet",
+    "bedriverAvenDistansforsaljning",
+    "hemsida",
+    "omfattarSarskiltFarligaProdukter",
+    "finansiering",
+    "egnaMedel",
+    "banklan",
+    "privatlan",
+    "annanFinansiering",
+    "ovrigaUpplysningarFinansiering",
+    "avtalMedTillverkareEllerPartihandlare"
+  ],
+  "ui:sections": [
+    {
+      "id": "foretag",
+      "title": "Företag och fakturering",
+      "icon": "building-2",
+      "defaultOpen": true,
+      "fields": [
+        "arDuFirmatecknare",
+        "fakturaadressSammaSomForetaget",
+        "fakturamottagare",
+        "fakturareferens",
+        "verksamhetsbeskrivningsval",
+        "verksamhetsbeskrivning"
+      ]
+    },
+    {
+      "id": "ansokan",
+      "title": "Ansökan om tillstånd för försäljning av tobak",
+      "icon": "file-text",
+      "defaultOpen": true,
+      "fields": [
+        "tidsperiodForForsaljningen",
+        "startdatumForsaljning",
+        "periodTidsbegransadForsaljning",
+        "serveringsstalletsNamn",
+        "besoksadressSammaSomArendeagare",
+        "besoksadress",
+        "kontaktuppgifterTillServeringsstallet",
+        "bedriverAvenDistansforsaljning",
+        "hemsida",
+        "omfattarSarskiltFarligaProdukter",
+        "finansiering",
+        "egnaMedel",
+        "banklan",
+        "privatlan",
+        "annanFinansiering",
+        "ovrigaUpplysningarFinansiering",
+        "avtalMedTillverkareEllerPartihandlare"
+      ]
+    }
+  ],
+  "arDuFirmatecknare": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "fakturaadressSammaSomForetaget": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
+  },
+  "fakturamottagare": {
+    "ui:order": [
+      "cO",
+      "utdelningsadress",
+      "postnummer",
+      "postort"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "cO": {
+      "ui:widget": "TextWidget"
+    },
+    "utdelningsadress": {
+      "ui:widget": "TextWidget"
+    },
+    "postnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "postort": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postnummer",
+          "postort"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "fakturareferens": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    },
+    "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
+  },
+  "verksamhetsbeskrivningsval": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+  },
+  "verksamhetsbeskrivning": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    }
+  },
+  "tidsperiodForForsaljningen": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "startdatumForsaljning": {
+    "ui:order": [],
+    "ui:options": {
+      "showObjectFieldset": true
+    }
+  },
+  "periodTidsbegransadForsaljning": {
+    "ui:order": [
+      "startDate",
+      "endDate"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "startDate": {
+      "ui:widget": "DateWidget"
+    },
+    "endDate": {
+      "ui:widget": "DateWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "startDate",
+          "endDate"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "serveringsstalletsNamn": {
+    "ui:widget": "TextWidget"
+  },
+  "besoksadressSammaSomArendeagare": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "besoksadress": {
+    "ui:order": [
+      "gatuadress",
+      "postnummer",
+      "postort"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "gatuadress": {
+      "ui:widget": "TextWidget"
+    },
+    "postnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "postort": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postnummer",
+          "postort"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "kontaktuppgifterTillServeringsstallet": {
+    "ui:order": [
+      "telefonnummer",
+      "ePostadress"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "telefonnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "ePostadress": {
+      "ui:widget": "TextWidget"
+    }
+  },
+  "bedriverAvenDistansforsaljning": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Distansförsäljning är försäljning av varor via postorder, telefon eller internet där leverantören ansvarar för leveransen av varorna.</p>"
+  },
+  "hemsida": {
+    "ui:widget": "TextWidget"
+  },
+  "omfattarSarskiltFarligaProdukter": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "finansiering": {
+    "ui:widget": "checkboxes",
+    "ui:options": {
+      "multiple": true,
+      "className": "w-full max-w-[48rem]"
+    },
+    "ui:description": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>"
+  },
+  "egnaMedel": {
+    "ui:options": {
+      "addable": true,
+      "orderable": false,
+      "addButtonLabel": "Lägg till"
+    },
+    "items": {
+      "ui:order": [
+        "bank",
+        "kontonummer",
+        "beloppKronor"
+      ],
+      "bank": {
+        "ui:widget": "TextWidget"
+      },
+      "kontonummer": {
+        "ui:widget": "TextWidget"
+      },
+      "beloppKronor": {
+        "ui:widget": "TextWidget"
+      }
+    }
+  },
+  "banklan": {
+    "ui:options": {
+      "addable": true,
+      "orderable": false,
+      "addButtonLabel": "Lägg till"
+    },
+    "items": {
+      "ui:order": [
+        "langivare",
+        "beloppKronor"
+      ],
+      "langivare": {
+        "ui:widget": "TextWidget"
+      },
+      "beloppKronor": {
+        "ui:widget": "TextWidget"
+      }
+    }
+  },
+  "privatlan": {
+    "ui:options": {
+      "addable": true,
+      "orderable": false,
+      "addButtonLabel": "Lägg till"
+    },
+    "items": {
+      "ui:order": [
+        "langivare",
+        "beloppKronor"
+      ],
+      "langivare": {
+        "ui:widget": "TextWidget"
+      },
+      "beloppKronor": {
+        "ui:widget": "TextWidget"
+      }
+    }
+  },
+  "annanFinansiering": {
+    "ui:options": {
+      "addable": true,
+      "orderable": false,
+      "addButtonLabel": "Lägg till"
+    },
+    "items": {
+      "ui:order": [
+        "lanetyp",
+        "langivare",
+        "beloppKronor"
+      ],
+      "lanetyp": {
+        "ui:widget": "TextWidget"
+      },
+      "langivare": {
+        "ui:widget": "TextWidget"
+      },
+      "beloppKronor": {
+        "ui:widget": "TextWidget"
+      }
+    }
+  },
+  "ovrigaUpplysningarFinansiering": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    }
+  },
+  "avtalMedTillverkareEllerPartihandlare": {
+    "ui:widget": "RadiobuttonWidget"
+  }
+}

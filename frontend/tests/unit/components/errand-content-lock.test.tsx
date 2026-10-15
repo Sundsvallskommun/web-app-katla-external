@@ -9,16 +9,20 @@ vi.mock('src/config/appconfig', () => ({
   appConfig: { features: { disclosureDoneMark: false } },
 }));
 
-const ErrandForm: React.FC<{ children: React.ReactNode; status: string }> = ({ children, status }) => {
-  const methods = useForm<ErrandDTO>({ defaultValues: { status } });
+const ErrandForm: React.FC<{ children: React.ReactNode; id?: string; lifecycle?: ErrandDTO['lifecycle'] }> = ({
+  children,
+  id,
+  lifecycle,
+}) => {
+  const methods = useForm<ErrandDTO>({ defaultValues: { id, lifecycle } });
 
   return <FormProvider {...methods}>{children}</FormProvider>;
 };
 
 describe('ErrandContentLock', () => {
-  it('keeps draft controls enabled', () => {
+  it('keeps controls enabled while the errand is being registered', () => {
     const { container } = render(
-      <ErrandForm status="DRAFT">
+      <ErrandForm>
         <ErrandContentLock>
           <input aria-label="Ärenderubrik" />
         </ErrandContentLock>
@@ -29,9 +33,21 @@ describe('ErrandContentLock', () => {
     expect(screen.getByRole('textbox', { name: 'Ärenderubrik' })).not.toBeDisabled();
   });
 
-  it('disables controls when the errand has been sent', () => {
+  it('keeps controls enabled for a resumed draft', () => {
     const { container } = render(
-      <ErrandForm status="NEW">
+      <ErrandForm id="id-1" lifecycle="DRAFT">
+        <ErrandContentLock>
+          <input aria-label="Ärenderubrik" />
+        </ErrandContentLock>
+      </ErrandForm>
+    );
+
+    expect(container.querySelector('fieldset')).not.toBeDisabled();
+  });
+
+  it('disables controls once the errand has been filed', () => {
+    const { container } = render(
+      <ErrandForm id="id-1" lifecycle="ACTIVE">
         <ErrandContentLock>
           <input aria-label="Ärenderubrik" />
         </ErrandContentLock>
@@ -44,7 +60,7 @@ describe('ErrandContentLock', () => {
 
   it('keeps the disclosure toggle interactive for a sent errand', () => {
     const { container } = render(
-      <ErrandForm status="NEW">
+      <ErrandForm id="id-1">
         <ErrandDisclosure header="Om ärendet" icon={<span aria-hidden="true" />} initialOpen={false}>
           <input aria-label="Ärenderubrik" />
         </ErrandDisclosure>

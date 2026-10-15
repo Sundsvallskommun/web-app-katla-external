@@ -7,10 +7,9 @@ import { ReactNode, Suspense } from 'react';
 import { localeFromPath } from './locale-path';
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
-  // Rot-layouten ligger ovanför [locale] och har därför ingen locale-parameter. Proxyn
-  // sätter x-path på requesten, så språket härleds från sökvägens första segment i
-  // stället för att låsas till standardspråket – annars skulle engelska sidor felaktigt
-  // deklarera lang="sv" för skärmläsare.
+  // The root layout sits above [locale] and so has no locale param. The proxy sets x-path on the
+  // request, so the language is derived from the first path segment rather than pinned to the
+  // default — otherwise English pages would declare lang="sv" to screen readers.
   const locale = localeFromPath((await headers()).get('x-path'));
 
   return (

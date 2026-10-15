@@ -1,2 +1,22 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize line endings across Windows / Linux / macOS checkouts.
+#
+# `text=auto` lets git decide which files are text and stores them with LF in
+# the repo, converting on checkout/commit per each developer's core.autocrlf.
+# `eol=lf` forces the working copy to LF too, so the repo is authoritative and
+# CRLF churn stops regardless of local git config or editor.
+* text=auto eol=lf
+
+# Shell scripts must stay LF or they break when run on Linux.
+*.sh text eol=lf
+
+# Common binary types — never touch these.
+*.jar   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary

@@ -41,7 +41,7 @@ function ErrorNavigationForm({
   showValidation?: boolean;
   formData?: Record<string, unknown>;
 }) {
-  const methods = useForm({ defaultValues: { status: 'DRAFT' } });
+  const methods = useForm();
 
   return (
     <FormProvider {...methods}>
@@ -57,8 +57,8 @@ function ErrorNavigationForm({
   );
 }
 
-describe('felnavigering i schemaformuläret', () => {
-  it('håller avsnitten omärkta tills valideringen är igång', () => {
+describe('SchemaForm error navigation', () => {
+  it('leaves sections unmarked until validation is running', () => {
     render(<ErrorNavigationForm />);
 
     expect(document.querySelector(`[${INVALID_FIELD_ATTRIBUTE}]`)).not.toBeInTheDocument();
@@ -66,17 +66,18 @@ describe('felnavigering i schemaformuläret', () => {
     expect(screen.queryByText('Komplett')).not.toBeInTheDocument();
   });
 
-  it('märker ifyllda avsnitt som kompletta och avsnitt med fel som ofullständiga', () => {
+  it('marks filled sections complete and sections with errors incomplete', () => {
     render(<ErrorNavigationForm showValidation formData={{ eventDate: '2026-08-13' }} />);
 
     expect(document.querySelector('[data-cy="section-status-event"]')).toHaveTextContent('Komplett');
     expect(document.querySelector('[data-cy="section-status-details"]')).toHaveTextContent('Ofullständig');
   });
 
-  it('öppnar avsnittet och flyttar fokus till första fältet som saknas', () => {
+  it('opens the section and moves focus to the first missing field', () => {
     render(<ErrorNavigationForm showValidation />);
 
-    // Fälten i ett hopfällt avsnitt är dolda för tillgänglighetsträdet, så de hämtas via id.
+    // Fields in a collapsed section are hidden from the accessibility tree, so they are
+    // fetched by id.
     const dateInput = document.getElementById('root_eventDate');
     const markedFields = document.querySelectorAll(`[${INVALID_FIELD_ATTRIBUTE}]`);
     expect(markedFields).toHaveLength(2);

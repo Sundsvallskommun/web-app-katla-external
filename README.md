@@ -1,15 +1,19 @@
-# Sundsvalls Kommun Katla supportmanagement
+# Sundsvalls Kommun Katla alkohol- och tobakstillstånd
 
 ## APIer som används
 
 Dessa APIer används i projektet, applikationsanvändaren i WSO2 måste prenumerera på dessa.
 
-| API               | Version |
-| ----------------- | ------: |
-| SupportManagement |    10.7 |
-| Citizen           |     3.0 |
-| Employee          |     2.0 |
-| SimulatorServer   |     2.0 |
+Källan är `backend/src/config/api-config.ts` — tabellen nedan speglar den.
+
+| API                           | Version |
+| ----------------------------- | ------: |
+| SimulatorServer               |     2.0 |
+| SupportManagement             |    15.2 |
+| support-management-alkt-sprint |    15.3 |
+| Citizen                       |     3.0 |
+| LegalEntity                   |     2.0 |
+| JsonSchema                    |     1.0 |
 
 
 ## Utveckling
@@ -24,7 +28,7 @@ Dessa APIer används i projektet, applikationsanvändaren i WSO2 måste prenumer
 1. Klona ner repot.
 
 ```
-git clone git@github.com:Sundsvallskommun/web-app-katla-sm.git
+git clone git@github.com:Sundsvallskommun/web-app-katla-aot.git
 ```
 
 2. Installera dependencies för både `backend` och `frontend`
@@ -57,6 +61,7 @@ redigera `.env.development.local` för behov. URLer, nycklar och cert behöver f
 
 - `CLIENT_KEY` och `CLIENT_SECRET` måste fyllas i för att APIerna ska fungera, du måste ha en applikation från WSO2-portalen som abonnerar på de microtjänster du anropar
 - `SAML_ENTRY_SSO` behöver pekas till en SAML IDP
+- `SAML_LOGOUT_URL` behöver pekas till IDPens Single Logout-endpoint, annars loggar "Logga ut" bara ut från appen och IDPen loggar in användaren igen direkt
 - `SAML_IDP_PUBLIC_CERT` ska stämma överens med IDPens cert
 - `SAML_PRIVATE_KEY` och `SAML_PUBLIC_KEY` behöver bara fyllas i korrekt om man kör mot en riktig IDP
 
@@ -106,6 +111,18 @@ yarn lint:fix          # lint med autofix
 yarn lint:strict       # som CI: 0 varningar tillåtna
 yarn format            # prettier --write
 yarn format:check      # som CI: verifiera formatering
+```
+
+## Git-hooks och verifiering
+
+Rotens `package.json` installerar [husky](https://typicode.github.io/husky/)-hooks. Kör `yarn install` i roten en gång (i samma miljö som du committar från).
+
+- **pre-commit**: stoppar `console.log`, möjliga personnummer och telefonnummer i stage:ade ändringar och kör prettier + eslint på stage:ade filer (`.lintstagedrc.mjs`). Kända testvärden läggs i `.husky/pii-allowlist.txt`.
+- **commit-msg**: commit-meddelanden ska följa [Conventional Commits](https://www.conventionalcommits.org/) (`commitlint.config.js`).
+- **pre-push**: strikt lint och formatkontroll för båda paketen.
+
+```
+yarn verify            # typkontroll, strikt lint, formatkontroll och enhetstester för båda paketen
 ```
 
 ## CI

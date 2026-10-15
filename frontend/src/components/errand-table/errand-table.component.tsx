@@ -8,7 +8,9 @@ import { getTypeDisplayName } from '@utils/errand-helpers';
 import dayjs from 'dayjs';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { errandPath } from 'src/constants/services';
 import { useOverviewErrands } from 'src/hooks/use-overview-errands';
+import { useService } from 'src/hooks/use-service';
 import { useSortStore } from 'src/stores/sort-store';
 
 import { ErrandTableFooter } from './errand-table-footer.component';
@@ -16,6 +18,7 @@ import { ErrandTableHeader } from './errand-table-header.component';
 
 export const ErrandTable: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const { rowHeight } = useSortStore();
   const { rows, isLoading, totalPages, errandsError, metadataError } = useOverviewErrands();
 
@@ -45,18 +48,18 @@ export const ErrandTable: React.FC = () => {
             {rows.map((errand, index) => (
               <Table.Row key={`errand-row-${index}`}>
                 <Table.Column>
-                  <StatusLabel status={errand?.status} />
+                  <StatusLabel status={errand?.status} lifecycle={errand?.lifecycle} />
                 </Table.Column>
                 <Table.Column>
                   <Link
                     as={NextLink}
-                    href={`/arende/${errand.errandNumber}/grundinformation`}
+                    href={errandPath(service, errand.errandNumber)}
                     aria-label={t('common:errand-table.open_errand', { errandNumber: errand.errandNumber })}
                   >
                     {errand.errandNumber}
                   </Link>
                 </Table.Column>
-                <Table.Column>{getTypeDisplayName(errand, t)}</Table.Column>
+                <Table.Column>{getTypeDisplayName(errand)}</Table.Column>
                 <Table.Column>{dayjs(errand.touched).format('YYYY-MM-DD HH:mm')}</Table.Column>
               </Table.Row>
             ))}

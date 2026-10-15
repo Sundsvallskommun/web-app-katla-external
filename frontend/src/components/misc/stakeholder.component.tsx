@@ -2,26 +2,16 @@ import { StakeholderCard } from '@components/card/stakeholder-card.component';
 import { useIsContentLocked } from '@contexts/errand-content-lock-context';
 import { ErrandDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getStakeholderUsingPersonNumber } from '@services/citizen/citizen-service';
-import { getEmployeeByPersonNumber, getEmployeeStakeholderFromApi } from '@services/employee-service/employee-service';
+import { getMyStakeholder, getStakeholderUsingPersonNumber } from '@services/citizen/citizen-service';
+import { Button, cx, FormControl, FormErrorMessage, FormLabel, Input, SearchField, Select } from '@sk-web-gui/react';
 import {
-  Button,
-  cx,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  RadioButton,
-  SearchField,
-  Select,
-} from '@sk-web-gui/react';
-import {
+  asPersonStakeholder,
   createStakeholderSchema,
   emptyStakeholder,
   phoneNumberFormatter,
   shouldShowContactDetails,
 } from '@utils/stakeholder';
-import { Pen, Plus } from 'lucide-react';
+import { Pen, Plus, UserRound } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, Resolver, useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -31,16 +21,17 @@ import { StakeholderFormModal } from './stakeholder-modal.component';
 
 export const StakeholderList: React.FC<{
   roles: string[];
-  employeeSearch?: boolean;
-  autoDetectSearch?: boolean;
   maxCount?: number;
   hideRoleSelect?: boolean;
-}> = ({ roles, employeeSearch = false, autoDetectSearch = false, maxCount, hideRoleSelect = false }) => {
-  const [searchMode, setSearchMode] = useState<string>('PERSON');
+  /** Offers the logged in citizen as a stakeholder, filled in from the session. */
+  allowAddSelf?: boolean;
+}> = ({ roles, maxCount, hideRoleSelect = false, allowAddSelf = false }) => {
   const [query, setQuery] = useState<string>('');
   const [searchResult, setSearchResult] = useState<boolean>(false);
   const [emptyResult, setEmptyResult] = useState<boolean>(false);
   const [manualEntryOpen, setManualEntryOpen] = useState<boolean>(false);
+  const [selfLookupFailed, setSelfLookupFailed] = useState<boolean>(false);
+  const [selfExternalId, setSelfExternalId] = useState<string>();
   const { metadata } = useMetadataStore();
   const { t } = useTranslation();
   const isLocked = useIsContentLocked();
@@ -53,7 +44,7 @@ export const StakeholderList: React.FC<{
     name: 'stakeholders',
   });
 
-  // Byggs om när språket ändras – yup fryser felmeddelandena vid konstruktionen.
+  // Rebuilt when the language changes: yup freezes the error messages at construction.
   const stakeholderSchema = useMemo(() => createStakeholderSchema(t), [t]);
 
   const method = useForm<StakeholderDTO>({
@@ -74,11 +65,14 @@ export const StakeholderList: React.FC<{
   const hasPrimaryRole = roles.includes('PRIMARY');
   const matchingCount = stakeholders?.filter((s) => roles.includes(s.role ?? '')).length ?? 0;
   const maxCountReached = maxCount !== undefined && matchingCount >= maxCount;
-  // Sök- och lägg till-kontrollerna hör till redigering. På ett inlåst ärende
-  // gjorde fieldsetet dem bara oklickbara, så ett personsökfält och en
-  // Lägg till manuellt-knapp stod kvar utan att svara på något.
+  // The search and add controls belong to editing. On a locked errand the fieldset only made
+  // them unclickable, leaving a person search field and an add button that responded to nothing.
   const showAddButton =
     !isLocked && !maxCountReached && (!hasPrimaryRole || (hasPrimaryRole && !hasPrimaryStakeholder));
+  const hasStakeholderWithId = (externalId: string | undefined) =>
+    externalId !== undefined &&
+    (stakeholders?.some((s) => roles.includes(s.role ?? '') && s.externalId === externalId) ?? false);
+  const showAddSelfButton = allowAddSelf && showAddButton && !hasStakeholderWithId(selfExternalId);
 
   const clearStakeholderForm = () => {
     setQuery('');
@@ -88,48 +82,38 @@ export const StakeholderList: React.FC<{
   };
 
   const onSearchHandler = async (query: string) => {
-    const effectiveMode =
-      autoDetectSearch ?
-        /^\d{8}-?\d{4}$/.test(query) ?
-          'PERSON'
-        : 'EMPLOYEE'
-      : searchMode;
-
-    if (effectiveMode === 'PERSON') {
-      setValue('personNumber', query);
-      const isValid = await trigger('personNumber');
-      if (!isValid) {
-        return;
-      }
-      const searchFn = autoDetectSearch ? getEmployeeByPersonNumber : getStakeholderUsingPersonNumber;
-      searchFn(query)
-        .then((res) => {
-          if (res.status === 200) {
-            reset(res.data);
-            setEmptyResult(false);
-            setSearchResult(true);
-          } else {
-            setEmptyResult(true);
-          }
-        })
-        .catch(() => {
-          setEmptyResult(true);
-        });
+    setValue('personNumber', query);
+    const isValid = await trigger('personNumber');
+    if (!isValid) {
+      return;
     }
-    if (effectiveMode === 'EMPLOYEE') {
-      getEmployeeStakeholderFromApi(query)
-        .then((res) => {
-          if (res.status === 200) {
-            reset(res.data);
-            setEmptyResult(false);
-            setSearchResult(true);
-          } else {
-            setEmptyResult(true);
-          }
-        })
-        .catch(() => {
+    getStakeholderUsingPersonNumber(query)
+      .then((res) => {
+        if (res.status === 200) {
+          reset(res.data);
+          setEmptyResult(false);
+          setSearchResult(true);
+        } else {
           setEmptyResult(true);
-        });
+        }
+      })
+      .catch(() => {
+        setEmptyResult(true);
+      });
+  };
+
+  // Added straight away: the citizen is known, contact details are edited on the card. The id
+  // is only known after the lookup, so a reloaded draft is checked for a duplicate here too.
+  const onAddSelfHandler = async () => {
+    setSelfLookupFailed(false);
+    try {
+      const { data: self } = await getMyStakeholder();
+      setSelfExternalId(self.externalId);
+      if (!hasStakeholderWithId(self.externalId)) {
+        append(asPersonStakeholder({ ...self, role: roles[0] }));
+      }
+    } catch {
+      setSelfLookupFailed(true);
     }
   };
 
@@ -137,7 +121,9 @@ export const StakeholderList: React.FC<{
     if (hideRoleSelect && metadata) {
       stakeholder.role = roles[0];
     }
-    append({ ...stakeholder, phoneNumbers: [phoneNumberFormatter(stakeholder?.phoneNumbers?.[0])] });
+    append(
+      asPersonStakeholder({ ...stakeholder, phoneNumbers: [phoneNumberFormatter(stakeholder?.phoneNumbers?.[0])] })
+    );
     clearStakeholderForm();
   };
 
@@ -146,33 +132,7 @@ export const StakeholderList: React.FC<{
       <FormProvider {...method}>
         {showAddButton && (
           <FormControl className="w-full">
-            {employeeSearch && !autoDetectSearch && (
-              <RadioButton.Group className="mb-18" inline>
-                <RadioButton
-                  data-cy="radiobutton-person"
-                  checked={searchMode === 'PERSON'}
-                  value={'PERSON'}
-                  onChange={(e) => {
-                    setSearchMode(e.target.value);
-                    clearStakeholderForm();
-                  }}
-                >
-                  {t('errand-information:stakeholder.person')}
-                </RadioButton>
-                <RadioButton
-                  data-cy="radiobutton-employee"
-                  checked={searchMode === 'EMPLOYEE'}
-                  value={'EMPLOYEE'}
-                  onChange={(e) => {
-                    setSearchMode(e.target.value);
-                    clearStakeholderForm();
-                  }}
-                >
-                  {t('errand-information:stakeholder.employee')}
-                </RadioButton>
-              </RadioButton.Group>
-            )}
-            <FormLabel>{t(`errand-information:search.${autoDetectSearch ? 'AUTODETECT' : searchMode}`)}</FormLabel>
+            <FormLabel>{t('errand-information:search.PERSON')}</FormLabel>
             <SearchField
               data-cy="person-number-input"
               size="md"
@@ -220,7 +180,7 @@ export const StakeholderList: React.FC<{
                   {department ?
                     <span>{department}</span>
                   : <span className={cx((!address || !city) && 'italic text-text-secondary')}>
-                      {/* Bugfix: template literal var alltid truthy — visa fallback när adress eller ort saknas */}
+                      {/* A template literal is always truthy; show the fallback when address or city is missing */}
                       {address && city ? `${address}, ${city}` : t('errand-information:stakeholder.missing_address')}
                     </span>
                   }
@@ -307,20 +267,45 @@ export const StakeholderList: React.FC<{
       })}
 
       {showAddButton && (
-        <Button
-          data-cy="add-manual-person-button"
-          variant="primary"
-          size="sm"
-          color="vattjom"
-          inverted={true}
-          className="mt-6 w-fit"
-          leftIcon={<Pen />}
-          onClick={() => {
-            setManualEntryOpen(true);
-          }}
-        >
-          {t('errand-information:stakeholder.add_manually')}
-        </Button>
+        <div className="mt-6 flex flex-col gap-8">
+          <div className="flex flex-wrap gap-8">
+            <Button
+              data-cy="add-manual-person-button"
+              variant="primary"
+              size="sm"
+              color="vattjom"
+              inverted={true}
+              className="w-fit"
+              leftIcon={<Pen />}
+              onClick={() => {
+                setManualEntryOpen(true);
+              }}
+            >
+              {t('errand-information:stakeholder.add_manually')}
+            </Button>
+            {showAddSelfButton && (
+              <Button
+                data-cy="add-self-button"
+                variant="primary"
+                size="sm"
+                color="vattjom"
+                inverted={true}
+                className="w-fit"
+                leftIcon={<UserRound />}
+                onClick={() => {
+                  void onAddSelfHandler();
+                }}
+              >
+                {t('errand-information:stakeholder.add_self')}
+              </Button>
+            )}
+          </div>
+          {selfLookupFailed && (
+            <FormErrorMessage data-cy="add-self-error">
+              {t('errand-information:stakeholder.self_lookup_failed')}
+            </FormErrorMessage>
+          )}
+        </div>
       )}
 
       <StakeholderFormModal
@@ -330,7 +315,7 @@ export const StakeholderList: React.FC<{
           setManualEntryOpen(false);
         }}
         editableFields={
-          roles.includes('EMPLOYEE') || roles.includes('SUBSTITUTEASSIGNMENT') ?
+          roles.includes('SUBSTITUTEASSIGNMENT') ?
             ['personNumber', 'firstName', 'lastName', 'emails', 'phoneNumbers', 'role']
           : ['personNumber', 'firstName', 'lastName', 'emails', 'phoneNumbers']
         }

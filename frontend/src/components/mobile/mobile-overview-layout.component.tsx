@@ -1,14 +1,14 @@
 'use client';
 
 import { LinkButton } from '@components/navigation/link-button.component';
-import { NotificationsBell } from '@components/notifications/notification-bell';
-import { NotificationsWrapper } from '@components/notifications/notification-wrapper';
 import { Button } from '@sk-web-gui/react';
 import { capitalize } from 'lodash';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { servicePath } from 'src/constants/services';
 import { useOverviewErrands } from 'src/hooks/use-overview-errands';
+import { useService } from 'src/hooks/use-service';
 import { useFilterStore } from 'src/stores/filter-store';
 
 import { MainPageMobileHeader } from './main-page-mobile-header.component';
@@ -19,8 +19,8 @@ type OverlayType = 'menu' | null;
 
 export const MobileOverviewLayout: React.FC = () => {
   const { t } = useTranslation();
+  const service = useService();
   const [overlay, setOverlay] = useState<OverlayType>(null);
-  const [showNotifications, setShowNotifications] = useState(false);
   const { activeStatus } = useFilterStore();
   const { rows, isLoading, hasMore, loadMore, totalElements, errandsError, metadataError } = useOverviewErrands({
     mode: 'mobile',
@@ -33,32 +33,22 @@ export const MobileOverviewLayout: React.FC = () => {
     <>
       <MainPageMobileHeader
         actions={
-          <div className="flex items-center gap-12">
-            <div className="[&>button]:!mx-0">
-              <NotificationsBell
-                expanded={showNotifications}
-                toggleShow={() => {
-                  setShowNotifications((current) => !current);
-                }}
-              />
-            </div>
-            <Button
-              iconButton
-              variant="tertiary"
-              aria-label={t('layout:controls.open_menu')}
-              aria-controls={overlay === 'menu' ? 'mobile-overview-menu' : undefined}
-              aria-expanded={overlay === 'menu'}
-              onClick={() => {
-                setOverlay('menu');
-              }}
-            >
-              <Menu />
-            </Button>
-          </div>
+          <Button
+            iconButton
+            variant="tertiary"
+            aria-label={t('layout:controls.open_menu')}
+            aria-controls={overlay === 'menu' ? 'mobile-overview-menu' : undefined}
+            aria-expanded={overlay === 'menu'}
+            onClick={() => {
+              setOverlay('menu');
+            }}
+          >
+            <Menu />
+          </Button>
         }
       >
         <div className="px-24 py-12">
-          <LinkButton href="/arende/registrera" color="vattjom" variant="primary" className="w-full">
+          <LinkButton href={servicePath(service)} color="vattjom" variant="primary" className="w-full">
             {t('filtering:new_errand_mobile')}
           </LinkButton>
         </div>
@@ -82,8 +72,6 @@ export const MobileOverviewLayout: React.FC = () => {
           }}
         />
       )}
-
-      <NotificationsWrapper show={showNotifications} setShow={setShowNotifications} open={false} />
     </>
   );
 };

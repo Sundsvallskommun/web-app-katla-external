@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 const requireAuth = process.env.HEALTH_AUTH === 'true';
 const authUsername = process.env.HEALTH_USERNAME;
 const authPassword = process.env.HEALTH_PASSWORD;
+const apiUrl = (process.env.API_URL_INTERNAL ?? '') || process.env.NEXT_PUBLIC_API_URL;
 
 export const GET = async () => {
   const headersList = await headers();
@@ -17,9 +18,7 @@ export const GET = async () => {
 
   try {
     // TLS certificate validation stays enabled. Internal CAs should be supplied through NODE_EXTRA_CA_CERTS.
-    const health = await axios
-      .get<unknown>(`${process.env.NEXT_PUBLIC_API_URL}/health/up`)
-      .then((response) => response.data);
+    const health = await axios.get<unknown>(`${apiUrl}/health/up`).then((response) => response.data);
 
     return new NextResponse(JSON.stringify(health), { status: 200 });
   } catch {

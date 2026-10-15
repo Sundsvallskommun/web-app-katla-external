@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -9,7 +10,33 @@
  * ---------------------------------------------------------------
  */
 
-export type JsonNode = any;
+export interface JsonNode {
+  empty?: boolean;
+  array?: boolean;
+  null?: boolean;
+  object?: boolean;
+  float?: boolean;
+  string?: boolean;
+  boolean?: boolean;
+  number?: boolean;
+  nodeType?: JsonNodeNodeTypeEnum;
+  integralNumber?: boolean;
+  missingNode?: boolean;
+  valueNode?: boolean;
+  container?: boolean;
+  pojo?: boolean;
+  floatingPointNumber?: boolean;
+  short?: boolean;
+  int?: boolean;
+  long?: boolean;
+  double?: boolean;
+  bigDecimal?: boolean;
+  bigInteger?: boolean;
+  /** @deprecated */
+  textual?: boolean;
+  binary?: boolean;
+  embeddedValue?: boolean;
+}
 
 /** UiSchemaRequest model */
 export interface UiSchemaRequest {
@@ -27,97 +54,35 @@ export interface Problem {
   instance?: string;
   /** @format uri */
   type?: string;
-  parameters?: Record<string, any>;
-  status?: StatusType;
   title?: string;
   detail?: string;
-}
-
-export interface StatusType {
-  reasonPhrase?: string;
   /** @format int32 */
-  statusCode?: number;
+  status?: number;
 }
 
 export interface ConstraintViolationProblem {
-  cause?: ThrowableProblem;
-  stackTrace?: {
-    classLoaderName?: string;
-    moduleName?: string;
-    moduleVersion?: string;
-    methodName?: string;
-    fileName?: string;
-    /** @format int32 */
-    lineNumber?: number;
-    className?: string;
-    nativeMethod?: boolean;
-  }[];
   /** @format uri */
   type?: string;
-  status?: StatusType;
+  /** @format int32 */
+  status?: number;
   violations?: Violation[];
   title?: string;
-  message?: string;
   /** @format uri */
   instance?: string;
-  parameters?: Record<string, any>;
   detail?: string;
-  suppressed?: {
-    stackTrace?: {
-      classLoaderName?: string;
-      moduleName?: string;
-      moduleVersion?: string;
-      methodName?: string;
-      fileName?: string;
-      /** @format int32 */
-      lineNumber?: number;
-      className?: string;
-      nativeMethod?: boolean;
-    }[];
-    message?: string;
-    localizedMessage?: string;
-  }[];
-  localizedMessage?: string;
+  causeAsProblem?: ThrowableProblem;
 }
 
 export interface ThrowableProblem {
-  cause?: any;
-  stackTrace?: {
-    classLoaderName?: string;
-    moduleName?: string;
-    moduleVersion?: string;
-    methodName?: string;
-    fileName?: string;
-    /** @format int32 */
-    lineNumber?: number;
-    className?: string;
-    nativeMethod?: boolean;
-  }[];
-  message?: string;
-  /** @format uri */
-  instance?: string;
   /** @format uri */
   type?: string;
-  parameters?: Record<string, any>;
-  status?: StatusType;
   title?: string;
+  /** @format int32 */
+  status?: number;
   detail?: string;
-  suppressed?: {
-    stackTrace?: {
-      classLoaderName?: string;
-      moduleName?: string;
-      moduleVersion?: string;
-      methodName?: string;
-      fileName?: string;
-      /** @format int32 */
-      lineNumber?: number;
-      className?: string;
-      nativeMethod?: boolean;
-    }[];
-    message?: string;
-    localizedMessage?: string;
-  }[];
-  localizedMessage?: string;
+  /** @format uri */
+  instance?: string;
+  causeAsProblem?: any;
 }
 
 export interface Violation {
@@ -180,21 +145,21 @@ export interface JsonSchema {
 }
 
 export interface PageJsonSchema {
-  /** @format int64 */
-  totalElements?: number;
   /** @format int32 */
   totalPages?: number;
+  /** @format int64 */
+  totalElements?: number;
   /** @format int32 */
   size?: number;
   content?: JsonSchema[];
   /** @format int32 */
   number?: number;
+  sort?: SortObject;
   pageable?: PageableObject;
-  first?: boolean;
-  last?: boolean;
   /** @format int32 */
   numberOfElements?: number;
-  sort?: SortObject;
+  first?: boolean;
+  last?: boolean;
   empty?: boolean;
 }
 
@@ -232,4 +197,16 @@ export interface UiSchema {
    * @format date-time
    */
   created?: string;
+}
+
+export enum JsonNodeNodeTypeEnum {
+  ARRAY = 'ARRAY',
+  BINARY = 'BINARY',
+  BOOLEAN = 'BOOLEAN',
+  MISSING = 'MISSING',
+  NULL = 'NULL',
+  NUMBER = 'NUMBER',
+  OBJECT = 'OBJECT',
+  POJO = 'POJO',
+  STRING = 'STRING',
 }

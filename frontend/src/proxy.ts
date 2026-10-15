@@ -1,5 +1,6 @@
 import i18nConfig from '@app/i18nConfig';
 import { pathWithoutLocale } from '@app/locale-path';
+import { isProtectedRoute, parseProtectedRoutes } from '@utils/protected-routes';
 import { NextRequest, NextResponse } from 'next/server';
 import { i18nRouter } from 'next-i18n-router';
 
@@ -7,16 +8,16 @@ import { envs } from '../middleware-envs';
 
 export async function proxy(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
-  // Skyddade rutter och admin-omdirigeringen listas utan språkprefix. Jämför därför mot
-  // den språkskalade sökvägen – annars slutar /en/... matcha listan och kontrollen hoppas
-  // över helt på andra språk än standardspråket.
+  // Protected routes and the admin redirect are listed without a language prefix, so compare
+  // against the stripped path — otherwise /en/... stops matching and the check is skipped
+  // entirely outside the default locale.
   const unprefixedPathname = pathWithoutLocale(pathname);
 
   if (unprefixedPathname === '/admin') {
     return NextResponse.redirect(new URL(envs.adminUrl));
   }
 
-  if (envs.protectedRoutes.includes(unprefixedPathname)) {
+  if (isProtectedRoute(unprefixedPathname, parseProtectedRoutes(envs.protectedRoutes))) {
     const cookieName = envs.sessionCookieName;
     const token = req.cookies.get(cookieName)?.value ?? '';
 
@@ -31,7 +32,8 @@ export async function proxy(req: NextRequest) {
 
     if (response.status === 401) {
       const loginUrl = new URL(`${envs.basePath}/login`, origin);
-      loginUrl.searchParams.set('path', pathname);
+      // The login page feeds this to appURL(), which only prepends the origin.
+      loginUrl.searchParams.set('path', `${envs.basePath}${pathname}`);
       return NextResponse.redirect(loginUrl);
     }
   }

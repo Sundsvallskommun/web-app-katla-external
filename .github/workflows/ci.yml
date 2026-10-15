@@ -107,6 +107,7 @@ jobs:
       NEXT_PUBLIC_ERRAND_FILTER: true
       NEXT_PUBLIC_REDUCED_STAKEHOLDER_INFO: false
       NEXT_PUBLIC_OTHER_PARTIES_DISCLOSURE: true
+      NEXT_PUBLIC_DRAFT_ERRAND: true
     steps:
       - name: Checkout
         uses: actions/checkout@v7

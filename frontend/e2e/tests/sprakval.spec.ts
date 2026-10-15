@@ -2,97 +2,67 @@ import type { Page } from '@playwright/test';
 
 import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
-import { mockReporterStakeholder } from '../fixtures/mockStakeholder';
+import { selectCategorization } from '../utils/categorization';
 import { jsonRoute } from '../utils/routes';
+import { SERVICE_PATH } from '../utils/service';
+import { addStakeholder, disclosureByTitle } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
 
-const MOCK_FORM_SCHEMA_NAME = 'avvikelse-plats-handelse';
-const MOCK_FORM_SCHEMA_ID = 'e2e-avvikelse-plats-handelse-v1';
-const MOCK_INCIDENT_DESCRIPTION = 'Händelsen inträffade i testmiljön';
-const mockFormSchemaResponse = {
-  schemaId: MOCK_FORM_SCHEMA_ID,
-  schema: {
-    $schema: 'https://json-schema.org/draft/2020-12/schema',
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      incidentDescription: {
-        type: 'string',
-        title: 'Beskriv händelsen',
-        minLength: 1,
-      },
-    },
-    required: ['incidentDescription'],
-  },
-  uiSchema: {},
-};
-
 /**
- * Språkvalet ska nås från sidhuvudet, utan omvägen via användarmenyn. Namnen står på
- * språket självt, så samma selektor fungerar oavsett vilket språk sidan visas på.
+ * The language choice must be reachable from the header, without going through the user menu.
+ * Names are written in the language itself, so the same selector works whatever language the
+ * page is shown in.
  *
- * Sidhuvudet renderar både desktop- och mobilraden och döljer den ena med CSS. Filtret
- * väljer den som faktiskt går att använda vid aktuell bredd – samma val en användare gör.
+ * The header renders both the desktop and mobile rows and hides one with CSS. The filter picks
+ * the one actually usable at the current width — the same choice a user makes.
  */
 const switchLanguageTo = async (page: Page, language: string) => {
   await page.getByTestId('language-switch-button').filter({ visible: true }).click();
   await page.getByRole('menuitemradio', { name: language }).click();
 };
 
-const selectRequiredErrandParameters = async (page: Page) => {
-  const eventType = page.getByTestId('event-type-deviation');
-  const eventConcerns = page.getByTestId('event-concerns-individual');
-
-  await eventType.check();
-  await expect(eventType).toBeChecked();
-  await eventConcerns.check();
-  await expect(eventConcerns).toBeChecked();
-};
-
 test.describe('Language switching', () => {
   test.beforeEach(async ({ appUrl, page }) => {
-    await page.route('**/employee/personal/*', jsonRoute(mockReporterStakeholder));
     await page.route('**/supportmanagement/errand/create', jsonRoute(mockErrand));
-    await page.route(`**/schemas/latest/${MOCK_FORM_SCHEMA_NAME}`, jsonRoute(mockFormSchemaResponse));
-    await page.route(`**/schemas/${MOCK_FORM_SCHEMA_ID}`, jsonRoute(mockFormSchemaResponse));
     await page.route('**/supportmanagement/metadata', jsonRoute(mockMetadata));
-    await page.goto(appUrl('/arende/registrera'));
+    await page.goto(appUrl(SERVICE_PATH));
   });
 
   test('keeps the entered registration form when the language changes', async ({ page }) => {
-    await expect(page.getByTestId('stakeholder-card').first()).toBeVisible();
-    await selectRequiredErrandParameters(page);
+    await expect(page.getByTestId('register-errand')).toBeEnabled();
 
-    const description = page.getByRole('textbox', { name: /Beskriv händelsen/ });
-    await description.fill(MOCK_INCIDENT_DESCRIPTION);
-    await expect(description).toHaveValue(MOCK_INCIDENT_DESCRIPTION);
+    // Added parties are the only entered data the form holds until the AoT fields exist, so the
+    // handover is measured on them.
+    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await addStakeholder(page, ovrigaParter, 'CONTACT');
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
 
     await switchLanguageTo(page, 'English');
 
-    await expect(page).toHaveURL(/\/en\/arende\/registrera$/);
+    await expect(page).toHaveURL(/\/en\/alkoholtillstand$/);
 
-    // Språkbytet monterar om hela ärendeträdet. Utan överlämningen står användaren
-    // inför ett tomt formulär, och priset för att byta språk blir att börja om.
-    await expect(page.getByTestId('event-type-deviation')).toBeChecked();
-    await expect(page.getByTestId('event-concerns-individual')).toBeChecked();
-    await expect(page.getByRole('textbox', { name: /Beskriv händelsen/ })).toHaveValue(MOCK_INCIDENT_DESCRIPTION);
+    // Switching language remounts the whole errand tree. Without the handover the user faces an
+    // empty form, and changing language costs them a fresh start.
+    await expect(disclosureByTitle(page, 'Other parties').getByTestId('stakeholder-card')).toHaveCount(1);
   });
 
   test.describe('on a phone', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
     test('changes language from the registration header without leaving the wizard', async ({ page }) => {
-      await selectRequiredErrandParameters(page);
+      // Step 1 is the categorization step, which the wizard will not leave uncategorized.
+      await selectCategorization(page);
       await page.getByRole('button', { name: 'Nästa' }).click();
-      await expect(page.getByText('Steg 2/5')).toBeVisible();
+      // Only the position matters here; the total follows the wizard's step list.
+      await expect(page.getByText(/^Steg 2\/\d+$/)).toBeVisible();
 
       await switchLanguageTo(page, 'English');
 
-      await expect(page).toHaveURL(/\/en\/arende\/registrera$/);
+      await expect(page).toHaveURL(/\/en\/alkoholtillstand$/);
 
-      // Kvar i wizarden, på samma steg. Tidigare fanns ingen språkkontroll alls här,
-      // så bytet krävde att användaren lämnade registreringen helt.
-      await expect(page.getByText('Step 2/5')).toBeVisible();
+      // Still in the wizard, on the same step: switching language must not force the user out of
+      // registration.
+      await expect(page.getByText(/^Step 2\/\d+$/)).toBeVisible();
     });
 
     test('opens the language panel under the button and inside the viewport', async ({ page }) => {
@@ -107,10 +77,10 @@ test.describe('Language switching', () => {
       const viewport = page.viewportSize();
       if (!buttonBox || !panelBox || !viewport) throw new Error('Saknar mått för knapp, panel eller viewport');
 
-      // Designsystemet ger panelen bara `right: 0`; den vertikala placeringen kommer från
-      // dess statiska position i normalflödet. Ligger kontrollen i en flex-container med
-      // items-center centreras panelen på knappen i stället och lägger sig över sidhuvudet,
-      // delvis utanför skärmen. Måtten är därför det som fångar en sådan regression.
+      // The design system gives the panel only `right: 0`; its vertical placement comes from its
+      // static position in normal flow. Inside a flex container with items-center the panel is
+      // centred on the button instead and covers the header, partly off screen. Measuring is what
+      // catches that regression.
       expect(panelBox.y).toBeGreaterThanOrEqual(buttonBox.y + buttonBox.height);
       expect(panelBox.x).toBeGreaterThanOrEqual(0);
       expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(viewport.width);

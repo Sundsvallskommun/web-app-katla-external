@@ -1,22 +1,17 @@
 'use client';
+import { SectionStatus, SectionStatusLabel } from '@components/disclosure/section-status-label.component';
 import { ErrandContentLock } from '@components/errand-content-lock/errand-content-lock.component';
+import { ROW_INDEX_PLACEHOLDER } from '@components/json/utils/row-index-placeholder';
+import { visibleFields as fieldsVisibleIn } from '@components/json/utils/schema-conditions';
+import { ErrorAlert } from '@components/misc/error-alert.component';
 import type { ErrorSchema, ObjectFieldTemplateProps, RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Checkbox, Disclosure, Divider, Label } from '@sk-web-gui/react';
+import { INVALID_FIELD_ATTRIBUTE } from '@utils/focus-first-error';
+import { activeStops, stopAnchor, stopsOfSchema } from '@utils/schema-stops';
 import { icons } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { appConfig } from 'src/config/appconfig';
-
-interface ConditionalRule {
-  if: {
-    properties: Record<string, { const: unknown }>;
-    required?: string[];
-  };
-  then: {
-    required?: string[];
-    properties?: Record<string, unknown>;
-  };
-}
 
 interface RowDefinition {
   fields: string[];
@@ -33,58 +28,10 @@ interface SectionDefinition {
 
 interface FormContext {
   originalSchema?: RJSFSchema;
+  /** Sub-schema per RJSF field id, so a nested object is judged by its own conditions. */
+  schemaById?: Record<string, RJSFSchema>;
   compact?: boolean;
   validationActive?: boolean;
-}
-
-function isConditionMet(condition: ConditionalRule['if'], formData: Record<string, unknown>): boolean {
-  if (!condition?.properties) return false;
-
-  for (const [field, rule] of Object.entries(condition.properties)) {
-    if ('const' in rule) {
-      if (formData[field] !== rule.const) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-/**
- * Extracts field names from a then-block (required fields and property keys)
- */
-function extractDependentFields(then: ConditionalRule['then']): string[] {
-  return [...(then.required ?? []), ...(then.properties ? Object.keys(then.properties) : [])];
-}
-
-/**
- * Extracts all conditional fields from the schema based on if/then rules
- */
-function getConditionalFields(schema: RJSFSchema): Map<string, ConditionalRule['if']> {
-  const conditionalFields = new Map<string, ConditionalRule['if']>();
-
-  // Handle allOf with if/then
-  const allOf = schema.allOf as ConditionalRule[] | undefined;
-  if (allOf) {
-    for (const rule of allOf) {
-      if (rule.if && rule.then) {
-        for (const field of extractDependentFields(rule.then)) {
-          conditionalFields.set(field, rule.if);
-        }
-      }
-    }
-  }
-
-  // Handle simple if/then at root level
-  const rootIf = schema.if as ConditionalRule['if'] | undefined;
-  const rootThen = schema.then as ConditionalRule['then'] | undefined;
-  if (rootIf && rootThen) {
-    for (const field of extractDependentFields(rootThen)) {
-      conditionalFields.set(field, rootIf);
-    }
-  }
-
-  return conditionalFields;
 }
 
 /**
@@ -102,8 +49,8 @@ function getSectionDefinitions(uiSchema: UiSchema | undefined): SectionDefinitio
 }
 
 /**
- * UI-schemat använder Lucides stabila kebab-case-namn medan lucide-reacts
- * ikonregister använder PascalCase som objektnycklar.
+ * The ui schema uses Lucide's stable kebab-case names, while lucide-react's icon registry keys
+ * on PascalCase.
  */
 function getSectionIcon(iconName: string | undefined) {
   if (!iconName) return undefined;
@@ -119,7 +66,7 @@ function getSectionIcon(iconName: string | undefined) {
 }
 
 /**
- * Fältet kan ha fel både på sig självt och i underliggande objekt, så hela grenen gås igenom.
+ * A field can carry errors both on itself and in nested objects, so the whole branch is walked.
  */
 function containsErrors(node: unknown): boolean {
   if (typeof node !== 'object' || node === null) return false;
@@ -137,12 +84,6 @@ function sectionHasErrors(fieldNames: string[], errorSchema: ErrorSchema | undef
 }
 
 /**
- * Avsnitten får sin status först när valideringen är igång. Innan dess vet formuläret inte
- * om ett tomt fält är ett fel eller bara något användaren inte hunnit fram till.
- */
-type SectionStatus = 'error' | 'complete';
-
-/**
  * Section component with completion checkbox
  */
 interface SectionDisclosureProps {
@@ -153,8 +94,8 @@ interface SectionDisclosureProps {
 
 function SectionDisclosure({ section, status, children }: SectionDisclosureProps) {
   const { t } = useTranslation('forms');
-  // Öppen om inget annat sägs, samma standard som ErrandDisclosure. Sätt defaultOpen:false
-  // i ui:sections för att stänga en enskild sektion.
+  // Open unless stated otherwise, matching ErrandDisclosure. Set defaultOpen:false in
+  // ui:sections to close an individual section.
   const [open, setOpen] = useState(section.defaultOpen ?? true);
   const [doneMark, setDoneMark] = useState(false);
   const SectionIcon = getSectionIcon(section.icon);
@@ -172,19 +113,9 @@ function SectionDisclosure({ section, status, children }: SectionDisclosureProps
     <Disclosure variant="alt" className="w-full" open={open} onToggleOpen={setOpen}>
       <Disclosure.Header>
         {SectionIcon && <Disclosure.Icon icon={React.createElement(SectionIcon)} />}
-        {/* min-w-0 låter rubriken krympa i stället för att trycka ut statusetiketten över kanten */}
+        {/* min-w-0 lets the heading shrink instead of pushing the status label off the edge */}
         <Disclosure.Title className="min-w-0">{section.title}</Disclosure.Title>
-        {status && (
-          <Label
-            inverted
-            rounded
-            color={status === 'error' ? 'error' : 'gronsta'}
-            className="sk-disclosure-label whitespace-nowrap"
-            data-cy={`section-status-${section.id}`}
-          >
-            {t(status === 'error' ? 'section_incomplete' : 'section_complete')}
-          </Label>
-        )}
+        {status && <SectionStatusLabel status={status} data-cy={`section-status-${section.id}`} />}
         {doneMark && status !== 'complete' && (
           <Label inverted rounded color="gronsta" className="sk-disclosure-label whitespace-nowrap">
             {t('section_complete')}
@@ -207,6 +138,31 @@ function SectionDisclosure({ section, status, children }: SectionDisclosureProps
   );
 }
 
+/** Stop texts per field they are shown under. Stops are root-level, so only the root has any. */
+function stopsByAnchor(ctx: FormContext | undefined, id: string, formData: unknown): Map<string, string[]> {
+  const byAnchor = new Map<string, string[]>();
+  if (id !== 'root') return byAnchor;
+
+  for (const stop of activeStops(stopsOfSchema(ctx?.originalSchema), formData)) {
+    const anchor = stopAnchor(stop);
+    if (anchor) byAnchor.set(anchor, [...(byAnchor.get(anchor) ?? []), stop.text]);
+  }
+  return byAnchor;
+}
+
+/** Puts the stop texts under the content, and marks it for error navigation while a stop holds. */
+function withStops(key: string, content: React.ReactNode, texts: string[]) {
+  if (texts.length === 0) return content;
+  return (
+    <div key={key} {...{ [INVALID_FIELD_ATTRIBUTE]: key }} data-cy="schema-stop">
+      {content}
+      {texts.map((text) => (
+        <ErrorAlert key={text} className="mt-16" message={text} />
+      ))}
+    </div>
+  );
+}
+
 /**
  * Renders fields based on order, rows, and visibility
  */
@@ -217,7 +173,8 @@ function renderFields(
   rows: RowDefinition[],
   rowFieldNames: Set<string>,
   renderedRows: Set<string>,
-  compact = false
+  compact = false,
+  stops = new Map<string, string[]>()
 ) {
   return fieldNames.map((fieldName) => {
     // Skip hidden fields
@@ -235,7 +192,8 @@ function renderFields(
       const visibleRowFields = row.fields.filter((f) => visibleFields.has(f));
       if (visibleRowFields.length === 0) return null;
 
-      return (
+      return withStops(
+        rowKey,
         <div key={rowKey} className={`flex ${compact ? 'flex-col gap-32' : (row.gap ?? '') || 'gap-32'}`}>
           {visibleRowFields.map((f) => {
             const prop = properties.find((p) => p.name === f);
@@ -245,7 +203,8 @@ function renderFields(
                 </div>
               : null;
           })}
-        </div>
+        </div>,
+        visibleRowFields.flatMap((f) => stops.get(f) ?? [])
       );
     }
 
@@ -254,8 +213,22 @@ function renderFields(
 
     // Standalone field
     const prop = properties.find((p) => p.name === fieldName);
-    return prop ? <div key={fieldName}>{prop.content}</div> : null;
+    return prop ? withStops(fieldName, <div key={fieldName}>{prop.content}</div>, stops.get(fieldName) ?? []) : null;
   });
+}
+
+/**
+ * The sub-schema this object is judged by. A dynamic table's rows are keyed with the row number
+ * replaced by a placeholder, because every row renders from the same item schema.
+ *
+ * Falling back to the root schema would be worse than having none: a row column that shares its
+ * name with a conditional question at the root — `personnummer` does — would be judged by that
+ * question's condition and silently disappear from the row.
+ */
+function schemaForObject(ctx: FormContext | undefined, id: string): RJSFSchema | undefined {
+  const byId = ctx?.schemaById;
+  const rowAgnosticId = id.replace(/_\d+(?=_|$)/g, `_${ROW_INDEX_PLACEHOLDER}`);
+  return byId?.[id] ?? byId?.[rowAgnosticId] ?? (id === 'root' ? ctx?.originalSchema : undefined);
 }
 
 /**
@@ -266,11 +239,9 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
   const { properties, uiSchema, errorSchema } = props;
   const formData = props.formData as Record<string, unknown> | undefined;
 
-  // Get original schema from formContext (RJSF processes and removes allOf from schema prop)
+  // RJSF strips allOf from the schema prop, so the conditions come from formContext instead.
   const ctx = props.formContext as FormContext | undefined;
-  const originalSchema = ctx?.originalSchema;
-  const conditionalFields =
-    originalSchema ? getConditionalFields(originalSchema) : new Map<string, ConditionalRule['if']>();
+  const objectSchema = schemaForObject(ctx, props.idSchema.$id);
 
   // Get row and section definitions from uiSchema
   const rows = getRowDefinitions(uiSchema);
@@ -280,18 +251,13 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
   // Get field order from uiSchema or use properties order
   const order = uiSchema?.['ui:order'] ?? properties.map((p) => p.name);
 
-  // Filter out hidden conditional fields
-  const visibleFields = new Set<string>();
-  for (const prop of properties) {
-    const condition = conditionalFields.get(prop.name);
-    if (condition) {
-      if (isConditionMet(condition, formData ?? {})) {
-        visibleFields.add(prop.name);
-      }
-    } else {
-      visibleFields.add(prop.name);
-    }
-  }
+  const stops = stopsByAnchor(ctx, props.idSchema.$id, formData);
+
+  const visibleFields = fieldsVisibleIn(
+    objectSchema,
+    formData,
+    properties.map((prop) => prop.name)
+  );
 
   const compact = ctx?.compact ?? false;
   const validationActive = ctx?.validationActive ?? false;
@@ -299,10 +265,29 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
   // If no sections defined, use original flat rendering
   if (sections.length === 0) {
     const renderedRows = new Set<string>();
-    return (
+    const renderedFields = (
       <div className="flex flex-col gap-32">
-        {renderFields(order, properties, visibleFields, rows, rowFieldNames, renderedRows, compact)}
+        {renderFields(order, properties, visibleFields, rows, rowFieldNames, renderedRows, compact, stops)}
       </div>
+    );
+
+    // Nested objects get no label from FieldTemplate, so a question built out of sub-fields
+    // ("Serveringsställets besöksadress") loses its text unless the ui schema asks for a fieldset.
+    const showObjectFieldset = uiSchema?.['ui:options']?.showObjectFieldset === true;
+    if (!showObjectFieldset || props.idSchema.$id === 'root') return renderedFields;
+
+    return (
+      <fieldset className="w-full min-w-0 max-w-full border-0 p-0" data-cy="schema-object-fieldset">
+        {props.title && (
+          <legend className="max-w-full whitespace-normal break-words text-label-medium font-bold">
+            {props.title}
+            {props.required ? '*' : ''}
+          </legend>
+        )}
+        {/* The description is FieldTemplate's: RJSF hands it over as the raw ui:description
+            markup, which would render as escaped text here. */}
+        {renderedFields}
+      </fieldset>
     );
   }
 
@@ -335,7 +320,8 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
                 rows,
                 rowFieldNames,
                 renderedRows,
-                compact
+                compact,
+                stops
               )}
             </div>
           );
@@ -349,7 +335,16 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
         return (
           <SectionDisclosure key={section.id} section={section} status={status}>
             <div className="flex flex-col gap-32 py-16">
-              {renderFields(sectionFieldsInOrder, properties, visibleFields, rows, rowFieldNames, renderedRows)}
+              {renderFields(
+                sectionFieldsInOrder,
+                properties,
+                visibleFields,
+                rows,
+                rowFieldNames,
+                renderedRows,
+                false,
+                stops
+              )}
             </div>
           </SectionDisclosure>
         );
@@ -358,7 +353,16 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
       {/* Render fields not in any section */}
       {unsectionedFields.length > 0 && (
         <div className="flex flex-col gap-32">
-          {renderFields(unsectionedFields, properties, visibleFields, rows, rowFieldNames, renderedRows, compact)}
+          {renderFields(
+            unsectionedFields,
+            properties,
+            visibleFields,
+            rows,
+            rowFieldNames,
+            renderedRows,
+            compact,
+            stops
+          )}
         </div>
       )}
     </div>

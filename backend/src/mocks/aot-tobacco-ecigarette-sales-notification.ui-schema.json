@@ -1,0 +1,207 @@
+{
+  "ui:order": [
+    "arDuFirmatecknare",
+    "fakturaadressSammaSomForetaget",
+    "fakturamottagare",
+    "fakturareferens",
+    "verksamhetsbeskrivningsval",
+    "verksamhetsbeskrivning",
+    "tidsperiodForForsaljningen",
+    "startdatumForsaljning",
+    "periodTidsbegransadForsaljning",
+    "serveringsstalletsNamn",
+    "besoksadressSammaSomArendeagare",
+    "besoksadress",
+    "kontaktuppgifterTillServeringsstallet",
+    "bedriverAvenDistansforsaljning",
+    "hemsida",
+    "omfattarSarskiltFarligaProdukter",
+    "avtalMedTillverkareEllerPartihandlare"
+  ],
+  "ui:sections": [
+    {
+      "id": "foretag",
+      "title": "Företag och fakturering",
+      "icon": "building-2",
+      "defaultOpen": true,
+      "fields": [
+        "arDuFirmatecknare",
+        "fakturaadressSammaSomForetaget",
+        "fakturamottagare",
+        "fakturareferens",
+        "verksamhetsbeskrivningsval",
+        "verksamhetsbeskrivning"
+      ]
+    },
+    {
+      "id": "ansokan",
+      "title": "Anmälan om försäljning av elektroniska cigaretter och påfyllnadsbehållare",
+      "icon": "file-text",
+      "defaultOpen": true,
+      "fields": [
+        "tidsperiodForForsaljningen",
+        "startdatumForsaljning",
+        "periodTidsbegransadForsaljning",
+        "serveringsstalletsNamn",
+        "besoksadressSammaSomArendeagare",
+        "besoksadress",
+        "kontaktuppgifterTillServeringsstallet",
+        "bedriverAvenDistansforsaljning",
+        "hemsida",
+        "omfattarSarskiltFarligaProdukter",
+        "avtalMedTillverkareEllerPartihandlare"
+      ]
+    }
+  ],
+  "arDuFirmatecknare": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "fakturaadressSammaSomForetaget": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
+  },
+  "fakturamottagare": {
+    "ui:order": [
+      "cO",
+      "utdelningsadress",
+      "postnummer",
+      "postort"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "cO": {
+      "ui:widget": "TextWidget"
+    },
+    "utdelningsadress": {
+      "ui:widget": "TextWidget"
+    },
+    "postnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "postort": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postnummer",
+          "postort"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "fakturareferens": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    },
+    "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
+  },
+  "verksamhetsbeskrivningsval": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+  },
+  "verksamhetsbeskrivning": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    }
+  },
+  "tidsperiodForForsaljningen": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "startdatumForsaljning": {
+    "ui:order": [],
+    "ui:options": {
+      "showObjectFieldset": true
+    }
+  },
+  "periodTidsbegransadForsaljning": {
+    "ui:order": [
+      "startDate",
+      "endDate"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "startDate": {
+      "ui:widget": "DateWidget"
+    },
+    "endDate": {
+      "ui:widget": "DateWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "startDate",
+          "endDate"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "serveringsstalletsNamn": {
+    "ui:widget": "TextWidget"
+  },
+  "besoksadressSammaSomArendeagare": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "besoksadress": {
+    "ui:order": [
+      "gatuadress",
+      "postnummer",
+      "postort"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "gatuadress": {
+      "ui:widget": "TextWidget"
+    },
+    "postnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "postort": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postnummer",
+          "postort"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "kontaktuppgifterTillServeringsstallet": {
+    "ui:order": [
+      "telefonnummer",
+      "ePostadress"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "telefonnummer": {
+      "ui:widget": "TextWidget"
+    },
+    "ePostadress": {
+      "ui:widget": "TextWidget"
+    }
+  },
+  "bedriverAvenDistansforsaljning": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Distansförsäljning är försäljning av varor via postorder, telefon eller internet där leverantören ansvarar för leveransen av varorna.</p>"
+  },
+  "hemsida": {
+    "ui:widget": "TextWidget"
+  },
+  "omfattarSarskiltFarligaProdukter": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "avtalMedTillverkareEllerPartihandlare": {
+    "ui:widget": "RadiobuttonWidget"
+  }
+}

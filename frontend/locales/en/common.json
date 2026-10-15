@@ -5,28 +5,12 @@
     "today": "Today {{time}}",
     "yesterday": "Yesterday {{time}}"
   },
-  "notification": {
-    "to_errand": "To the case",
-    "from": "From: {{name}}",
-    "event": "Event: {{label}}",
-    "unknown_sender": "Unknown",
-    "subtype": {
-      "ATTACHMENT": "New attachment",
-      "DECISION": "New decision",
-      "ERRAND": "Case updated",
-      "MESSAGE": "New message",
-      "NOTE": "New comment/note",
-      "SYSTEM": "Phase change",
-      "SUSPENSION": "Suspension ended"
-    }
-  },
   "api_errors": {
     "metadata": "Metadata could not be retrieved. Please try again later.",
     "errands": "The cases could not be retrieved. Please try again later.",
     "counts": "The number of cases could not be retrieved. Please try again later.",
-    "notifications": "The notifications could not be retrieved. Please try again later.",
-    "acknowledge_notification": "The notification could not be acknowledged.",
-    "errand": "The case could not be retrieved. Please try again later."
+    "errand": "The case could not be retrieved. Please try again later.",
+    "organizations": "Your companies and organisations could not be retrieved. Please try again later."
   },
   "errand-table": {
     "loading": "Loading cases",
@@ -39,7 +23,7 @@
     "header": {
       "status": "Status",
       "errandNumber": "Case number",
-      "classificationType": "Report type",
+      "classificationType": "Case type",
       "created": "Reported"
     }
   },
@@ -56,5 +40,10 @@
   "tabs": {
     "basic_information": "Basic information"
   },
-  "loading_information": "Loading information"
+  "loading_information": "Loading information",
+  "render_error": {
+    "title": "Something went wrong",
+    "description": "The page could not be displayed. Try again, and contact support if the problem persists.",
+    "retry": "Try again"
+  }
 }

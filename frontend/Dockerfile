@@ -22,6 +22,7 @@ COPY . .
 # values are supplied separately by Compose for server-side request handling.
 ARG NEXT_PUBLIC_APP_NAME=Katla
 ARG NEXT_PUBLIC_API_URL
+ARG API_URL_INTERNAL
 ARG DOMAIN_NAME
 ARG NEXT_PUBLIC_BASE_PATH
 ARG ADMIN_URL

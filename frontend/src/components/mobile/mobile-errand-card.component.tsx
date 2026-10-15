@@ -7,6 +7,8 @@ import { getTypeDisplayName } from '@utils/errand-helpers';
 import dayjs from 'dayjs';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { errandPath } from 'src/constants/services';
+import { useService } from 'src/hooks/use-service';
 
 interface MobileErrandCardProps {
   errand: ErrandDTO;
@@ -14,18 +16,19 @@ interface MobileErrandCardProps {
 
 export const MobileErrandCard: React.FC<MobileErrandCardProps> = ({ errand }) => {
   const { t } = useTranslation();
-  const url = `/arende/${errand.errandNumber}/grundinformation`;
+  const service = useService();
+  const url = errandPath(service, errand.errandNumber);
 
   return (
     <div className="py-4">
       <div className="flex min-h-[8rem] items-end self-stretch rounded-[20px] border border-opacity-30 pt-[2.0rem] pb-[1.2rem] pl-[2.0rem] pr-[0.8rem] gap-4">
         <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
           <div className="w-fit">
-            <StatusLabel status={errand.status} />
+            <StatusLabel status={errand.status} lifecycle={errand.lifecycle} />
           </div>
 
           <div className="text-xl font-bold lining-nums proportional-nums leading-[2.8rem] pt-[1.2rem] break-words">
-            {getTypeDisplayName(errand, t)}
+            {getTypeDisplayName(errand)}
           </div>
 
           <div className="flex flex-col items-start gap-1.5 pt-[2.4rem] flex-1">
