@@ -7,6 +7,7 @@ import { Errand, ErrandLifecycleEnum, Label, PageErrand } from '@/data-contracts
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { writeRateLimit } from '@/middlewares/rate-limit.middleware';
 import { ErrandCountDTO, ErrandDTO, ErrandsQueryDTO, PageErrandDTO } from '@/responses/supportmanagement.response';
 import { MetadataResponseDTO } from '@/responses/supportmanagement-metadata.response';
 import ApiService from '@/services/api.service';
@@ -65,7 +66,7 @@ export class SupportManagementController {
 
   @Post('/supportmanagement/errand/create')
   @OpenAPI({ summary: 'Create new errand' })
-  @UseBefore(authMiddleware)
+  @UseBefore(authMiddleware, writeRateLimit)
   @ResponseSchema(ErrandDTO)
   async createErrand(@Req() req: RequestWithUser, @Body() errand: ErrandDTO): Promise<ErrandDTO> {
     const url = `${MUNICIPALITY_ID}/${requireNamespace(req)}/errands`;
