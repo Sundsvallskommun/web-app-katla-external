@@ -97,7 +97,7 @@
         }
       ],
       "title": "Kommer du att ha stadigvarande försäljning av livsmedel?",
-      "description": "Exempelvis mejerivaror, grönsaker och frukt. [TEXT SAKNAS: slutlig hjälptext]"
+      "description": "Exempelvis mejerivaror, grönsaker och frukt."
     },
     "tillverkarFolkolPaForsaljningsstallet": {
       "type": "string",
@@ -160,7 +160,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är försäljningsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är försäljningsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",
@@ -171,7 +171,8 @@
         },
         "postnummer": {
           "type": "string",
-          "title": "Postnummer"
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
         },
         "postort": {
           "type": "string",
@@ -194,7 +195,8 @@
         },
         "ePostadress": {
           "type": "string",
-          "title": "E-postadress"
+          "title": "E-postadress",
+          "format": "email"
         },
         "hemsida": {
           "type": "string",
@@ -202,24 +204,6 @@
         }
       },
       "title": "Kontaktuppgifter till försäljningsstället"
-    },
-    "harDuKassaregister": {
-      "type": "string",
-      "oneOf": [
-        {
-          "const": "JA",
-          "title": "Ja"
-        },
-        {
-          "const": "NEJ",
-          "title": "Nej"
-        }
-      ],
-      "title": "Har du kassaregister?"
-    },
-    "registreringskod": {
-      "type": "string",
-      "title": "Ange registreringskod"
     }
   },
   "required": [
@@ -230,8 +214,7 @@
     "besoksadressSammaSomArendeagare",
     "stadigvarandeForsaljningAvLivsmedel",
     "tillverkarFolkolPaForsaljningsstallet",
-    "egenkontrollprogramFolkol",
-    "harDuKassaregister"
+    "egenkontrollprogramFolkol"
   ],
   "allOf": [
     {
@@ -317,23 +300,6 @@
         "required": [
           "dokumentationKanVisasVidTillsyn"
         ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "harDuKassaregister": {
-            "const": "JA"
-          }
-        },
-        "required": [
-          "harDuKassaregister"
-        ]
-      },
-      "then": {
-        "properties": {
-          "registreringskod": true
-        }
       }
     }
   ],

@@ -145,7 +145,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är serveringsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är serveringsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",
@@ -156,7 +156,8 @@
         },
         "postnummer": {
           "type": "string",
-          "title": "Postnummer"
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
         },
         "postort": {
           "type": "string",
@@ -179,7 +180,8 @@
         },
         "ePostadress": {
           "type": "string",
-          "title": "E-postadress"
+          "title": "E-postadress",
+          "format": "email"
         },
         "hemsida": {
           "type": "string",

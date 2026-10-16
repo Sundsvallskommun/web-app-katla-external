@@ -112,7 +112,8 @@
         },
         "postnummer": {
           "type": "string",
-          "title": "Postnummer"
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
         },
         "postort": {
           "type": "string",
@@ -156,22 +157,26 @@
     "literStarkol": {
       "type": "string",
       "title": "Hur många liter starköl tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literVin": {
       "type": "string",
       "title": "Hur många liter vin tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literSpritdrycker": {
       "type": "string",
       "title": "Hur många liter spritdrycker tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "literCider": {
       "type": "string",
       "title": "Hur många liter cider eller andra jästa alkoholdrycker tillverkas?",
-      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad."
+      "description": "Förra kalenderåret, eller uppskattad volym om produktionen är nystartad. Ange antal liter i siffror.",
+      "pattern": "^\\d+$"
     },
     "produktionenStartade": {
       "type": "string",
@@ -273,12 +278,12 @@
       "type": "string",
       "oneOf": [
         {
-          "const": "JAG_VILL_LADDA_UPP_BESKRIVNING",
-          "title": "Jag vill ladda upp beskrivning på besöksarrangemanget"
-        },
-        {
           "const": "JAG_VILL_BESKRIVA_BESOKSARRANGEMANGET",
           "title": "Jag vill beskriva besöksarrangemanget"
+        },
+        {
+          "const": "JAG_VILL_LADDA_UPP_BESKRIVNING",
+          "title": "Jag vill ladda upp beskrivning på besöksarrangemanget"
         }
       ],
       "title": "Besöksarrangemang"
@@ -372,7 +377,8 @@
           },
           "ePostadress": {
             "type": "string",
-            "title": "E-postadress"
+            "title": "E-postadress",
+            "format": "email"
           }
         }
       },

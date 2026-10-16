@@ -3,6 +3,7 @@ import { test as base } from '@playwright/test';
 import { getMe } from '../fixtures/getMe';
 import { getMyOrganizations } from '../fixtures/getMyOrganizations';
 import { ownerStakeholderFor } from '../fixtures/getOwnerStakeholder';
+import { mockSelfStakeholder } from '../fixtures/mockStakeholder';
 import { jsonRoute } from './routes';
 
 // The same value as CookieConsentUtils.defaultCookieConsentName in @sk-web-gui/react.
@@ -23,8 +24,8 @@ interface AppFixtures {
   appUrl: (path: string) => string;
 }
 
-// Sets cookie consent and mocks a logged-in user, their organisations and an empty attachment
-// list for every test. The fixture callback is named
+// Sets cookie consent and mocks a logged-in user, their citizen record, their organisations and an
+// empty attachment list for every test. The fixture callback is named
 // `run` rather than Playwright's conventional `use` so it does not trip
 // react-hooks/rules-of-hooks, which reads `use(...)` as React's use hook.
 export const test = base.extend<AppFixtures>({
@@ -33,6 +34,7 @@ export const test = base.extend<AppFixtures>({
       { name: COOKIE_CONSENT_NAME, value: DEFAULT_COOKIE_VALUE, url: baseURL ?? DEFAULT_BASE_URL },
     ]);
     await page.route('**/api/me', jsonRoute(getMe));
+    await page.route('**/citizen/me', jsonRoute(mockSelfStakeholder));
     await page.route('**/api/my-organizations', jsonRoute(getMyOrganizations));
     await page.route('**/api/my-organizations/*/stakeholder', (route) => {
       const partyId = new URL(route.request().url()).pathname.split('/').at(-2);

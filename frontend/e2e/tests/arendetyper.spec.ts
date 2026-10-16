@@ -87,6 +87,30 @@ test.describe('Ärendetyper', () => {
       test(schemaCase.title, registersWithSchema(schemaCase));
     }
 
+    test('visar fel vid fältet för ett felaktigt postnummer och en felaktig e-postadress', async ({ appUrl, page }) => {
+      // Nested object and array row fields, where the message has the longest way to travel.
+      const tasting = branches.find((candidate) => candidate.schema.endsWith('tasting'));
+      if (!tasting) throw new Error('tasting case missing');
+      const pair = loadSchemaPair(tasting.schema);
+      await openFormWithSchema(page, appUrl, pair);
+      await fillSchemaForm(page, pair.schema, tasting.steps);
+      await uploadRequiredAttachments(page, pair.schema, tasting.attachments);
+      await fillSchemaForm(page, pair.schema, [
+        { text: 'besoksadress.postnummer', value: '8523' },
+        { text: 'personerTillKunskapsprovet.0.ePostadress', value: 'inte-en-adress' },
+      ]);
+
+      await page.getByTestId('register-errand').click();
+
+      await expect(page.locator('[data-invalid-field="root_besoksadress_postnummer"]')).toContainText(
+        'Värdet matchar inte det förväntade formatet'
+      );
+      await expect(page.locator('[data-invalid-field="root_personerTillKunskapsprovet_0_ePostadress"]')).toContainText(
+        'Ange en giltig e-postadress'
+      );
+      await expect(page.getByTestId('submit-button')).toBeHidden();
+    });
+
     test('catering utan mat stoppas tills svaret ändras', async ({ appUrl, page }) => {
       // Everything else complete, so the stop is the only thing holding registration back.
       const catering = happyPaths.find((candidate) => candidate.schema.endsWith('permanent-catering'));

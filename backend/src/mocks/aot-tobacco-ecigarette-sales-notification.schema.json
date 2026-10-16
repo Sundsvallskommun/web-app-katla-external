@@ -139,7 +139,7 @@
           "title": "Nej"
         }
       ],
-      "title": "Är försäljningsställets besöksadress samma som ärendeägarens adress?"
+      "title": "Är försäljningsställets besöksadress samma som företagets adress?"
     },
     "besoksadress": {
       "type": "object",
@@ -150,7 +150,8 @@
         },
         "postnummer": {
           "type": "string",
-          "title": "Postnummer"
+          "title": "Postnummer",
+          "pattern": "^\\d{3}\\s?\\d{2}$"
         },
         "postort": {
           "type": "string",

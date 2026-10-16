@@ -14,7 +14,6 @@ interface OwnerDetailsForm {
   careOf?: string;
   zipCode?: string;
   city?: string;
-  serveringsstalle?: string;
 }
 
 /**
@@ -122,7 +121,6 @@ export const ErrandOwnerModal: React.FC<{
       careOf: owner.careOf ?? '',
       zipCode: owner.zipCode ?? '',
       city: owner.city ?? '',
-      serveringsstalle: owner.serveringsstalle ?? '',
     });
     setEmails(owner.emails ?? []);
     setPhoneNumbers(owner.phoneNumbers ?? []);
@@ -178,11 +176,6 @@ export const ErrandOwnerModal: React.FC<{
             </FormControl>
           </div>
         }
-
-        <FormControl className="w-full">
-          <FormLabel htmlFor="owner-serveringsstalle">{t('errand-information:owner.serveringsstalle')}</FormLabel>
-          <Input id="owner-serveringsstalle" data-cy="owner-serveringsstalle-input" {...register('serveringsstalle')} />
-        </FormControl>
 
         <div className="flex gap-8">
           <FormControl className="min-w-0 flex-1">

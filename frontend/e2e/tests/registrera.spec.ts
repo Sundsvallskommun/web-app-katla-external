@@ -18,9 +18,9 @@ import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../
 import { emptyRoute, jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
 import {
-  addSelfAsStakeholder,
   addStakeholder,
   disclosureByTitle,
+  expectSelfAsContact,
   manuallyAddStakeholder,
   manuallyEditStakeholder,
 } from '../utils/stakeholder';
@@ -61,7 +61,8 @@ const openRegistrationConfirmation = async (page: Page) => {
   return submitButton;
 };
 
-// The owner counts as a stakeholder: it is the errand's PRIMARY one.
+// The owner counts as a stakeholder, it is the errand's PRIMARY one, and so does the citizen,
+// who is a contact person from the start.
 const registerErrand = async (page: Page, expectedStakeholderCount: number) => {
   const submitButton = await openRegistrationConfirmation(page);
   const createRequest = page.waitForRequest(
@@ -211,7 +212,6 @@ test.describe('Register new errand page', () => {
     );
     await expect(page.getByTestId('owner-organizationNumber')).toHaveAttribute('readonly', '');
 
-    await page.getByTestId('owner-serveringsstalle-input').fill('Acme Krogen');
     await page.getByTestId('owner-address-input').fill('Storgatan 1');
     await page.getByTestId('owner-zipCode-input').fill('852 31');
     await page.getByTestId('owner-city-input').fill('Sundsvall');
@@ -227,7 +227,6 @@ test.describe('Register new errand page', () => {
     await expect(page.getByTestId('owner-email-value')).toHaveText('post@acme.se');
     await page.getByTestId('owner-modal-save').click();
 
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toContainText('Acme Krogen');
     await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 852 31 Sundsvall');
     await expect(owner.getByTestId('stakeholder-email')).toHaveText('post@acme.se');
 
@@ -238,13 +237,14 @@ test.describe('Register new errand page', () => {
     await submitButton.click();
     const body = (await createRequest).postDataJSON() as CreateErrandRequestBody;
 
-    expect(body.stakeholders?.[0]).toMatchObject({
-      role: 'PRIMARY',
-      externalId: mockOrganization.partyId,
-      serveringsstalle: 'Acme Krogen',
-      address: 'Storgatan 1',
-      emails: ['post@acme.se'],
-    });
+    expect(body.stakeholders).toContainEqual(
+      expect.objectContaining({
+        role: 'PRIMARY',
+        externalId: mockOrganization.partyId,
+        address: 'Storgatan 1',
+        emails: ['post@acme.se'],
+      })
+    );
   });
 
   test('Discards owner edits that were cancelled', async ({ page }) => {
@@ -252,14 +252,14 @@ test.describe('Register new errand page', () => {
     await selectErrandOwner(page, mockOrganization);
 
     await owner.getByTestId('edit-owner-button').click();
-    await page.getByTestId('owner-serveringsstalle-input').fill('Ska inte sparas');
+    await page.getByTestId('owner-careOf-input').fill('Ska inte sparas');
     await page.getByTestId('owner-modal-cancel').click();
 
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toHaveCount(0);
+    await expect(owner.getByTestId('stakeholder-address')).not.toContainText('Ska inte sparas');
 
     // Reopening shows what was filed, not the abandoned edit.
     await owner.getByTestId('edit-owner-button').click();
-    await expect(page.getByTestId('owner-serveringsstalle-input')).toHaveValue('');
+    await expect(page.getByTestId('owner-careOf-input')).toHaveValue('');
   });
 
   test('Refuses to register an errand before it has been categorized', async ({ page }) => {
@@ -287,7 +287,7 @@ test.describe('Register new errand page', () => {
     await selectCategorization(page);
     await selectErrandOwner(page);
 
-    await registerErrand(page, 1);
+    await registerErrand(page, 2);
   });
 
   test('Files the chosen organization as the errand owner', async ({ page }) => {
@@ -301,7 +301,10 @@ test.describe('Register new errand page', () => {
     await submitButton.click();
     const body = (await createRequest).postDataJSON() as CreateErrandRequestBody;
 
-    expect(body.stakeholders).toEqual([ownerStakeholderFor(mockSecondOrganization)]);
+    expect(body.stakeholders).toEqual([
+      expect.objectContaining({ role: 'CONTACT', externalId: mockSelfStakeholder.externalId }),
+      ownerStakeholderFor(mockSecondOrganization),
+    ]);
   });
 
   test('Files the logged in citizen as a private errand owner', async ({ page }) => {
@@ -312,14 +315,16 @@ test.describe('Register new errand page', () => {
     await expect(owner.getByTestId('stakeholder-role')).toHaveText('Ärendeägare');
     await expect(owner.getByTestId('stakeholder-personNumber')).toHaveText(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 85230 Sundsvall');
+    // The owner is on the errand already, so the contact entry goes.
+    await expect(disclosureByTitle(page, 'Övriga parter').getByTestId('stakeholder-card')).toHaveCount(0);
 
-    // Identity comes from the login and is not theirs to change; the serving location is.
+    // Identity comes from the login and is not theirs to change; the address is.
     await owner.getByTestId('edit-owner-button').click();
     await expect(page.getByTestId('owner-personNumber')).toHaveValue(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(page.getByTestId('owner-personNumber')).toHaveAttribute('readonly', '');
-    await page.getByTestId('owner-serveringsstalle-input').fill('Festlokalen');
+    await page.getByTestId('owner-careOf-input').fill('c/o Festlokalen');
     await page.getByTestId('owner-modal-save').click();
-    await expect(owner.getByTestId('stakeholder-serveringsstalle')).toContainText('Festlokalen');
+    await expect(owner.getByTestId('stakeholder-address')).toContainText('c/o Festlokalen');
 
     const submitButton = await openRegistrationConfirmation(page);
     const createRequest = page.waitForRequest(
@@ -334,7 +339,7 @@ test.describe('Register new errand page', () => {
         externalIdType: 'PRIVATE',
         externalId: mockSelfStakeholder.externalId,
         firstName: mockSelfStakeholder.firstName,
-        serveringsstalle: 'Festlokalen',
+        careOf: 'c/o Festlokalen',
       }),
     ]);
   });
@@ -350,6 +355,40 @@ test.describe('Register new errand page', () => {
     await expect(owner.getByTestId('add-self-owner-button')).toBeVisible();
   });
 
+  test('Puts the citizen back as contact person before registering an errand that lost them', async ({ page }) => {
+    const owner = errandOwnerSection(page);
+    await selectCategorization(page);
+    await addSelfAsErrandOwner(page);
+    await owner.getByTestId('remove-owner-button').click();
+    await selectErrandOwner(page);
+    await expect(disclosureByTitle(page, 'Övriga parter').getByTestId('stakeholder-card')).toHaveCount(0);
+
+    await page.getByTestId('register-errand').click();
+    await expect(page.getByText('Du läggs till som kontaktperson')).toBeVisible();
+    await page.getByTestId('citizen-contact-cancel').click();
+    await expect(page.getByTestId('submit-button')).toHaveCount(0);
+
+    await page.getByTestId('register-errand').click();
+    await page.getByTestId('citizen-contact-continue').click();
+    await expectSelfAsContact(disclosureByTitle(page, 'Övriga parter'));
+    const submitButton = page.getByTestId('submit-button');
+    await expect(submitButton).toBeEnabled();
+    const createRequest = page.waitForRequest(
+      (request) => request.url().includes('/supportmanagement/errand/create') && request.method() === 'POST'
+    );
+    await submitButton.click();
+    const body = (await createRequest).postDataJSON() as CreateErrandRequestBody;
+
+    expect(body.stakeholders).toEqual([
+      ownerStakeholderFor(mockOrganization),
+      expect.objectContaining({
+        role: 'CONTACT',
+        externalIdType: 'PRIVATE',
+        externalId: mockSelfStakeholder.externalId,
+      }),
+    ]);
+  });
+
   test('Adds a stakeholder using personnumber and registers the errand', async ({ page }) => {
     await expect(page.locator('main').first()).toBeVisible();
 
@@ -361,24 +400,22 @@ test.describe('Register new errand page', () => {
 
     await selectCategorization(page);
     await selectErrandOwner(page);
-    const body = await registerErrand(page, 2);
+    const body = await registerErrand(page, 3);
 
     expect(body.stakeholders).toContainEqual(
       expect.objectContaining({ role: 'CONTACT', externalIdType: 'PRIVATE', externalId: mockStakeholder.externalId })
     );
   });
 
-  test('Adds the logged in citizen as a stakeholder and registers the errand', async ({ page }) => {
+  test('Lists the logged in citizen as a contact person from the start and registers the errand', async ({ page }) => {
     const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
-    await addSelfAsStakeholder(page, ovrigaParter);
+    await expectSelfAsContact(ovrigaParter);
 
     const card = ovrigaParter.getByTestId('stakeholder-card');
     await expect(card).toHaveCount(1);
-    await expect(card.getByTestId('stakeholder-role')).toHaveText('Kontaktperson');
     await expect(card.getByTestId('stakeholder-name')).toContainText('Förnamn Efternamn');
     await expect(card.getByTestId('stakeholder-personNumber')).toContainText(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(card.getByTestId('stakeholder-email')).toHaveText('E-postadress saknas');
-    await expect(card.getByTestId('edit-card-button')).toBeVisible();
     await expect(ovrigaParter.getByTestId('add-manual-person-button')).toBeVisible();
 
     await selectCategorization(page);
@@ -402,7 +439,7 @@ test.describe('Register new errand page', () => {
 
     const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
     await addStakeholder(page, ovrigaParter, 'CONTACT');
-    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
     await selectCategorization(page);
     await selectErrandOwner(page);
 
@@ -416,7 +453,7 @@ test.describe('Register new errand page', () => {
     expect(response.status()).toBe(502);
 
     await expect(page).toHaveURL(/\/alkoholtillstand$/);
-    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
     await expect(page.getByText('Något gick fel när ärendet sparades')).toBeVisible();
     await expect(page.getByText('Ärendet skickades in')).toHaveCount(0);
   });
@@ -430,20 +467,20 @@ test.describe('Register new errand page', () => {
     await manuallyAddStakeholder(page);
     await page.getByTestId('modal-cancel-person-button').click();
     await expect(page.getByTestId('manual-person-modal')).toHaveCount(0);
-    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(0);
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
 
     await ovrigaParter.getByTestId('add-manual-person-button').dispatchEvent('click');
     await manuallyAddStakeholder(page);
     await page.getByTestId('modal-add-person-button').click();
     await expect(page.getByTestId('manual-person-modal')).toHaveCount(0);
 
-    await expect(ovrigaParter.getByTestId('edit-card-button')).toBeVisible();
+    await expect(ovrigaParter.getByTestId('stakeholder-card').last().getByTestId('edit-card-button')).toBeVisible();
     await expect(ovrigaParter.getByTestId('remove-card-button')).toBeVisible();
     await expect(ovrigaParter.getByTestId('add-manual-person-button')).toBeVisible();
 
     await selectCategorization(page);
     await selectErrandOwner(page);
-    const body = await registerErrand(page, 2);
+    const body = await registerErrand(page, 3);
 
     expect(body.stakeholders).toContainEqual(
       expect.objectContaining({ role: 'CONTACT', externalIdType: 'PRIVATE', firstName: 'Test', lastName: 'Testsson' })
@@ -455,18 +492,19 @@ test.describe('Register new errand page', () => {
 
     const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
     await addStakeholder(page, ovrigaParter, 'CONTACT');
-    await expect(ovrigaParter.getByTestId('edit-card-button')).toBeVisible();
+    // The citizen's own card comes first and has no remove action.
+    const stakeholderCard = ovrigaParter.getByTestId('stakeholder-card').last();
+    await expect(stakeholderCard.getByTestId('edit-card-button')).toBeVisible();
     await ovrigaParter.getByTestId('remove-card-button').dispatchEvent('click');
-    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(0);
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
 
     await addStakeholder(page, ovrigaParter, 'CONTACT');
-    await ovrigaParter.getByTestId('edit-card-button').dispatchEvent('click');
+    await stakeholderCard.getByTestId('edit-card-button').dispatchEvent('click');
 
     await manuallyEditStakeholder(page, mockStakeholder);
     await page.getByTestId('modal-cancel-person-button').click();
     await expect(page.getByTestId('manual-person-modal')).toHaveCount(0);
 
-    const stakeholderCard = ovrigaParter.getByTestId('stakeholder-card');
     await expect(stakeholderCard.getByTestId('stakeholder-name')).toContainText(
       `${mockStakeholder.firstName ?? ''} ${mockStakeholder.lastName ?? ''}`
     );
@@ -474,7 +512,7 @@ test.describe('Register new errand page', () => {
     await expect(stakeholderCard.getByTestId('stakeholder-email')).toContainText(MOCK_EMAIL);
     await expect(stakeholderCard.getByTestId('stakeholder-phonenumber')).toContainText(MOCK_COUNTRY_CODE_PHONE_NUMBER);
 
-    await ovrigaParter.getByTestId('edit-card-button').dispatchEvent('click');
+    await stakeholderCard.getByTestId('edit-card-button').dispatchEvent('click');
     await manuallyEditStakeholder(page, mockStakeholder);
     await page.getByTestId('modal-add-person-button').click();
     await expect(page.getByTestId('manual-person-modal')).toHaveCount(0);
@@ -488,6 +526,6 @@ test.describe('Register new errand page', () => {
 
     await selectCategorization(page);
     await selectErrandOwner(page);
-    await registerErrand(page, 2);
+    await registerErrand(page, 3);
   });
 });

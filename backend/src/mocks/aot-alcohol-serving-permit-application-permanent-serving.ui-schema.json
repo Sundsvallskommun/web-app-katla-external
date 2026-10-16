@@ -24,8 +24,6 @@
     "serveringstiderInomhusSlutetSallskap",
     "serveringstiderUtomhusSlutetSallskap",
     "alkoholdrycker",
-    "menyval",
-    "menyBeskrivning",
     "finansiering",
     "egnaMedel",
     "banklan",
@@ -82,8 +80,6 @@
         "serveringstiderInomhusSlutetSallskap",
         "serveringstiderUtomhusSlutetSallskap",
         "alkoholdrycker",
-        "menyval",
-        "menyBeskrivning",
         "finansiering",
         "egnaMedel",
         "banklan",
@@ -104,7 +100,8 @@
     }
   ],
   "arDuFirmatecknare": {
-    "ui:widget": "RadiobuttonWidget"
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
   "fakturaadressSammaSomForetaget": {
     "ui:widget": "RadiobuttonWidget",
@@ -151,12 +148,12 @@
   },
   "verksamhetsbeskrivningsval": {
     "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
   "verksamhetsbeskrivning": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
-      "className": "w-full min-h-[14rem]"
+      "className": "w-full min-h-[24rem]"
     }
   },
   "kunskapOmAlkohollagen": {
@@ -433,17 +430,6 @@
       "multiple": true,
       "className": "w-full max-w-[48rem]"
     }
-  },
-  "menyval": {
-    "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>En förutsättning för att få servera alkoholdrycker är att det även serveras mat. Utbudet av mat ska vara tillrett, tillräckligt och tillgängligt. Detta innebär att du ska ha mat som du har kapacitet att tillreda på plats i restaurangen och matutbudet ska även alltid vara tillgängligt för gästerna i verksamheten. Du kan välja att bifoga en meny om du har en sådan. Annars kan du välja att skriva in denna i formuläret. Om du har en annan, enklare meny efter kl. 23 ska du även bifoga den eller skriva in denna i formuläret nedan. Exempel på rätter i en enklare meny är hamburgare, sallad, paj, varma smörgåsar och bakad potatis.</p>"
-  },
-  "menyBeskrivning": {
-    "ui:widget": "TexteditorWidget",
-    "ui:options": {
-      "className": "w-full min-h-[14rem]"
-    },
-    "ui:description": "<p>(den mat som kommer att serveras)</p>"
   },
   "finansiering": {
     "ui:widget": "checkboxes",

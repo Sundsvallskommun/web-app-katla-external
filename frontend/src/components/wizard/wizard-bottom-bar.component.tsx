@@ -1,5 +1,6 @@
 import i18nConfig from '@app/i18nConfig';
 import { CancelErrandDialog } from '@components/cancel-errand-dialog.component';
+import { CitizenContactDialog } from '@components/citizen-contact-dialog.component';
 import { useFormValidation } from '@contexts/form-validation-context';
 import { ErrandFormDTO } from '@interfaces/errand-form';
 import { CenterDiv } from '@layouts/center-div.component';
@@ -28,7 +29,7 @@ export const WizardBottomBar: React.FC = () => {
   const { getValues } = useFormContext<ErrandFormDTO>();
   const { setShowValidation } = useFormValidation();
   const reportValidationError = useReportValidationError();
-  const { validate, saveDraft, register } = useSaveErrand();
+  const { validate, saveDraft, register, citizenPrompt } = useSaveErrand();
   const { currentStep, goNext, goBack, setStepErrors } = useWizardStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
@@ -140,6 +141,7 @@ export const WizardBottomBar: React.FC = () => {
           window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
+      <CitizenContactDialog {...citizenPrompt} />
 
       <Dialog show={isOpen}>
         <Dialog.Content className="-mt-20">

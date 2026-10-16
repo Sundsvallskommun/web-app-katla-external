@@ -18,6 +18,7 @@ import {
   isOrganizationStakeholder,
   organizationAsPrimaryStakeholder,
   PRIMARY_STAKEHOLDER_ROLE,
+  withoutCitizenContact,
   withoutPrimaryStakeholder,
   withPrimaryStakeholder,
 } from '@utils/stakeholder';
@@ -83,9 +84,14 @@ export const ErrandOwnerContent: React.FC = () => {
     setSelfLookupFailed(false);
     try {
       const { data: self } = await getMyStakeholder();
-      setValue('stakeholders', withPrimaryStakeholder(getValues('stakeholders'), citizenAsPrimaryStakeholder(self)), {
-        shouldDirty: true,
-      });
+      setValue(
+        'stakeholders',
+        withPrimaryStakeholder(
+          withoutCitizenContact(getValues('stakeholders'), self),
+          citizenAsPrimaryStakeholder(self)
+        ),
+        { shouldDirty: true }
+      );
     } catch {
       setSelfLookupFailed(true);
     }

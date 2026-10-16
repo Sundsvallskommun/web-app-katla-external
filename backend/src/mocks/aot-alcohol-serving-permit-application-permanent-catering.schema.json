@@ -165,7 +165,8 @@
           },
           "ePostadress": {
             "type": "string",
-            "title": "E-postadress"
+            "title": "E-postadress",
+            "format": "email"
           }
         }
       },

@@ -10,7 +10,8 @@
     "errands": "The cases could not be retrieved. Please try again later.",
     "counts": "The number of cases could not be retrieved. Please try again later.",
     "errand": "The case could not be retrieved. Please try again later.",
-    "organizations": "Your companies and organisations could not be retrieved. Please try again later."
+    "organizations": "Your companies and organisations could not be retrieved. Please try again later.",
+    "citizen": "Your details could not be retrieved. Please try again later."
   },
   "errand-table": {
     "loading": "Loading cases",

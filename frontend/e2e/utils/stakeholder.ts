@@ -70,15 +70,13 @@ export const addStakeholder = async (page: Page, scope: Locator, role: string) =
   await syntheticClick(scope.locator('button', { hasText: 'Lägg till person' }));
 };
 
-/** Adds the logged in citizen in one click; contact details are edited on the card afterwards. */
-export const addSelfAsStakeholder = async (page: Page, scope: Locator) => {
-  await page.route('**/citizen/me', jsonRoute(mockSelfStakeholder));
-
-  const selfResponse = page.waitForResponse('**/citizen/me');
-  await scope.getByTestId('add-self-button').dispatchEvent('click');
-  await selfResponse;
-
-  await expect(scope.getByTestId('search-result')).toHaveCount(0);
+/** The logged in citizen is a contact person from the start and cannot be removed. */
+export const expectSelfAsContact = async (scope: Locator) => {
+  const card = scope.getByTestId('stakeholder-card').filter({ hasText: mockSelfStakeholder.firstName ?? '' });
+  await expect(card).toHaveCount(1);
+  await expect(card.getByTestId('stakeholder-role')).toHaveText('Kontaktperson');
+  await expect(card.getByTestId('edit-card-button')).toBeVisible();
+  await expect(card.getByTestId('remove-card-button')).toHaveCount(0);
   await expect(scope.getByTestId('add-self-button')).toHaveCount(0);
 };
 
