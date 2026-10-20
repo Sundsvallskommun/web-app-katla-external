@@ -2,7 +2,7 @@ import { Parameter, Stakeholder } from '@/data-contracts/support-management-alkt
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { OrganizationDTO } from '@/responses/legal-entity.response';
 import ApiService from '@/services/api.service';
-import { getOrganizationAddress } from '@/services/legal-entity.service';
+import { getOrganizationDetails, OrganizationAddress } from '@/services/legal-entity.service';
 import { logger } from '@/utils/logger';
 import { requireServiceKey } from '@/utils/service-context';
 import { ORGANIZATION_NUMBER_PARAMETER } from '@/utils/stakeholder-mapping';
@@ -10,8 +10,9 @@ import { ORGANIZATION_NUMBER_PARAMETER } from '@/utils/stakeholder-mapping';
 const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
 const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
 const COUNTRY = 'SVERIGE';
+const PHONE_CHANNEL = 'phone';
 
-type AddressLookup = Pick<ApiService, 'get'>;
+type DetailsLookup = Pick<ApiService, 'get'>;
 
 const isPrimaryStakeholder = (stakeholder: Stakeholder): boolean => stakeholder.role === PRIMARY_STAKEHOLDER_ROLE;
 
@@ -39,7 +40,25 @@ const filled = (value: string | null | undefined): string | undefined => (value?
 const hasAddress = (stakeholder: Stakeholder): boolean =>
   Boolean(filled(stakeholder.address) && filled(stakeholder.zipCode) && filled(stakeholder.city));
 
-const completePrimaryStakeholder = async (stakeholder: Stakeholder, req: RequestWithUser, api?: AddressLookup): Promise<Stakeholder> => {
+const hasPhone = (stakeholder: Stakeholder): boolean =>
+  (stakeholder.contactChannels ?? []).some(channel => channel.type === PHONE_CHANNEL && filled(channel.value));
+
+const withRegisteredAddress = (stakeholder: Stakeholder, registered: OrganizationAddress | undefined): Stakeholder =>
+  registered
+    ? {
+        ...stakeholder,
+        address: filled(stakeholder.address) ?? registered.address,
+        zipCode: filled(stakeholder.zipCode) ?? registered.zipCode,
+        city: filled(stakeholder.city) ?? registered.city,
+      }
+    : stakeholder;
+
+const withRegisteredPhone = (stakeholder: Stakeholder, registered: string | undefined): Stakeholder =>
+  registered && !hasPhone(stakeholder)
+    ? { ...stakeholder, contactChannels: [...(stakeholder.contactChannels ?? []), { type: PHONE_CHANNEL, value: registered }] }
+    : stakeholder;
+
+const completePrimaryStakeholder = async (stakeholder: Stakeholder, req: RequestWithUser, api?: DetailsLookup): Promise<Stakeholder> => {
   const partyId = stakeholder.externalId?.toLowerCase();
   const organization = req.session.representingBusinessChoices?.[requireServiceKey(req)]?.find(
     candidate => candidate.partyId.toLowerCase() === partyId,
@@ -51,34 +70,28 @@ const completePrimaryStakeholder = async (stakeholder: Stakeholder, req: Request
     ...(organization && { parameters: withOrganizationNumber(stakeholder.parameters, organization.organizationNumber) }),
   };
 
-  if (!organization || hasAddress(completed)) return completed;
+  if (!organization || (hasAddress(completed) && hasPhone(completed))) return completed;
 
   // Best effort.
   try {
-    const registered = await getOrganizationAddress(organization.partyId, req, api);
-    if (!registered) return completed;
+    const registered = await getOrganizationDetails(organization.partyId, req, api);
 
-    return {
-      ...completed,
-      address: filled(completed.address) ?? registered.address,
-      zipCode: filled(completed.zipCode) ?? registered.zipCode,
-      city: filled(completed.city) ?? registered.city,
-    };
+    return withRegisteredPhone(withRegisteredAddress(completed, registered.address), registered.phone);
   } catch (error) {
-    logger.warn(`Could not read the address for organization ${organization.partyId}; filing the errand without it`);
+    logger.warn(`Could not read the registered details for organization ${organization.partyId}; filing the errand without them`);
     logger.debug(error);
     return completed;
   }
 };
 
 /**
- * Adds the organisation number (session) and registered address (LegalEntity) Draken expects on
- * the owner. Runs on every write, since the DTO carries no parameters.
+ * Adds the organisation number (session) and the registered address and phone (LegalEntity)
+ * Draken expects on the owner. Runs on every write, since the DTO carries no parameters.
  */
 export const completePrimaryStakeholders = (
   stakeholders: Stakeholder[] | undefined,
   req: RequestWithUser,
-  api?: AddressLookup,
+  api?: DetailsLookup,
 ): Promise<Stakeholder[] | undefined> | undefined =>
   stakeholders &&
   Promise.all(

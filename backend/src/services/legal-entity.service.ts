@@ -37,18 +37,25 @@ export interface OrganizationAddress {
   city: string;
 }
 
-export const getOrganizationAddress = async (
-  partyId: string,
-  req: Sender,
-  api: LegalEntityApi = defaultApi,
-): Promise<OrganizationAddress | undefined> => {
+/** What LegalEntity holds of the details Draken requires on the owner; each only when complete. */
+export interface OrganizationDetails {
+  address?: OrganizationAddress;
+  phone?: string;
+}
+
+export const getOrganizationDetails = async (partyId: string, req: Sender, api: LegalEntityApi = defaultApi): Promise<OrganizationDetails> => {
   const url = `${legalEntityBase}/${MUNICIPALITY_ID}/${partyId}`;
   const res = await api.get<LegalEntity2>({ url }, req);
   const address = res.data?.address;
+  const phone = res.data?.phoneNumber?.trim();
 
-  if (!address?.addressArea || !address.postalCode || !address.city) return undefined;
-
-  return { address: address.addressArea, zipCode: address.postalCode, city: address.city };
+  return {
+    address:
+      address?.addressArea && address.postalCode && address.city
+        ? { address: address.addressArea, zipCode: address.postalCode, city: address.city }
+        : undefined,
+    phone: phone === '' ? undefined : phone,
+  };
 };
 
 /** Organisations the citizen is registered in directly. */

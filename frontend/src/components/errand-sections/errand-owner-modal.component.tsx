@@ -28,30 +28,34 @@ const ContactList: React.FC<{
   validate: (value: string) => string | null;
   format?: (value: string) => string;
   onChange: (values: string[]) => void;
-}> = ({ label, placeholder, name, values, validate, format, onChange }) => {
+  required?: boolean;
+  /** Reported by the save, which is where an empty required list shows. */
+  requiredError?: string | null;
+}> = ({ label, placeholder, name, values, validate, format, onChange, required, requiredError }) => {
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
+  const error = addError ?? requiredError ?? null;
 
   const add = () => {
     const value = format ? format(draft.trim()) : draft.trim();
     const validationError = validate(value);
     if (validationError) {
-      setError(validationError);
+      setAddError(validationError);
       return;
     }
     // Silently ignoring a duplicate reads as the button not working, so it is an error too.
     if (values.includes(value)) {
-      setError(t('errand-information:owner.modal.already_added'));
+      setAddError(t('errand-information:owner.modal.already_added'));
       return;
     }
     onChange([...values, value]);
     setDraft('');
-    setError(null);
+    setAddError(null);
   };
 
   return (
-    <FormControl className="w-full" invalid={error !== null}>
+    <FormControl className="w-full" required={required} invalid={error !== null}>
       <FormLabel htmlFor={`owner-${name}-input`}>{label}</FormLabel>
       <div className="flex gap-8 items-start">
         <Input
@@ -62,7 +66,7 @@ const ContactList: React.FC<{
           value={draft}
           onChange={(event) => {
             setDraft(event.target.value);
-            setError(null);
+            setAddError(null);
           }}
         />
         <Button data-cy={`owner-${name}-add`} variant="secondary" leftIcon={<Plus size={16} />} onClick={add}>
@@ -107,11 +111,17 @@ export const ErrandOwnerModal: React.FC<{
   const { t } = useTranslation();
   const [emails, setEmails] = useState<string[]>([]);
   const [phoneNumbers, setPhoneNumbers] = useState<string[]>([]);
+  const [phoneMissing, setPhoneMissing] = useState(false);
 
   // Rebuilt when the language changes: yup freezes the error messages at construction.
   const contactSchema = useMemo(() => createStakeholderSchema(t), [t]);
 
-  const { register, handleSubmit, reset } = useForm<OwnerDetailsForm>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<OwnerDetailsForm>();
 
   // Reopening after a cancel must show what was filed, not the abandoned edits.
   useEffect(() => {
@@ -124,6 +134,7 @@ export const ErrandOwnerModal: React.FC<{
     });
     setEmails(owner.emails ?? []);
     setPhoneNumbers(owner.phoneNumbers ?? []);
+    setPhoneMissing(false);
   }, [show, owner, reset]);
 
   const validateWith = (field: 'emails' | 'phoneNumbers') => (value: string) => {
@@ -135,14 +146,21 @@ export const ErrandOwnerModal: React.FC<{
     }
   };
 
+  // Refused here rather than at registration: the modal is where the owner is completed.
   const save = (details: OwnerDetailsForm) => {
+    if (phoneNumbers.length === 0) return;
     onSave({
       ...owner,
       ...details,
       emails: emails.length ? emails : undefined,
-      phoneNumbers: phoneNumbers.length ? phoneNumbers : undefined,
+      phoneNumbers,
     });
     onClose();
+  };
+
+  const submit = (event: React.BaseSyntheticEvent) => {
+    setPhoneMissing(phoneNumbers.length === 0);
+    void handleSubmit(save)(event);
   };
 
   return (
@@ -178,9 +196,16 @@ export const ErrandOwnerModal: React.FC<{
         }
 
         <div className="flex gap-8">
-          <FormControl className="min-w-0 flex-1">
+          <FormControl className="min-w-0 flex-1" required invalid={errors.address !== undefined}>
             <FormLabel htmlFor="owner-address">{t('errand-information:stakeholder.modal.address')}</FormLabel>
-            <Input id="owner-address" data-cy="owner-address-input" {...register('address')} />
+            <Input
+              id="owner-address"
+              data-cy="owner-address-input"
+              {...register('address', { required: t('validation:owner.address_required') })}
+            />
+            {errors.address && (
+              <FormErrorMessage data-cy="owner-address-error">{errors.address.message}</FormErrorMessage>
+            )}
           </FormControl>
           <FormControl className="min-w-0 flex-1">
             <FormLabel htmlFor="owner-careOf">{t('errand-information:stakeholder.modal.care_of')}</FormLabel>
@@ -189,13 +214,25 @@ export const ErrandOwnerModal: React.FC<{
         </div>
 
         <div className="flex gap-8">
-          <FormControl className="min-w-0 flex-1">
+          <FormControl className="min-w-0 flex-1" required invalid={errors.zipCode !== undefined}>
             <FormLabel htmlFor="owner-zipCode">{t('errand-information:stakeholder.modal.zip_code')}</FormLabel>
-            <Input id="owner-zipCode" data-cy="owner-zipCode-input" {...register('zipCode')} />
+            <Input
+              id="owner-zipCode"
+              data-cy="owner-zipCode-input"
+              {...register('zipCode', { required: t('validation:owner.zip_code_required') })}
+            />
+            {errors.zipCode && (
+              <FormErrorMessage data-cy="owner-zipCode-error">{errors.zipCode.message}</FormErrorMessage>
+            )}
           </FormControl>
-          <FormControl className="min-w-0 flex-1">
+          <FormControl className="min-w-0 flex-1" required invalid={errors.city !== undefined}>
             <FormLabel htmlFor="owner-city">{t('errand-information:stakeholder.modal.city')}</FormLabel>
-            <Input id="owner-city" data-cy="owner-city-input" {...register('city')} />
+            <Input
+              id="owner-city"
+              data-cy="owner-city-input"
+              {...register('city', { required: t('validation:owner.city_required') })}
+            />
+            {errors.city && <FormErrorMessage data-cy="owner-city-error">{errors.city.message}</FormErrorMessage>}
           </FormControl>
         </div>
 
@@ -206,7 +243,12 @@ export const ErrandOwnerModal: React.FC<{
           values={phoneNumbers}
           validate={validateWith('phoneNumbers')}
           format={phoneNumberFormatter}
-          onChange={setPhoneNumbers}
+          required
+          requiredError={phoneMissing ? t('validation:owner.phone_required') : null}
+          onChange={(values) => {
+            setPhoneNumbers(values);
+            setPhoneMissing(false);
+          }}
         />
 
         <ContactList
@@ -220,14 +262,7 @@ export const ErrandOwnerModal: React.FC<{
       </Modal.Content>
 
       <Modal.Footer className="max-sm:flex-col max-sm:gap-8">
-        <Button
-          data-cy="owner-modal-save"
-          variant="primary"
-          className="max-sm:w-full"
-          onClick={(event) => {
-            void handleSubmit(save)(event);
-          }}
-        >
+        <Button data-cy="owner-modal-save" variant="primary" className="max-sm:w-full" onClick={submit}>
           {t('errand-information:owner.modal.save')}
         </Button>
         <Button data-cy="owner-modal-cancel" variant="secondary" className="max-sm:w-full" onClick={onClose}>

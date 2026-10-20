@@ -1,6 +1,8 @@
 import { FormValidationProvider } from '@contexts/form-validation-provider';
 import { MyStakeholderContext } from '@contexts/my-stakeholder-context';
 import type { StakeholderDTO } from '@data-contracts/backend/data-contracts';
+import { mockOrganization } from '@e2e/fixtures/getMyOrganizations';
+import { ownerStakeholderFor } from '@e2e/fixtures/getOwnerStakeholder';
 import type { ErrandFormDTO } from '@interfaces/errand-form';
 import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -69,9 +71,9 @@ vi.mock('@sk-web-gui/react', () => {
   return { Button, cx, Dialog, useSnackbar: () => snackbarMock };
 });
 
-const OWNER: ErrandFormDTO['stakeholders'] = [
-  { role: 'PRIMARY', externalId: 'f1e2d3c4-0000-4000-8000-000000000001', organizationName: 'Acme Restaurang AB' },
-];
+const OWNER: ErrandFormDTO['stakeholders'] = [ownerStakeholderFor(mockOrganization)];
+const { address, zipCode, city, phoneNumbers } = ownerStakeholderFor(mockOrganization);
+const OWNER_DETAILS = { address, zipCode, city, phoneNumbers };
 
 const SELF: StakeholderDTO = { externalId: 'f1e2d3c4-0000-4000-8000-000000000009', firstName: 'Anna' };
 const SELF_AS_CONTACT: StakeholderDTO = { ...SELF, role: 'CONTACT', externalIdType: 'PRIVATE' };
@@ -144,6 +146,14 @@ describe('What registration requires before it will submit', () => {
     clickRegister();
 
     await expectReported('validation:owner.required');
+  });
+
+  it('refuses to register while the owner lacks the details Draken requires', async () => {
+    renderButtons({ labels: CLASSIFICATION, stakeholders: [{ ...OWNER[0], phoneNumbers: [] }] });
+
+    clickRegister();
+
+    await expectReported('validation:owner.details_required');
   });
 
   it('opens the confirmation once the errand is categorized and has an owner', async () => {
@@ -280,7 +290,7 @@ describe('What registration requires before it will submit', () => {
     it('asks nothing when the citizen is the owner', async () => {
       renderButtons({
         labels: CLASSIFICATION,
-        stakeholders: [{ ...SELF, role: 'PRIMARY', externalIdType: 'PRIVATE' }],
+        stakeholders: [{ ...SELF, ...OWNER_DETAILS, role: 'PRIMARY', externalIdType: 'PRIVATE' }],
       });
 
       clickRegister();

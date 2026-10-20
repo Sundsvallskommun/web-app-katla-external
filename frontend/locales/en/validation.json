@@ -22,7 +22,12 @@
     "phone_invalid": "Enter a valid mobile number, for example 0731234567, +46731234567 or 0046731234567."
   },
   "owner": {
-    "required": "Select the company or organisation the case concerns, or add yourself as a private person."
+    "required": "Select the company or organisation the case concerns, or add yourself as a private person.",
+    "details_required": "Fill in the case owner's address, postal code, city and phone number under Edit details.",
+    "address_required": "Address cannot be empty",
+    "zip_code_required": "Postal code cannot be empty",
+    "city_required": "City cannot be empty",
+    "phone_required": "Add at least one phone number"
   },
   "categorization": {
     "category_required": "Select the category the case concerns.",

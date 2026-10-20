@@ -1,4 +1,6 @@
 import { FormValidationProvider } from '@contexts/form-validation-provider';
+import { mockOrganization } from '@e2e/fixtures/getMyOrganizations';
+import { ownerStakeholderFor } from '@e2e/fixtures/getOwnerStakeholder';
 import type { ErrandFormDTO } from '@interfaces/errand-form';
 import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -60,7 +62,7 @@ function TestForm() {
   const methods = useForm<ErrandFormDTO>({
     defaultValues: {
       // Registration refuses an errand without an owner before it looks at the form data.
-      stakeholders: [{ role: 'PRIMARY', externalId: 'f1e2d3c4-0000-4000-8000-000000000001' }],
+      stakeholders: [ownerStakeholderFor(mockOrganization)],
       // Labels select the schema; without them the broken entry is filtered out before the save.
       labels: [
         { id: 'alkohol', classification: 'CATEGORY', resourceName: 'ALCOHOL' },

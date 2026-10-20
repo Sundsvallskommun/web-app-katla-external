@@ -7,7 +7,7 @@ import { ErrandFormDTO } from '@interfaces/errand-form';
 import { validateErrandAttachments } from '@utils/errand-attachments';
 import { getSelectedLabels } from '@utils/label-tree';
 import { validateErrandStops } from '@utils/schema-stops';
-import { getPrimaryStakeholder } from '@utils/stakeholder';
+import { getPrimaryStakeholder, hasOwnerDetails } from '@utils/stakeholder';
 import type { TFunction } from 'i18next';
 
 /** What the errand is about to be saved as. A draft is held to fewer rules than a registration. */
@@ -31,6 +31,12 @@ export const validateCategorization = (values: ErrandFormDTO, t: TFunction): str
 // citizen who filed it could not read it back.
 export const validateOwner = (values: ErrandFormDTO, t: TFunction): string[] =>
   getPrimaryStakeholder(values.stakeholders) ? [] : [t('validation:owner.required')];
+
+// Only the citizen can supply these, so a registration stops here rather than in Draken's review.
+export const validateOwnerDetails = (values: ErrandFormDTO, t: TFunction): string[] => {
+  const owner = getPrimaryStakeholder(values.stakeholders);
+  return owner && !hasOwnerDetails(owner) ? [t('validation:owner.details_required')] : [];
+};
 
 /**
  * Upstream validates the filed answers against their schema, so an invalid form is shown here
@@ -62,6 +68,7 @@ export async function validateErrandForSave(
       [
         () => validateCategorization(values, t),
         () => validateOwner(values, t),
+        () => validateOwnerDetails(values, t),
         () => validateFormData(values, intent, tForms, locale, namespace),
         () => validateErrandStops(values, t, locale, namespace),
         () => validateErrandAttachments(values, t, locale, namespace),

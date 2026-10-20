@@ -73,18 +73,20 @@ export const StakeholderCard: React.FC<{
                 {organizationNumber && <div data-cy="stakeholder-organizationNumber">{organizationNumber}</div>}
               </div>
               <div className="flex flex-col min-w-0">
-                {(stakeholder.address ?? stakeholder.city) && (
-                  <div data-cy="stakeholder-address">
-                    {[stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
+                <div data-cy="stakeholder-address">
+                  {(stakeholder.address ?? stakeholder.city) ?
+                    [stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
                       .filter(Boolean)
-                      .join(' ')}
-                  </div>
-                )}
-                {stakeholder.phoneNumbers?.map((phoneNumber) => (
-                  <div key={phoneNumber} data-cy="stakeholder-phonenumber">
-                    {phoneNumber}
-                  </div>
-                ))}
+                      .join(' ')
+                  : t('errand-information:stakeholder.missing_address')}
+                </div>
+                {stakeholder.phoneNumbers?.length ?
+                  stakeholder.phoneNumbers.map((phoneNumber) => (
+                    <div key={phoneNumber} data-cy="stakeholder-phonenumber">
+                      {phoneNumber}
+                    </div>
+                  ))
+                : <div data-cy="stakeholder-phonenumber">{t('errand-information:stakeholder.missing_phone')}</div>}
                 {stakeholder.emails?.map((email) => (
                   <div key={email} data-cy="stakeholder-email">
                     {email}

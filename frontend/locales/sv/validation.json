@@ -22,7 +22,12 @@
     "phone_invalid": "Fyll i ett giltigt mobilnummer, till exempel 0731234567, +46731234567 eller 0046731234567."
   },
   "owner": {
-    "required": "Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson."
+    "required": "Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson.",
+    "details_required": "Fyll i ärendeägarens adress, postnummer, ort och telefonnummer under Redigera uppgifter.",
+    "address_required": "Adress får inte vara tom",
+    "zip_code_required": "Postnummer får inte vara tomt",
+    "city_required": "Ort får inte vara tom",
+    "phone_required": "Lägg till minst ett telefonnummer"
   },
   "categorization": {
     "category_required": "Välj vilken kategori ärendet gäller.",

@@ -24,6 +24,8 @@ export default defineConfig({
       '@middlewares': path.resolve(dirname, 'src/utils/middlewares'),
       '@public': path.resolve(dirname, 'public'),
       '@data-contracts': path.resolve(dirname, 'src/data-contracts'),
+      // Unit tests reuse the e2e fixtures rather than keeping a second set of mock data.
+      '@e2e': path.resolve(dirname, 'e2e'),
       src: path.resolve(dirname, 'src'),
     },
   },
