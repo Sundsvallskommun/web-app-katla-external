@@ -12,6 +12,7 @@ import {
   mockCitizenPartyId,
   mockForeignOrganizationPartyId,
   mockOrganizationPartyId,
+  mockPhoneNumber,
   mockSecondaryOrganizationPartyId,
   mockServiceKey,
 } from './helpers/mock-data';
@@ -61,7 +62,7 @@ describe('my organizations', () => {
     beforeEach(() => {
       vi.clearAllMocks();
       get.mockResolvedValue({
-        data: { address: { addressArea: 'Storgatan 1', postalCode: '85230', city: 'Sundsvall' }, phoneNumber: '060-123456' },
+        data: { address: { addressArea: 'Storgatan 1', postalCode: '85230', city: 'Sundsvall' }, phoneNumber: mockPhoneNumber },
       });
     });
 
@@ -78,7 +79,7 @@ describe('my organizations', () => {
         zipCode: '85230',
         city: 'Sundsvall',
         country: 'SVERIGE',
-        phoneNumbers: ['060-123456'],
+        phoneNumbers: [mockPhoneNumber],
       });
     });
 

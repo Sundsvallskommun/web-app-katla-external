@@ -4,7 +4,7 @@ import { Stakeholder } from '@/data-contracts/support-management-alkt-sprint/dat
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
 
-import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId, mockServiceKey } from './helpers/mock-data';
+import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId, mockPhoneNumber, mockServiceKey } from './helpers/mock-data';
 
 vi.mock('@/utils/logger', () => ({ logger: { warn: vi.fn(), debug: vi.fn() } }));
 
@@ -31,7 +31,7 @@ const owner = (overrides: Partial<Stakeholder> = {}): Stakeholder => ({
 });
 
 const registeredAddress = { addressArea: 'TRANSPORTGATAN 36', postalCode: '42246', city: 'HISINGS BACKA' };
-const registeredPhone = '060-123456';
+const registeredPhone = mockPhoneNumber;
 const phoneChannel = (value: string) => ({ type: 'phone', value });
 
 const organizationNumberParameter = { key: 'organizationNumber', displayName: 'Organisationsnummer', values: ['111111-2222'] };

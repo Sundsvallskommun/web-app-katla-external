@@ -25,7 +25,8 @@ describe('formSchemaValidator', () => {
       expect.arrayContaining([expect.objectContaining({ name: 'dependentRequired' })])
     );
     expect(
-      formSchemaValidator.validateFormData({ email: 'person@example.com', phone: '060-123456' }, schema).errors
+      // 0701740635 is a mock phone number from PTS, not a real number
+      formSchemaValidator.validateFormData({ email: 'person@example.com', phone: '0701740635' }, schema).errors
     ).toEqual([]);
   });
 
