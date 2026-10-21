@@ -1,4 +1,6 @@
 import { schemaNamesForErrand } from '@components/json/utils/schema-utils';
+import { mockOrganization } from '@e2e/fixtures/getMyOrganizations';
+import { ownerStakeholderFor } from '@e2e/fixtures/getOwnerStakeholder';
 import type { ErrandFormDTO } from '@interfaces/errand-form';
 import { validateErrandForSave } from '@utils/errand-preconditions';
 import type { TFunction } from 'i18next';
@@ -29,7 +31,8 @@ const t = ((key: string) => key) as unknown as TFunction;
 const tForms = ((key: string) => `forms:${key}`) as unknown as TFunction;
 const context = { t, tForms, locale: 'sv', namespace: 'AOT' };
 
-const OWNER: ErrandFormDTO['stakeholders'] = [{ role: 'PRIMARY', externalId: 'f1e2d3c4-0000-4000-8000-000000000001' }];
+const OWNER: ErrandFormDTO['stakeholders'] = [ownerStakeholderFor(mockOrganization)];
+const OWNER_WITHOUT_PHONE: ErrandFormDTO['stakeholders'] = [{ ...OWNER[0], phoneNumbers: undefined }];
 
 const LABELS: ErrandFormDTO['labels'] = [
   { id: 'alkohol', classification: 'CATEGORY', resourceName: 'ALCOHOL' },
@@ -65,6 +68,14 @@ describe('validateErrandForSave for a registration', () => {
     await expect(validateErrandForSave(errand({ stakeholders: [] }), 'register', context)).resolves.toEqual([
       'validation:owner.required',
     ]);
+  });
+
+  // Draken stops the case without them, and only the citizen can supply them.
+  it('asks for the owner details before the form is looked at', async () => {
+    await expect(
+      validateErrandForSave(errand({ stakeholders: OWNER_WITHOUT_PHONE }), 'register', context)
+    ).resolves.toEqual(['validation:owner.details_required']);
+    expect(validateErrandFormDataMock).not.toHaveBeenCalled();
   });
 
   it('requires every form of the ärendetyp, in the forms language', async () => {
@@ -105,6 +116,12 @@ describe('validateErrandForSave for a draft', () => {
     await expect(validateErrandForSave(errand({ stakeholders: [] }), 'draft', context)).resolves.toEqual([
       'validation:owner.required',
     ]);
+  });
+
+  it('saves a draft whose owner has no phone yet', async () => {
+    await expect(
+      validateErrandForSave(errand({ stakeholders: OWNER_WITHOUT_PHONE }), 'draft', context)
+    ).resolves.toEqual([]);
   });
 
   it('accepts an uncategorized draft and asks for no bilagor', async () => {

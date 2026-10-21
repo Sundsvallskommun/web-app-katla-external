@@ -5,6 +5,7 @@ import {
   validateCategorization,
   validateFormData,
   validateOwner,
+  validateOwnerDetails,
 } from '@utils/errand-preconditions';
 
 import { WizardStep } from './wizard-steps';
@@ -23,8 +24,10 @@ export async function validateStep(
   switch (step.id) {
     case 'about':
       return validateCategorization(formValues, t);
-    case 'owner':
-      return validateOwner(formValues, t);
+    case 'owner': {
+      const missingOwner = validateOwner(formValues, t);
+      return missingOwner.length > 0 ? missingOwner : validateOwnerDetails(formValues, t);
+    }
     case 'details':
       return validateFormData(formValues, 'register', tForms, locale, namespace);
     case 'attachments':

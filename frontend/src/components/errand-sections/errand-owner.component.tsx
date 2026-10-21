@@ -15,6 +15,7 @@ import { INVALID_FIELD_ATTRIBUTE } from '@utils/focus-first-error';
 import {
   citizenAsPrimaryStakeholder,
   getPrimaryStakeholder,
+  hasOwnerDetails,
   isOrganizationStakeholder,
   organizationAsPrimaryStakeholder,
   PRIMARY_STAKEHOLDER_ROLE,
@@ -29,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { useMyOrganizations } from 'src/hooks/use-my-organizations';
 
 const OWNER_FIELD_ID = 'errand-owner';
+const OWNER_DETAILS_FIELD_ID = 'errand-owner-details';
 
 export const ErrandOwnerContent: React.FC = () => {
   const { t } = useTranslation();
@@ -103,6 +105,8 @@ export const ErrandOwnerContent: React.FC = () => {
 
   const hasError = showValidation && owner === undefined;
   const invalidFieldProps = hasError ? { [INVALID_FIELD_ATTRIBUTE]: OWNER_FIELD_ID } : {};
+  const hasDetailsError = showValidation && owner !== undefined && !hasOwnerDetails(owner);
+  const invalidDetailsProps = hasDetailsError ? { [INVALID_FIELD_ATTRIBUTE]: OWNER_DETAILS_FIELD_ID } : {};
   const showSelect = !isLocked && !ownerIsPerson && organizations.length > 0;
   const showAddSelf = !isLocked && owner === undefined;
 
@@ -180,7 +184,7 @@ export const ErrandOwnerContent: React.FC = () => {
           )}
 
           {owner && (
-            <>
+            <div {...invalidDetailsProps}>
               <StakeholderCard
                 stakeholder={owner}
                 roles={[PRIMARY_STAKEHOLDER_ROLE]}
@@ -209,6 +213,11 @@ export const ErrandOwnerContent: React.FC = () => {
                   </>
                 }
               />
+              {hasDetailsError && (
+                <FormErrorMessage data-cy="errand-owner-details-error" className="text-error">
+                  {t('validation:owner.details_required')}
+                </FormErrorMessage>
+              )}
               <ErrandOwnerModal
                 owner={owner}
                 organizationNumber={organizationNumber}
@@ -218,7 +227,7 @@ export const ErrandOwnerContent: React.FC = () => {
                 }}
                 onSave={replaceOwner}
               />
-            </>
+            </div>
           )}
         </div>
       )}

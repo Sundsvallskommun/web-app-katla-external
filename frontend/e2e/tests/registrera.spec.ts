@@ -13,7 +13,12 @@ import {
 } from '../fixtures/mockMetadata';
 import { mockManualEditStakeholder, mockSelfStakeholder, mockStakeholder } from '../fixtures/mockStakeholder';
 import { aboutErrandSection, selectCategorization } from '../utils/categorization';
-import { MOCK_COUNTRY_CODE_PHONE_NUMBER, MOCK_EMAIL, MOCK_HYPHEN_PERSON_NUMBER } from '../utils/constants';
+import {
+  MOCK_COUNTRY_CODE_PHONE_NUMBER,
+  MOCK_EMAIL,
+  MOCK_HYPHEN_PERSON_NUMBER,
+  MOCK_PHONE_NUMBER,
+} from '../utils/constants';
 import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
 import { emptyRoute, jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
@@ -29,6 +34,8 @@ import { expect, test } from '../utils/test';
 const OWNER_REQUIRED_MESSAGE =
   'Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson.';
 const CATEGORY_REQUIRED_MESSAGE = 'Välj vilken kategori ärendet gäller.';
+const OWNER_DETAILS_REQUIRED_MESSAGE =
+  'Fyll i ärendeägarens adress, postnummer, ort och telefonnummer under Redigera uppgifter.';
 
 /** A metadata label as the errand stores it, without the subtree. */
 const asErrandLabel = ({ classification, displayName, id, resourceName, resourcePath }: LabelDTO) => ({
@@ -323,8 +330,13 @@ test.describe('Register new errand page', () => {
     await expect(page.getByTestId('owner-personNumber')).toHaveValue(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(page.getByTestId('owner-personNumber')).toHaveAttribute('readonly', '');
     await page.getByTestId('owner-careOf-input').fill('c/o Festlokalen');
+    // The citizen record carries no phone, which Draken requires, so the owner adds one.
+    await page.getByTestId('owner-phone-input').fill(MOCK_PHONE_NUMBER);
+    await page.getByTestId('owner-phone-add').click();
+    await expect(page.getByTestId('owner-phone-value')).toHaveText(MOCK_COUNTRY_CODE_PHONE_NUMBER);
     await page.getByTestId('owner-modal-save').click();
     await expect(owner.getByTestId('stakeholder-address')).toContainText('c/o Festlokalen');
+    await expect(owner.getByTestId('stakeholder-phonenumber')).toHaveText(MOCK_COUNTRY_CODE_PHONE_NUMBER);
 
     const submitButton = await openRegistrationConfirmation(page);
     const createRequest = page.waitForRequest(
@@ -340,8 +352,21 @@ test.describe('Register new errand page', () => {
         externalId: mockSelfStakeholder.externalId,
         firstName: mockSelfStakeholder.firstName,
         careOf: 'c/o Festlokalen',
+        phoneNumbers: [MOCK_COUNTRY_CODE_PHONE_NUMBER],
       }),
     ]);
+  });
+
+  test('Refuses to register while the owner lacks a phone number', async ({ page }) => {
+    const owner = errandOwnerSection(page);
+    await selectCategorization(page);
+    await addSelfAsErrandOwner(page);
+
+    await page.getByTestId('register-errand').click();
+
+    await expect(owner.getByTestId('errand-owner-details-error')).toContainText(OWNER_DETAILS_REQUIRED_MESSAGE);
+    await expect(page.locator('#react-toast').getByText(OWNER_DETAILS_REQUIRED_MESSAGE)).toBeVisible();
+    await expect(page.getByTestId('submit-button')).toHaveCount(0);
   });
 
   test('Removing the private owner offers the organizations and the citizen again', async ({ page }) => {

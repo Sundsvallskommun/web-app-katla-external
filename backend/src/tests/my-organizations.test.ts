@@ -12,6 +12,7 @@ import {
   mockCitizenPartyId,
   mockForeignOrganizationPartyId,
   mockOrganizationPartyId,
+  mockPhoneNumber,
   mockSecondaryOrganizationPartyId,
   mockServiceKey,
 } from './helpers/mock-data';
@@ -60,10 +61,12 @@ describe('my organizations', () => {
 
     beforeEach(() => {
       vi.clearAllMocks();
-      get.mockResolvedValue({ data: { address: { addressArea: 'Storgatan 1', postalCode: '85230', city: 'Sundsvall' } } });
+      get.mockResolvedValue({
+        data: { address: { addressArea: 'Storgatan 1', postalCode: '85230', city: 'Sundsvall' }, phoneNumber: mockPhoneNumber },
+      });
     });
 
-    it('returns the organisation as the errand will file it: number and registered address included', async () => {
+    it('returns the organisation as the errand will file it: number, registered address and phone included', async () => {
       const stakeholder = await new LegalEntityController().ownerStakeholder(requestWithOrganizations(organizations), mockOrganizationPartyId);
 
       expect(stakeholder).toEqual({
@@ -76,6 +79,7 @@ describe('my organizations', () => {
         zipCode: '85230',
         city: 'Sundsvall',
         country: 'SVERIGE',
+        phoneNumbers: [mockPhoneNumber],
       });
     });
 

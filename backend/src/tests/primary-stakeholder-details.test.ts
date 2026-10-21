@@ -4,7 +4,7 @@ import { Stakeholder } from '@/data-contracts/support-management-alkt-sprint/dat
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
 
-import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId, mockServiceKey } from './helpers/mock-data';
+import { mockCitizenPartyId, mockOrganizationName, mockOrganizationPartyId, mockPhoneNumber, mockServiceKey } from './helpers/mock-data';
 
 vi.mock('@/utils/logger', () => ({ logger: { warn: vi.fn(), debug: vi.fn() } }));
 
@@ -31,6 +31,8 @@ const owner = (overrides: Partial<Stakeholder> = {}): Stakeholder => ({
 });
 
 const registeredAddress = { addressArea: 'TRANSPORTGATAN 36', postalCode: '42246', city: 'HISINGS BACKA' };
+const registeredPhone = mockPhoneNumber;
+const phoneChannel = (value: string) => ({ type: 'phone', value });
 
 const organizationNumberParameter = { key: 'organizationNumber', displayName: 'Organisationsnummer', values: ['111111-2222'] };
 
@@ -43,7 +45,7 @@ const complete = async (stakeholder: Stakeholder): Promise<Stakeholder> => {
 describe('primary stakeholder details', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    get.mockResolvedValue({ data: { address: registeredAddress } });
+    get.mockResolvedValue({ data: { address: registeredAddress, phoneNumber: registeredPhone } });
   });
 
   it('files the organisation number from the session as a parameter, hyphenated as Draken does', async () => {
@@ -52,15 +54,21 @@ describe('primary stakeholder details', () => {
     expect(completed.parameters).toEqual([{ key: 'serveringsstalle', values: ['Selånger Padelcenter'] }, organizationNumberParameter]);
   });
 
-  it('fills the registered address from LegalEntity', async () => {
+  it('fills the registered address and phone from LegalEntity', async () => {
     const completed = await complete(owner());
 
     expect(get.mock.calls[0]?.[0].url).toContain(`/${mockOrganizationPartyId}`);
-    expect(completed).toMatchObject({ address: 'TRANSPORTGATAN 36', zipCode: '42246', city: 'HISINGS BACKA', country: 'SVERIGE' });
+    expect(completed).toMatchObject({
+      address: 'TRANSPORTGATAN 36',
+      zipCode: '42246',
+      city: 'HISINGS BACKA',
+      country: 'SVERIGE',
+      contactChannels: [phoneChannel(registeredPhone)],
+    });
   });
 
-  it('keeps an address the citizen entered and skips the lookup', async () => {
-    const entered = { address: 'Storgatan 1', zipCode: '85230', city: 'Sundsvall' };
+  it('keeps the address and phone the citizen entered and skips the lookup', async () => {
+    const entered = { address: 'Storgatan 1', zipCode: '85230', city: 'Sundsvall', contactChannels: [phoneChannel('+46701234567')] };
 
     const completed = await complete(owner(entered));
 
@@ -68,12 +76,36 @@ describe('primary stakeholder details', () => {
     expect(get).not.toHaveBeenCalled();
   });
 
-  it('files the errand without an address when LegalEntity cannot be read', async () => {
+  it('keeps the entered address and takes only the phone from LegalEntity', async () => {
+    const entered = { address: 'Storgatan 1', zipCode: '85230', city: 'Sundsvall', contactChannels: [{ type: 'email', value: 'post@acme.se' }] };
+
+    const completed = await complete(owner(entered));
+
+    expect(completed).toMatchObject({ ...entered, contactChannels: [{ type: 'email', value: 'post@acme.se' }, phoneChannel(registeredPhone)] });
+  });
+
+  it('keeps the entered phone and takes only the address from LegalEntity', async () => {
+    const completed = await complete(owner({ contactChannels: [phoneChannel('+46701234567')] }));
+
+    expect(completed).toMatchObject({ address: 'TRANSPORTGATAN 36', contactChannels: [phoneChannel('+46701234567')] });
+  });
+
+  it('files no phone when LegalEntity holds none', async () => {
+    get.mockResolvedValue({ data: { address: registeredAddress, phoneNumber: ' ' } });
+
+    const completed = await complete(owner());
+
+    expect(completed.address).toBe('TRANSPORTGATAN 36');
+    expect(completed.contactChannels).toBeUndefined();
+  });
+
+  it('files the errand without address or phone when LegalEntity cannot be read', async () => {
     get.mockRejectedValue(new Error('upstream down'));
 
     const completed = await complete(owner());
 
     expect(completed.address).toBeUndefined();
+    expect(completed.contactChannels).toBeUndefined();
     expect(completed.parameters).toContainEqual(organizationNumberParameter);
   });
 

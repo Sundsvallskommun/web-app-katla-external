@@ -81,6 +81,12 @@ export const withPrimaryStakeholder = (
   owner: StakeholderDTO
 ): StakeholderDTO[] => [...withoutPrimaryStakeholder(stakeholders), owner];
 
+const filled = (value: string | undefined): boolean => Boolean(value?.trim());
+
+/** Street, postal code, city and a phone: Draken stops a case whose owner lacks any of them. */
+export const hasOwnerDetails = (owner: StakeholderDTO): boolean =>
+  filled(owner.address) && filled(owner.zipCode) && filled(owner.city) && Boolean(owner.phoneNumbers?.some(filled));
+
 export const emptyStakeholder: StakeholderDTO = {
   externalIdType: PERSON_EXTERNAL_ID_TYPE,
   externalId: '',
