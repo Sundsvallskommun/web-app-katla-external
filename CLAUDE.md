@@ -114,7 +114,7 @@ Backend (`tsconfig.json`): `@/*` → `src/*`, plus `@config`, `@controllers/*`, 
 
 ## Testing
 
-- **Vitest (frontend)**: unit/component tests in `frontend/tests/unit/`, config in `vitest.config.mts`, setup in `tests/setup.ts`
+- **Vitest (frontend)**: unit/component tests in `frontend/tests/unit/`, config in `vitest.config.mts`, setup in `tests/setup.ts`. Aliaset `@e2e/*` pekar på `e2e/`, så enhetstester återanvänder fixturerna och konstanterna i `e2e/fixtures/` och `e2e/utils/constants.ts` i stället för att hålla egna mockdata.
 - **Vitest (backend)**: tests in `backend/src/tests/`, config in `vitest.config.mts` (SWC transform for decorator metadata); deterministisk testmiljö sätts i `src/tests/setup.ts`, ingen lokal test-envfil krävs
 - **Playwright (frontend)**: specs i `e2e/tests/`, config i `playwright.config.ts`. Sviten kör mot `yarn dev` som Playwright startar själv (produktionsbygget använder standalone-output och kan inte startas med `next start`); CI verifierar `yarn build` som separat steg. `workers: 1` med flit — parallella workers gör on demand-kompileringen flaky.
 - **E2E mot en redan igång server**: sätt `PLAYWRIGHT_BASE_URL` (inklusive basvägen, t.ex. `http://dev.test:3100/registrering/aot`) så används den som `baseURL` och `webServer` hoppas över helt. Enda vägen in när `next dev` inte kan starta lokalt — på en Windows-monterad arbetskopia misslyckas den med att ta sitt lockfile. Specarna mockar alla backend-anrop, så inget når en riktig uppström.
