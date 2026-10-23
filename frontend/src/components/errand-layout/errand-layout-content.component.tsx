@@ -51,6 +51,7 @@ const createDefaultErrand = (): ErrandFormDTO => ({
   //TODO: Change channel to ESERVICE_KATLA?
   channel: 'ESERVICE',
   resolution: 'INFORMED',
+  parameters: [{ key: 'premisesMunicipality', values: ['2281'] }],
 });
 
 interface ErrandRouteContentProps {

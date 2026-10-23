@@ -29,6 +29,9 @@
     "city_required": "Ort får inte vara tom",
     "phone_required": "Lägg till minst ett telefonnummer"
   },
+  "municipality": {
+    "required": "Välj kommun"
+  },
   "categorization": {
     "category_required": "Välj vilken kategori ärendet gäller.",
     "type_required": "Välj vilken ärendetyp ärendet gäller."

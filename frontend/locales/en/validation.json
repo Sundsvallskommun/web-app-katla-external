@@ -29,6 +29,9 @@
     "city_required": "City cannot be empty",
     "phone_required": "Add at least one phone number"
   },
+  "municipality": {
+    "required": "Select municipality"
+  },
   "categorization": {
     "category_required": "Select the category the case concerns.",
     "type_required": "Select the case type the case concerns."

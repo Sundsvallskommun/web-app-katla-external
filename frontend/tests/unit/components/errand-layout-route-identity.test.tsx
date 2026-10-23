@@ -329,6 +329,12 @@ describe('errand layout route identity', () => {
 
     const expectedDefaults = {
       channel: 'ESERVICE',
+      parameters: [
+        {
+          key: 'premisesMunicipality',
+          values: ['2281'],
+        },
+      ],
       priority: 'MEDIUM',
       resolution: 'INFORMED',
       title: 'Empty errand',

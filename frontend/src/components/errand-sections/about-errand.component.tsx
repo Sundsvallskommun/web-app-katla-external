@@ -20,6 +20,7 @@ import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useMetadataStore } from 'src/stores/metadata-store';
 
+const MUNICIPALITY_FIELD_ID = 'premisesMunicipality';
 const CATEGORY_FIELD_ID = 'errand-category';
 const TYPE_FIELD_ID = 'errand-type';
 
@@ -29,7 +30,7 @@ const selectedId = (event: CustomOnChangeEvent): string =>
 
 export const AboutErrandContent: React.FC = () => {
   const { t } = useTranslation();
-  const { setValue, watch } = useFormContext<ErrandFormDTO>();
+  const { setValue, watch, getValues } = useFormContext<ErrandFormDTO>();
   const { showValidation } = useFormValidation();
   const isLocked = useIsContentLocked();
   const labelStructure = useMetadataStore((state) => state.metadata?.labels?.labelStructure);
@@ -69,6 +70,17 @@ export const AboutErrandContent: React.FC = () => {
     }
   };
 
+  const setPremisesMunicipality = (municipalityCode: string) => {
+    const p = {
+      key: 'premisesMunicipality',
+      displayName: 'Kommun',
+      values: [municipalityCode],
+    };
+    setValue('parameters', municipalityCode ? [p] : []);
+  };
+
+  const municipalityHasError =
+    showValidation && !getValues().parameters?.some((p) => p.key === 'premisesMunicipality' && p?.values?.length);
   const categoryHasError = showValidation && !selected.CATEGORY;
   const typeHasError = showValidation && !!selected.CATEGORY && !selected.TYPE;
 
@@ -90,6 +102,33 @@ export const AboutErrandContent: React.FC = () => {
   return (
     <div className="flex flex-col gap-[2.4rem] pb-[2.4rem]">
       <span className="text-dark-secondary">{t('errand-information:about.description')}</span>
+      <FormControl
+        required
+        invalid={municipalityHasError}
+        className="w-full sm:w-[calc(50%-10px)]"
+        {...(municipalityHasError ? { [INVALID_FIELD_ATTRIBUTE]: MUNICIPALITY_FIELD_ID } : {})}
+      >
+        <FormLabel htmlFor="premisesMunicipality">Välj kommun</FormLabel>
+        <Select
+          id={MUNICIPALITY_FIELD_ID}
+          data-cy="errand-municipality-select"
+          className="w-full"
+          value={watch().parameters?.find((p) => p.key === 'premisesMunicipality')?.values?.[0]}
+          aria-invalid={municipalityHasError}
+          onChange={(event) => {
+            setPremisesMunicipality(event.target.value);
+          }}
+        >
+          <Select.Option value="">Välj kommun</Select.Option>
+          <Select.Option value="2281">Sundsvall</Select.Option>
+          <Select.Option value="2262">Timrå</Select.Option>
+        </Select>
+        {municipalityHasError && (
+          <FormErrorMessage data-cy="errand-municipality-error" className="text-error">
+            {t('validation:municipality.required')}
+          </FormErrorMessage>
+        )}
+      </FormControl>
       <FormControl
         required
         invalid={categoryHasError}
