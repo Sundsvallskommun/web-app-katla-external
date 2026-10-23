@@ -5,12 +5,11 @@ import ApiService from '@/services/api.service';
 import { getOrganizationDetails, OrganizationAddress } from '@/services/legal-entity.service';
 import { logger } from '@/utils/logger';
 import { requireServiceKey } from '@/utils/service-context';
-import { ORGANIZATION_NUMBER_PARAMETER } from '@/utils/stakeholder-mapping';
+import { ORGANIZATION_NUMBER_PARAMETER, PHONE_CHANNEL } from '@/utils/stakeholder-mapping';
 
 const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
 const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
 const COUNTRY = 'SVERIGE';
-const PHONE_CHANNEL = 'phone';
 
 type DetailsLookup = Pick<ApiService, 'get'>;
 
@@ -41,7 +40,7 @@ const hasAddress = (stakeholder: Stakeholder): boolean =>
   Boolean(filled(stakeholder.address) && filled(stakeholder.zipCode) && filled(stakeholder.city));
 
 const hasPhone = (stakeholder: Stakeholder): boolean =>
-  (stakeholder.contactChannels ?? []).some(channel => channel.type === PHONE_CHANNEL && filled(channel.value));
+  (stakeholder.contactChannels ?? []).some(channel => channel.type?.toUpperCase() === PHONE_CHANNEL && filled(channel.value));
 
 const withRegisteredAddress = (stakeholder: Stakeholder, registered: OrganizationAddress | undefined): Stakeholder =>
   registered

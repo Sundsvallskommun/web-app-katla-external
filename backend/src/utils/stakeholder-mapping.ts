@@ -5,6 +5,9 @@ import { StakeholderDTO } from '@/responses/supportmanagement.response';
 const SERVERINGSSTALLE_PARAMETER = 'serveringsstalle';
 /** Parameter key Draken reads the organisation number from. */
 export const ORGANIZATION_NUMBER_PARAMETER = 'organizationNumber';
+/** Contact channel types as Draken writes them; read case-insensitively since older errands hold lowercase. */
+export const EMAIL_CHANNEL = 'EMAIL';
+export const PHONE_CHANNEL = 'PHONE';
 
 export function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder): StakeholderDTO {
   const { contactChannels, parameters, ...rest } = stakeholder;
@@ -16,8 +19,8 @@ export function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder): Stakeh
     (acc, { type, value }) => {
       if (!value) return acc;
 
-      if (type === 'email') acc.emails.push(value.toLocaleLowerCase());
-      if (type === 'phone') acc.phoneNumbers.push(value);
+      if (type?.toUpperCase() === EMAIL_CHANNEL) acc.emails.push(value.toLocaleLowerCase());
+      if (type?.toUpperCase() === PHONE_CHANNEL) acc.phoneNumbers.push(value);
 
       return acc;
     },
@@ -42,12 +45,12 @@ export function mapStakeholderDTOToStakeholder(stakeholder: StakeholderDTO): Sta
 
   const contactChannels: ContactChannel[] = [
     ...(emails?.map(email => ({
-      type: 'email',
+      type: EMAIL_CHANNEL,
       value: email,
     })) ?? []),
 
     ...(phoneNumbers?.map(phone => ({
-      type: 'phone',
+      type: PHONE_CHANNEL,
       value: phone,
     })) ?? []),
   ];

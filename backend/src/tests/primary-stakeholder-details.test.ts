@@ -32,7 +32,7 @@ const owner = (overrides: Partial<Stakeholder> = {}): Stakeholder => ({
 
 const registeredAddress = { addressArea: 'TRANSPORTGATAN 36', postalCode: '42246', city: 'HISINGS BACKA' };
 const registeredPhone = mockPhoneNumber;
-const phoneChannel = (value: string) => ({ type: 'phone', value });
+const phoneChannel = (value: string) => ({ type: 'PHONE', value });
 
 const organizationNumberParameter = { key: 'organizationNumber', displayName: 'Organisationsnummer', values: ['111111-2222'] };
 
@@ -88,6 +88,13 @@ describe('primary stakeholder details', () => {
     const completed = await complete(owner({ contactChannels: [phoneChannel('+46701234567')] }));
 
     expect(completed).toMatchObject({ address: 'TRANSPORTGATAN 36', contactChannels: [phoneChannel('+46701234567')] });
+  });
+
+  // Errands filed before the channel types were uppercased still carry 'phone'.
+  it('counts a lowercase phone channel as an entered phone', async () => {
+    const completed = await complete(owner({ contactChannels: [{ type: 'phone', value: '+46701234567' }] }));
+
+    expect(completed.contactChannels).toEqual([{ type: 'phone', value: '+46701234567' }]);
   });
 
   it('files no phone when LegalEntity holds none', async () => {
