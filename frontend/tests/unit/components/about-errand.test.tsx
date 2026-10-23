@@ -193,6 +193,7 @@ describe('AboutErrand categorization', () => {
   it('says what is missing only once validation has been asked for', async () => {
     renderAbout();
 
+    expect(queryCy('errand-municipality-error')).toBeNull();
     expect(queryCy('errand-category-error')).toBeNull();
 
     fireEvent.click(screen.getByTestId('show-validation'));

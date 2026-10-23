@@ -82,7 +82,12 @@ const registerErrand = async (page: Page, expectedStakeholderCount: number) => {
   const body = request.postDataJSON() as CreateErrandRequestBody;
   // The form has no fields until the AoT schemas exist, so the errand should go out with no
   // parameters and no schema answers — only the stakeholders carry information so far.
-  expect(body.parameters ?? []).toEqual([]);
+  expect(body.parameters ?? []).toEqual([
+    {
+      key: 'premisesMunicipality',
+      values: ['2281'],
+    },
+  ]);
   expect(body.jsonParameters).toEqual([]);
   expect(body.stakeholders?.length).toBe(expectedStakeholderCount);
   expect(body.lifecycle).toBe('ACTIVE');
