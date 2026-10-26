@@ -9,6 +9,10 @@ export const APIS = [
     version: '17.0',
   },
   {
+    name: 'support-management',
+    version: '17.2',
+  },
+  {
     name: 'citizen',
     version: '3.0',
   },
@@ -29,7 +33,7 @@ export const APIS = [
 // Temporary routing for the Support Management development sprint.
 // Remove this alias and rename the APIS entry to supportmanagement when the sprint API is retired.
 const API_SERVICE_ALIASES: Readonly<Record<string, string>> = {
-  supportmanagement: 'support-management-alkt-sprint',
+  //  supportmanagement: 'support-management-alkt-sprint',
 };
 
 export function getApiBase(name: string): string {
