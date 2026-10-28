@@ -223,7 +223,7 @@ describe('mocked schema pairs against the renderer contract', () => {
       });
 
       it('lists responsible staff under serveringsansvarigPersonal', () => {
-        const staffShape = ['fornamn', 'efternamn', 'personnummer'];
+        const staffShape = ['fornamn', 'efternamn', 'fodelsedatum', 'fromDate'];
         const holders = Object.entries(root).filter(([, child]) => {
           const items =
             child.type === 'array' && typeof child.items === 'object' ? (child.items as RJSFSchema) : undefined;

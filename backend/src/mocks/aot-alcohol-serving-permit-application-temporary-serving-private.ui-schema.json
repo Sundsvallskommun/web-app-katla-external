@@ -303,7 +303,8 @@
       "ui:order": [
         "fornamn",
         "efternamn",
-        "personnummer"
+        "fodelsedatum",
+        "fromDate"
       ],
       "fornamn": {
         "ui:widget": "TextWidget"
@@ -311,11 +312,14 @@
       "efternamn": {
         "ui:widget": "TextWidget"
       },
-      "personnummer": {
-        "ui:widget": "TextWidget"
+      "fodelsedatum": {
+        "ui:widget": "DateWidget"
+      },
+      "fromDate": {
+        "ui:widget": "DateWidget"
       }
     },
-    "ui:description": "<p>Nedan anger du namn och personnummer till den person eller de personer som ska vara ansvariga för serveringen av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.</p>"
+    "ui:description": "<p>Nedan anger du namn och födelsedatum till den person eller de personer som ska vara ansvariga för serveringen av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.</p>"
   },
   "sittplatserILokalen": {
     "ui:order": [

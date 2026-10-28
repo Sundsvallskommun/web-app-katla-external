@@ -16,14 +16,11 @@ export interface JsonNode {
   null?: boolean;
   object?: boolean;
   float?: boolean;
-  string?: boolean;
-  boolean?: boolean;
-  number?: boolean;
-  nodeType?: JsonNodeNodeTypeEnum;
-  integralNumber?: boolean;
   missingNode?: boolean;
+  integralNumber?: boolean;
   valueNode?: boolean;
   container?: boolean;
+  nodeType?: JsonNodeNodeTypeEnum;
   pojo?: boolean;
   floatingPointNumber?: boolean;
   short?: boolean;
@@ -35,6 +32,9 @@ export interface JsonNode {
   /** @deprecated */
   textual?: boolean;
   binary?: boolean;
+  number?: boolean;
+  string?: boolean;
+  boolean?: boolean;
   embeddedValue?: boolean;
 }
 
@@ -70,19 +70,6 @@ export interface ConstraintViolationProblem {
   /** @format uri */
   instance?: string;
   detail?: string;
-  causeAsProblem?: ThrowableProblem;
-}
-
-export interface ThrowableProblem {
-  /** @format uri */
-  type?: string;
-  title?: string;
-  /** @format int32 */
-  status?: number;
-  detail?: string;
-  /** @format uri */
-  instance?: string;
-  causeAsProblem?: any;
 }
 
 export interface Violation {
