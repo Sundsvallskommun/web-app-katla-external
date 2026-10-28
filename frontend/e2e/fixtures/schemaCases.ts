@@ -57,7 +57,7 @@ const ownFunds: Step[] = [
 
 const servingManager: Step = {
   row: 'serveringsansvarigPersonal',
-  values: { fornamn: 'Anna', efternamn: 'Testsson', personnummer: MOCK_HYPHEN_PERSON_NUMBER },
+  values: { fornamn: 'Anna', efternamn: 'Testsson', fodelsedatum: '1985-04-12', fromDate: '2026-11-01' },
 };
 
 const orderAndSobriety: Step = {

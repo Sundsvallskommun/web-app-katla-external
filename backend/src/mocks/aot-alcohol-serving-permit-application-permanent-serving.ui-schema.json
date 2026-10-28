@@ -592,7 +592,8 @@
       "ui:order": [
         "fornamn",
         "efternamn",
-        "personnummer"
+        "fodelsedatum",
+        "fromDate"
       ],
       "fornamn": {
         "ui:widget": "TextWidget"
@@ -600,11 +601,14 @@
       "efternamn": {
         "ui:widget": "TextWidget"
       },
-      "personnummer": {
-        "ui:widget": "TextWidget"
+      "fodelsedatum": {
+        "ui:widget": "DateWidget"
+      },
+      "fromDate": {
+        "ui:widget": "DateWidget"
       }
     },
-    "ui:description": "<p>Under öppettider måste det alltid finnas en serveringsansvarig person på plats i verksamheten. Om inte någon av företagets företrädare är på plats måste en annan utsedd och anmäld serveringsansvarig vara på plats. Nedan anger du namn och personnummer till den person eller de personer som är ansvariga för servering av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.<br />\nHar du inte anställt personal ännu kan du fylla i serveringsansvarig personal vid ett senare tillfälle.</p>"
+    "ui:description": "<p>Under öppettider måste det alltid finnas en serveringsansvarig person på plats i verksamheten. Om inte någon av företagets företrädare är på plats måste en annan utsedd och anmäld serveringsansvarig vara på plats. Nedan anger du namn och födelsedatum till den person eller de personer som är ansvariga för servering av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.<br />\nHar du inte anställt personal ännu kan du fylla i serveringsansvarig personal vid ett senare tillfälle.</p>"
   },
   "sittplatserILokalen": {
     "ui:order": [

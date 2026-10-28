@@ -242,7 +242,7 @@ positiva formuleringen av allt ovan; adaptern och kontraktstestet kontrollerar d
     dryckerna i `alkoholdrycker` med de fyra konstanterna; maten som `serverasMat`, `menyval`
     (`JAG_VILL_BESKRIVA` | `JAG_VILL_LADDA_UPP`) och `menyBeskrivning`, där bilagan `MENU` krävs
     vid `JAG_VILL_LADDA_UPP`; ansvariga personer i `serveringsansvarigPersonal` med `fornamn`,
-    `efternamn` och `personnummer`. Titlarna får skilja sig per schema, nycklarna inte. Ett schema
+    `efternamn`, `fodelsedatum` och `fromDate` (båda `format: date`). Titlarna får skilja sig per schema, nycklarna inte. Ett schema
     utan frågan utelämnar nyckeln; Draken visar då "—". Kontrolleras i kontraktstestet.
     Undantag: tobakens `hemsida` är en rotsträng som visas vid distansförsäljning, eftersom
     villkorsmotorn bara kan visa rotegenskaper (punkt 4) — Draken läser den från roten för tobak.
