@@ -4,12 +4,12 @@ export const APIS = [
     name: 'simulatorserver',
     version: '2.0',
   },
+  // {
+  //   name: 'support-management-alkt-sprint',
+  //   version: '17.0',
+  // },
   {
-    name: 'support-management-alkt-sprint',
-    version: '17.0',
-  },
-  {
-    name: 'support-management',
+    name: 'supportmanagement',
     version: '17.2',
   },
   {
