@@ -39,6 +39,11 @@ const LabelProbe: React.FC = () => {
   return <span data-testid="labels">{JSON.stringify(watch('labels'))}</span>;
 };
 
+const ParametersProbe: React.FC = () => {
+  const { watch } = useFormContext<ErrandFormDTO>();
+  return <span data-testid="parameters">{JSON.stringify(watch('parameters'))}</span>;
+};
+
 const ShowValidationButton: React.FC = () => {
   const { setShowValidation } = useFormValidation();
   return (
@@ -80,6 +85,7 @@ const renderAbout = (defaultValues: Partial<ErrandFormDTO> = {}) => {
             <AboutErrandContent />
           </ErrandContentLock>
           <LabelProbe />
+          <ParametersProbe />
           <ShowValidationButton />
         </FormValidationProvider>
       </FormProvider>
@@ -188,6 +194,26 @@ describe('AboutErrand categorization', () => {
 
     expect(categorySelect()).toHaveValue('Alkohol');
     expect(getCy('errand-type-input')).toHaveValue('Stadigvarande');
+  });
+
+  it('changes only the municipality parameter, keeping the others', async () => {
+    const other = { key: 'otherParameter', values: ['kept'] };
+    renderAbout({ parameters: [other, { key: 'premisesMunicipality', values: ['2281'] }] });
+
+    fireEvent.change(getCy('errand-municipality-select'), { target: { value: '2262' } });
+
+    await waitFor(() => {
+      expect(JSON.parse(screen.getByTestId('parameters').textContent ?? '')).toEqual([
+        other,
+        { key: 'premisesMunicipality', displayName: 'Kommun', values: ['2262'] },
+      ]);
+    });
+
+    fireEvent.change(getCy('errand-municipality-select'), { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(JSON.parse(screen.getByTestId('parameters').textContent ?? '')).toEqual([other]);
+    });
   });
 
   it('says what is missing only once validation has been asked for', async () => {

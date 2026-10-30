@@ -43,7 +43,10 @@ const LABELS: ErrandFormDTO['labels'] = [
 const [SCHEMA_NAME] = schemaNamesForErrand(LABELS, 'AOT');
 const OTHER_SCHEMA_NAME = 'aot_tobacco_sales_permit_application';
 
+const MUNICIPALITY = { key: 'premisesMunicipality', values: ['2281'] };
+
 const errand = (overrides: Partial<ErrandFormDTO> = {}): ErrandFormDTO => ({
+  parameters: [MUNICIPALITY],
   labels: LABELS,
   stakeholders: OWNER,
   ...overrides,
@@ -56,6 +59,12 @@ beforeEach(() => {
 });
 
 describe('validateErrandForSave for a registration', () => {
+  it('asks for the municipality even when other parameters are set', async () => {
+    await expect(
+      validateErrandForSave(errand({ parameters: [{ key: 'otherParameter', values: ['x'] }] }), 'register', context)
+    ).resolves.toEqual(['validation:municipality.required']);
+  });
+
   it('asks for the categorization before anything else is looked at', async () => {
     await expect(validateErrandForSave(errand({ labels: [] }), 'register', context)).resolves.toEqual([
       'validation:categorization.category_required',

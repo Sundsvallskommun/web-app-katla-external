@@ -33,7 +33,9 @@ export const validateOwner = (values: ErrandFormDTO, t: TFunction): string[] =>
   getPrimaryStakeholder(values.stakeholders) ? [] : [t('validation:owner.required')];
 
 export const validateMunicipality = (values: ErrandFormDTO, t: TFunction): string[] =>
-  values?.parameters?.length === 0 ? [t('validation:municipality.required')] : [];
+  values?.parameters?.some((p) => p.key === 'premisesMunicipality' && p.values?.length) ?
+    []
+  : [t('validation:municipality.required')];
 
 // Only the citizen can supply these, so a registration stops here rather than in Draken's review.
 export const validateOwnerDetails = (values: ErrandFormDTO, t: TFunction): string[] => {
