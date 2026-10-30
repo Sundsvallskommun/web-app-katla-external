@@ -105,7 +105,7 @@ const permanentTobaccoSales: Step[] = [
 export const happyPaths: SchemaCase[] = [
   {
     title: 'Anmälan om försäljning av folköl',
-    schema: 'aot-alcohol-folkol-sales-notification',
+    schema: 'aot-alcohol-folkol-folkol-sales-notification',
     steps: [
       ...company('Kiosk som säljer folköl.'),
       { radio: 'stadigvarandeForsaljningAvLivsmedel', value: 'JA' },
@@ -119,14 +119,14 @@ export const happyPaths: SchemaCase[] = [
   },
   {
     title: 'Anmälan om servering av endast folköl',
-    schema: 'aot-alcohol-folkol-serving-notification',
+    schema: 'aot-alcohol-folkol-folkol-serving-notification',
     steps: [...company('Café som serverar folköl.'), ...folkolServing],
     attachments: [],
     absent: ['fakturamottagare', 'besoksadress'],
   },
   {
     title: 'Anmälan om försäljning och servering av folköl',
-    schema: 'aot-alcohol-folkol-sales-serving-notification',
+    schema: 'aot-alcohol-folkol-folkol-sales-serving-notification',
     steps: [...company('Restaurang som både säljer och serverar folköl.'), ...folkolServing],
     attachments: [],
     absent: ['fakturamottagare', 'besoksadress'],
@@ -282,7 +282,7 @@ export const happyPaths: SchemaCase[] = [
 export const branches: SchemaCase[] = [
   {
     title: 'folköl via ombud med beskrivningen som fil',
-    schema: 'aot-alcohol-folkol-sales-serving-notification',
+    schema: 'aot-alcohol-folkol-folkol-sales-serving-notification',
     steps: [...companyByRepresentative, ...folkolServing],
     attachments: ['POWER_OF_ATTORNEY', 'BUSINESS_DESCRIPTION'],
     absent: ['verksamhetsbeskrivning'],
