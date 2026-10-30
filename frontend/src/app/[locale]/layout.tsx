@@ -1,3 +1,4 @@
+import { InactivityMonitor } from '@components/inactivity-monitor.component';
 import LocalizationProvider from '@components/localization-provider/localization-provider';
 import { headers } from 'next/headers';
 import { ReactNode } from 'react';
@@ -31,7 +32,13 @@ const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
   const { locale } = await params;
   const { resources } = await initLocalization(locale, namespaces);
 
-  return <LocalizationProvider {...{ locale, resources, namespaces }}>{children}</LocalizationProvider>;
+  return (
+    <LocalizationProvider {...{ locale, resources, namespaces }}>
+      {children}
+      {/* Inside the provider, not in AppLayout: the dialog needs the session namespace. */}
+      <InactivityMonitor />
+    </LocalizationProvider>
+  );
 };
 
 export const generateMetadata = async ({ params }: LocaleLayoutProps) => {
