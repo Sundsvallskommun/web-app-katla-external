@@ -222,10 +222,11 @@ positiva formuleringen av allt ovan; adaptern och kontraktstestet kontrollerar d
 8. **Text och språk**: placering och `x-i18n` enligt `json-schema-localization.md`; maskinvärden
    översätts aldrig.
 9. **Besöksadress**: serverings- eller försäljningsställets adress ligger alltid i rotegenskapen
-   `besoksadress` med `gatuadress`, `postnummer` och `postort` — ingen annan egenskap bär de
-   fälten. Draken läser adressen därifrån, utom när `besoksadressSammaSomArendeagare` är `JA`; då
-   gäller adressen på ärendets PRIMARY-intressent. Finns frågan krävs `besoksadress` vid `NEJ`,
-   saknas frågan är `besoksadress` alltid obligatorisk. Kontrolleras i kontraktstestet.
+   `premisesAddress` (alkohol) eller `pointOfSaleAddress` (tobak) med `street`, `postalCode` och
+   `city` — ingen annan egenskap än fakturamottagaren bär de fälten. Draken läser adressen
+   därifrån, utom när `premisesAddressSameAsCompany`/`pointOfSaleAddressSameAsCompany` är `YES`; då
+   gäller adressen på ärendets PRIMARY-intressent. Finns frågan krävs adressen vid `NO`, saknas
+   frågan är adressen alltid obligatorisk. Kontrolleras i kontraktstestet.
 10. **Stopp**: ett svar som utesluter ansökan uttrycks på roten som
     `x-stops: [{when, text}]`. `when` följer villkorsreglerna i punkt 4, pekar bara på
     rotegenskaper och har alltid `required`; texten visas under den sista egenskapen i
@@ -235,14 +236,18 @@ positiva formuleringen av allt ovan; adaptern och kontraktstestet kontrollerar d
     post utan `text` eller `when.required` släpps och loggas.
 11. **Beslutsflikens nycklar**: Drakens beslutsunderlag läser serverings- eller
     försäljningsstället ur fasta rotnycklar, på samma sätt som besöksadressen i punkt 9
-    (`docs/beslutsflik-nycklar.md`). Namnet är rotsträngen `serveringsstalletsNamn`;
-    kontaktuppgifterna ligger i `kontaktuppgifterTillServeringsstallet` med enbart
-    `telefonnummer`, `ePostadress` och `hemsida`, och inget annat objekt bär de fälten; sittplatser i
-    `sittplatserILokalen` med `antalSittplatserInomhus` och `antalSittplatserUteservering`;
-    dryckerna i `alkoholdrycker` med de fyra konstanterna; maten som `serverasMat`, `menyval`
-    (`JAG_VILL_BESKRIVA` | `JAG_VILL_LADDA_UPP`) och `menyBeskrivning`, där bilagan `MENU` krävs
-    vid `JAG_VILL_LADDA_UPP`; ansvariga personer i `serveringsansvarigPersonal` med `fornamn`,
-    `efternamn`, `fodelsedatum` och `fromDate` (båda `format: date`). Titlarna får skilja sig per schema, nycklarna inte. Ett schema
-    utan frågan utelämnar nyckeln; Draken visar då "—". Kontrolleras i kontraktstestet.
-    Undantag: tobakens `hemsida` är en rotsträng som visas vid distansförsäljning, eftersom
-    villkorsmotorn bara kan visa rotegenskaper (punkt 4) — Draken läser den från roten för tobak.
+    (`docs/beslutsflik-nycklar.md`). Prefixet är `premises` för alkohol och `pointOfSale` för tobak.
+    Namnet är rotsträngen `<prefix>Name`; kontaktuppgifterna ligger i `<prefix>Contact` med enbart
+    `phoneNumber`, `emailAddress` och `website`, och inget annat objekt bär de fälten; sittplatser i
+    `seating` med `seatsIndoor` och `seatsOutdoor`; dryckerna i `beverages` med de fyra
+    konstanterna; maten som `servesFood`, `menuChoice` (`DESCRIBE` | `UPLOAD`) och
+    `menuDescription`, där bilagan `MENU` krävs vid `UPLOAD`; ansvariga personer i
+    `responsibleServingStaff` med `firstName`, `lastName`, `dateOfBirth` och `fromDate` (båda
+    `format: date`). Titlarna får skilja sig per schema, nycklarna inte. Ett schema utan frågan
+    utelämnar nyckeln; Draken visar då "—". Kontrolleras i kontraktstestet.
+    Undantag: tobakens `distanceSellingWebsite` är en rotsträng som visas vid distansförsäljning,
+    eftersom villkorsmotorn bara kan visa rotegenskaper (punkt 4).
+12. **Nycklar och konstanter på engelska**: egenskapsnamn är engelsk camelCase och `const`-värden
+    engelsk `UPPER_SNAKE_CASE`. Där ett svar förs över till tillståndet i PartyAssets
+    används namn och värden från PartyAssets AoT-scheman för alkohol och tobak;
+    `docs/schema-key-mapping.md` listar hela översättningen.

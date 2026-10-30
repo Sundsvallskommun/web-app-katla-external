@@ -3,220 +3,220 @@
   "title": "Ansökan om tillstånd för försäljning av tobak",
   "type": "object",
   "properties": {
-    "arDuFirmatecknare": {
+    "isAuthorizedSignatory": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
       "title": "Är du firmatecknare?"
     },
-    "fakturaadressSammaSomForetaget": {
+    "invoiceAddressSameAsCompany": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
       "title": "Är fakturaadressen samma som företagets adress?",
       "description": "Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens."
     },
-    "fakturamottagare": {
+    "invoiceRecipient": {
       "type": "object",
       "properties": {
-        "cO": {
+        "careOf": {
           "type": "string",
           "title": "c/o"
         },
-        "utdelningsadress": {
+        "street": {
           "type": "string",
           "title": "Utdelningsadress"
         },
-        "postnummer": {
+        "postalCode": {
           "type": "string",
           "title": "Postnummer",
           "pattern": "^\\d{3}\\s?\\d{2}$"
         },
-        "postort": {
+        "city": {
           "type": "string",
           "title": "Postort"
         }
       },
       "required": [
-        "utdelningsadress",
-        "postnummer",
-        "postort"
+        "street",
+        "postalCode",
+        "city"
       ],
       "title": "Fakturamottagare"
     },
-    "fakturareferens": {
+    "invoiceReference": {
       "type": "string",
       "title": "Fakturareferens",
       "description": "Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer."
     },
-    "verksamhetsbeskrivningsval": {
+    "businessDescriptionChoice": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JAG_VILL_SKRIVA_VERKSAMHETSBESKRIVNINGEN_I",
+          "const": "DESCRIBE",
           "title": "Jag vill skriva verksamhetsbeskrivningen i formuläret"
         },
         {
-          "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM",
+          "const": "UPLOAD",
           "title": "Jag vill bifoga verksamhetsbeskrivningen som fil"
         }
       ],
       "title": "Verksamhetsbeskrivning",
       "description": "Du måste lämna en detaljerad beskrivning av företagets verksamhet.\n\nHur vill du lämna verksamhetsbeskrivningen?"
     },
-    "verksamhetsbeskrivning": {
+    "businessDescription": {
       "type": "string",
       "title": "Verksamhetsbeskrivning"
     },
-    "tidsperiodForForsaljningen": {
+    "salesPeriod": {
       "type": "string",
       "oneOf": [
         {
-          "const": "TILLSVIDARE",
+          "const": "INDEFINITE",
           "title": "Tillsvidare"
         },
         {
-          "const": "TIDSBEGRANSAD_FORSALJNING",
+          "const": "TEMPORARY",
           "title": "Tidsbegränsad försäljning"
         }
       ],
       "title": "Tidsperiod för försäljningen"
     },
-    "startdatumForsaljning": {
+    "salesStartDate": {
       "type": "string",
       "format": "date",
       "title": "Startdatum försäljning"
     },
-    "periodTidsbegransadForsaljning": {
+    "salesPeriodDates": {
       "type": "object",
       "properties": {
-        "startDate": {
+        "fromDate": {
           "type": "string",
           "format": "date",
           "title": "Från och med"
         },
-        "endDate": {
+        "toDate": {
           "type": "string",
           "format": "date",
           "title": "Till och med"
         }
       },
       "required": [
-        "startDate",
-        "endDate"
+        "fromDate",
+        "toDate"
       ],
       "title": "Period för tidsbegränsad försäljning"
     },
-    "serveringsstalletsNamn": {
+    "pointOfSaleName": {
       "type": "string",
       "title": "Försäljningsställets namn"
     },
-    "besoksadressSammaSomArendeagare": {
+    "pointOfSaleAddressSameAsCompany": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
       "title": "Är försäljningsställets besöksadress samma som företagets adress?"
     },
-    "besoksadress": {
+    "pointOfSaleAddress": {
       "type": "object",
       "properties": {
-        "gatuadress": {
+        "street": {
           "type": "string",
           "title": "Gatuadress"
         },
-        "postnummer": {
+        "postalCode": {
           "type": "string",
           "title": "Postnummer",
           "pattern": "^\\d{3}\\s?\\d{2}$"
         },
-        "postort": {
+        "city": {
           "type": "string",
           "title": "Postort"
         }
       },
       "required": [
-        "gatuadress",
-        "postnummer",
-        "postort"
+        "street",
+        "postalCode",
+        "city"
       ],
       "title": "Besöksadress"
     },
-    "kontaktuppgifterTillServeringsstallet": {
+    "pointOfSaleContact": {
       "type": "object",
       "properties": {
-        "telefonnummer": {
+        "phoneNumber": {
           "type": "string",
           "title": "Telefonnummer"
         },
-        "ePostadress": {
+        "emailAddress": {
           "type": "string",
           "title": "E-postadress",
           "format": "email"
         }
       },
       "required": [
-        "telefonnummer"
+        "phoneNumber"
       ],
       "title": "Kontaktuppgifter till försäljningsstället"
     },
-    "bedriverAvenDistansforsaljning": {
+    "includesDistanceSelling": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
       "title": "Jag kommer också bedriva distansförsäljning",
       "description": "Distansförsäljning är försäljning av varor via postorder, telefon eller internet där leverantören ansvarar för leveransen av varorna."
     },
-    "hemsida": {
+    "distanceSellingWebsite": {
       "type": "string",
       "title": "Hemsida"
     },
-    "omfattarSarskiltFarligaProdukter": {
+    "includesParticularlyDangerousProducts": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
       "title": "Registreringen omfattar försäljning av särskilt farliga kemiska produkter, e-cigaretter och e-vätskor (dödskallemärkta)."
     },
-    "finansiering": {
+    "financing": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
@@ -224,19 +224,19 @@
         "type": "string",
         "oneOf": [
           {
-            "const": "EGNA_MEDEL",
+            "const": "OWN_FUNDS",
             "title": "Egna medel"
           },
           {
-            "const": "BANKLAN",
+            "const": "BANK_LOAN",
             "title": "Banklån"
           },
           {
-            "const": "PRIVATLAN",
+            "const": "PRIVATE_LOAN",
             "title": "Privatlån"
           },
           {
-            "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN",
+            "const": "OTHER_FINANCING",
             "title": "Annan finansiering (exempelvis Almilån, Bryggerilån eller Revers)"
           }
         ]
@@ -244,7 +244,7 @@
       "title": "Finansiering",
       "description": "För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med."
     },
-    "egnaMedel": {
+    "ownFunds": {
       "type": "array",
       "items": {
         "type": "object",
@@ -253,104 +253,104 @@
             "type": "string",
             "title": "Bank"
           },
-          "kontonummer": {
+          "accountNumber": {
             "type": "string",
             "title": "Kontonummer"
           },
-          "beloppKronor": {
+          "amountSek": {
             "type": "string",
             "title": "Belopp (kronor)"
           }
         },
         "required": [
           "bank",
-          "kontonummer",
-          "beloppKronor"
+          "accountNumber",
+          "amountSek"
         ]
       },
       "title": "Egna medel"
     },
-    "banklan": {
+    "bankLoans": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "langivare": {
+          "lender": {
             "type": "string",
             "title": "Långivare"
           },
-          "beloppKronor": {
+          "amountSek": {
             "type": "string",
             "title": "Belopp (kronor)"
           }
         },
         "required": [
-          "langivare",
-          "beloppKronor"
+          "lender",
+          "amountSek"
         ]
       },
       "title": "Banklån"
     },
-    "privatlan": {
+    "privateLoans": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "langivare": {
+          "lender": {
             "type": "string",
             "title": "Långivare"
           },
-          "beloppKronor": {
+          "amountSek": {
             "type": "string",
             "title": "Belopp (kronor)"
           }
         },
         "required": [
-          "langivare",
-          "beloppKronor"
+          "lender",
+          "amountSek"
         ]
       },
       "title": "Privatlån"
     },
-    "annanFinansiering": {
+    "otherFinancing": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "lanetyp": {
+          "loanType": {
             "type": "string",
             "title": "Lånetyp"
           },
-          "langivare": {
+          "lender": {
             "type": "string",
             "title": "Långivare"
           },
-          "beloppKronor": {
+          "amountSek": {
             "type": "string",
             "title": "Belopp (kronor)"
           }
         },
         "required": [
-          "lanetyp",
-          "langivare",
-          "beloppKronor"
+          "loanType",
+          "lender",
+          "amountSek"
         ]
       },
       "title": "Annan finansiering"
     },
-    "ovrigaUpplysningarFinansiering": {
+    "financingNotes": {
       "type": "string",
       "title": "Övriga upplysningar angående finansieringen"
     },
-    "avtalMedTillverkareEllerPartihandlare": {
+    "hasSupplierAgreement": {
       "type": "string",
       "oneOf": [
         {
-          "const": "JA",
+          "const": "YES",
           "title": "Ja"
         },
         {
-          "const": "NEJ",
+          "const": "NO",
           "title": "Nej"
         }
       ],
@@ -358,218 +358,218 @@
     }
   },
   "required": [
-    "arDuFirmatecknare",
-    "verksamhetsbeskrivningsval",
-    "fakturaadressSammaSomForetaget",
-    "finansiering",
-    "besoksadressSammaSomArendeagare",
-    "tidsperiodForForsaljningen",
-    "serveringsstalletsNamn",
-    "bedriverAvenDistansforsaljning",
-    "avtalMedTillverkareEllerPartihandlare",
-    "omfattarSarskiltFarligaProdukter",
-    "kontaktuppgifterTillServeringsstallet"
+    "isAuthorizedSignatory",
+    "businessDescriptionChoice",
+    "invoiceAddressSameAsCompany",
+    "financing",
+    "pointOfSaleAddressSameAsCompany",
+    "salesPeriod",
+    "pointOfSaleName",
+    "includesDistanceSelling",
+    "hasSupplierAgreement",
+    "includesParticularlyDangerousProducts",
+    "pointOfSaleContact"
   ],
   "allOf": [
     {
       "if": {
         "properties": {
-          "fakturaadressSammaSomForetaget": {
-            "const": "NEJ"
+          "invoiceAddressSameAsCompany": {
+            "const": "NO"
           }
         },
         "required": [
-          "fakturaadressSammaSomForetaget"
+          "invoiceAddressSameAsCompany"
         ]
       },
       "then": {
         "properties": {
-          "fakturamottagare": true
+          "invoiceRecipient": true
         }
       }
     },
     {
       "if": {
         "properties": {
-          "verksamhetsbeskrivningsval": {
-            "const": "JAG_VILL_SKRIVA_VERKSAMHETSBESKRIVNINGEN_I"
+          "businessDescriptionChoice": {
+            "const": "DESCRIBE"
           }
         },
         "required": [
-          "verksamhetsbeskrivningsval"
+          "businessDescriptionChoice"
         ]
       },
       "then": {
         "required": [
-          "verksamhetsbeskrivning"
+          "businessDescription"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "tidsperiodForForsaljningen": {
-            "const": "TIDSBEGRANSAD_FORSALJNING"
+          "salesPeriod": {
+            "const": "TEMPORARY"
           }
         },
         "required": [
-          "tidsperiodForForsaljningen"
+          "salesPeriod"
         ]
       },
       "then": {
         "required": [
-          "periodTidsbegransadForsaljning"
+          "salesPeriodDates"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "tidsperiodForForsaljningen": {
-            "const": "TILLSVIDARE"
+          "salesPeriod": {
+            "const": "INDEFINITE"
           }
         },
         "required": [
-          "tidsperiodForForsaljningen"
+          "salesPeriod"
         ]
       },
       "then": {
         "required": [
-          "startdatumForsaljning"
+          "salesStartDate"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "besoksadressSammaSomArendeagare": {
-            "const": "NEJ"
+          "pointOfSaleAddressSameAsCompany": {
+            "const": "NO"
           }
         },
         "required": [
-          "besoksadressSammaSomArendeagare"
+          "pointOfSaleAddressSameAsCompany"
         ]
       },
       "then": {
         "required": [
-          "besoksadress"
+          "pointOfSaleAddress"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "bedriverAvenDistansforsaljning": {
-            "const": "JA"
+          "includesDistanceSelling": {
+            "const": "YES"
           }
         },
         "required": [
-          "bedriverAvenDistansforsaljning"
+          "includesDistanceSelling"
         ]
       },
       "then": {
         "required": [
-          "hemsida"
+          "distanceSellingWebsite"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "EGNA_MEDEL"
+              "const": "OWN_FUNDS"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       },
       "then": {
         "required": [
-          "egnaMedel"
+          "ownFunds"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "BANKLAN"
+              "const": "BANK_LOAN"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       },
       "then": {
         "required": [
-          "banklan"
+          "bankLoans"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "PRIVATLAN"
+              "const": "PRIVATE_LOAN"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       },
       "then": {
         "required": [
-          "privatlan"
+          "privateLoans"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+              "const": "OTHER_FINANCING"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       },
       "then": {
         "required": [
-          "annanFinansiering"
+          "otherFinancing"
         ]
       }
     },
     {
       "if": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
               "enum": [
-                "EGNA_MEDEL",
-                "BANKLAN",
-                "PRIVATLAN",
-                "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+                "OWN_FUNDS",
+                "BANK_LOAN",
+                "PRIVATE_LOAN",
+                "OTHER_FINANCING"
               ]
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       },
       "then": {
         "properties": {
-          "ovrigaUpplysningarFinansiering": true
+          "financingNotes": true
         }
       }
     }
@@ -580,12 +580,12 @@
       "label": "Fullmakt",
       "requiredWhen": {
         "properties": {
-          "arDuFirmatecknare": {
-            "const": "NEJ"
+          "isAuthorizedSignatory": {
+            "const": "NO"
           }
         },
         "required": [
-          "arDuFirmatecknare"
+          "isAuthorizedSignatory"
         ]
       }
     },
@@ -609,12 +609,12 @@
       "label": "Verksamhetsbeskrivning",
       "requiredWhen": {
         "properties": {
-          "verksamhetsbeskrivningsval": {
-            "const": "JAG_VILL_BIFOGA_VERKSAMHETSBESKRIVNINGEN_SOM"
+          "businessDescriptionChoice": {
+            "const": "UPLOAD"
           }
         },
         "required": [
-          "verksamhetsbeskrivningsval"
+          "businessDescriptionChoice"
         ]
       }
     },
@@ -623,14 +623,14 @@
       "label": "Kontoutdrag för egna medel",
       "requiredWhen": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "EGNA_MEDEL"
+              "const": "OWN_FUNDS"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       }
     },
@@ -639,14 +639,14 @@
       "label": "Lånebevis för banklån",
       "requiredWhen": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "BANKLAN"
+              "const": "BANK_LOAN"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       }
     },
@@ -655,14 +655,14 @@
       "label": "Lånebevis för privatlån",
       "requiredWhen": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "PRIVATLAN"
+              "const": "PRIVATE_LOAN"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       }
     },
@@ -671,14 +671,14 @@
       "label": "Lånebevis för annan finansiering",
       "requiredWhen": {
         "properties": {
-          "finansiering": {
+          "financing": {
             "contains": {
-              "const": "ANNAN_FINANSIERING_EXEMPELVIS_ALMILAN_BRYGGERILAN"
+              "const": "OTHER_FINANCING"
             }
           }
         },
         "required": [
-          "finansiering"
+          "financing"
         ]
       }
     },
@@ -687,12 +687,12 @@
       "label": "Registrering från Länsstyrelsen",
       "requiredWhen": {
         "properties": {
-          "omfattarSarskiltFarligaProdukter": {
-            "const": "JA"
+          "includesParticularlyDangerousProducts": {
+            "const": "YES"
           }
         },
         "required": [
-          "omfattarSarskiltFarligaProdukter"
+          "includesParticularlyDangerousProducts"
         ]
       }
     },
@@ -701,12 +701,12 @@
       "label": "Avtal med tillverkare eller partihandlare",
       "requiredWhen": {
         "properties": {
-          "avtalMedTillverkareEllerPartihandlare": {
-            "const": "JA"
+          "hasSupplierAgreement": {
+            "const": "YES"
           }
         },
         "required": [
-          "avtalMedTillverkareEllerPartihandlare"
+          "hasSupplierAgreement"
         ]
       }
     },
@@ -727,12 +727,12 @@
       "label": "Bild på försäljningsplatsen",
       "requiredWhen": {
         "properties": {
-          "tidsperiodForForsaljningen": {
-            "const": "TIDSBEGRANSAD_FORSALJNING"
+          "salesPeriod": {
+            "const": "TEMPORARY"
           }
         },
         "required": [
-          "tidsperiodForForsaljningen"
+          "salesPeriod"
         ]
       }
     },

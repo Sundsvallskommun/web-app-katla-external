@@ -119,30 +119,37 @@ describe('mocked schema pairs against the renderer contract', () => {
       }
     });
 
-    // Draken reads the premises address from this one key in every schema.
-    it('keeps the premises address in the root besoksadress object', () => {
-      const root = schema.properties ?? {};
-      const holders = objectSchemas(schema).filter((object) => object.properties?.gatuadress !== undefined);
-      const address = root.besoksadress;
+    // Alcohol schemas say premises and tobacco schemas point of sale, as the PartyAsset schemas do.
+    const site = file.startsWith('aot-tobacco') ? 'pointOfSale' : 'premises';
+    const otherSite = site === 'premises' ? 'pointOfSale' : 'premises';
 
-      if (root.besoksadressSammaSomArendeagare !== undefined) expect(address).toBeDefined();
+    // Draken reads the premises address from this one key in every schema of the domain.
+    it(`keeps the premises address in the root ${site}Address object`, () => {
+      const root = schema.properties ?? {};
+      const invoiceRecipient = root.invoiceRecipient;
+      const holders = objectSchemas(schema).filter(
+        (object) => object.properties?.street !== undefined && object !== invoiceRecipient
+      );
+      const address = root[`${site}Address`];
+
+      if (root[`${site}AddressSameAsCompany`] !== undefined) expect(address).toBeDefined();
       if (typeof address !== 'object') {
         expect(holders).toEqual([]);
         return;
       }
 
       expect(holders).toEqual([address]);
-      expect(address.required).toEqual(expect.arrayContaining(['gatuadress', 'postnummer', 'postort']));
+      expect(address.required).toEqual(expect.arrayContaining(['street', 'postalCode', 'city']));
 
-      if (root.besoksadressSammaSomArendeagare === undefined) {
-        expect(schema.required).toContain('besoksadress');
+      if (root[`${site}AddressSameAsCompany`] === undefined) {
+        expect(schema.required).toContain(`${site}Address`);
       } else {
         expect(schema.allOf).toContainEqual({
           if: {
-            properties: { besoksadressSammaSomArendeagare: { const: 'NEJ' } },
-            required: ['besoksadressSammaSomArendeagare'],
+            properties: { [`${site}AddressSameAsCompany`]: { const: 'NO' } },
+            required: [`${site}AddressSameAsCompany`],
           },
-          then: { required: ['besoksadress'] },
+          then: { required: [`${site}Address`] },
         });
       }
     });
@@ -153,83 +160,78 @@ describe('mocked schema pairs against the renderer contract', () => {
       const rootObjects = Object.entries(root).filter(([, child]) => child.type === 'object');
       const propertyNames = (object: RJSFSchema) => Object.keys(object.properties ?? {});
 
-      it('names the premises in a root serveringsstalletsNamn string', () => {
-        for (const object of objectSchemas(schema)) {
-          expect(propertyNames(object)).not.toContain('forsaljningsstalletsNamn');
-          expect(propertyNames(object)).not.toContain('namn');
-        }
-        if (root.serveringsstalletsNamn !== undefined) expect(root.serveringsstalletsNamn.type).toBe('string');
+      it(`names the premises in a root ${site}Name string`, () => {
+        const premisesKeys = ['Name', 'AddressSameAsCompany', 'Address', 'Contact'];
+        for (const suffix of premisesKeys) expect(root[`${otherSite}${suffix}`]).toBeUndefined();
+        const name = root[`${site}Name`];
+        if (name !== undefined) expect(name.type).toBe('string');
       });
 
-      it('keeps contact details in kontaktuppgifterTillServeringsstallet only', () => {
-        const contactFields = ['telefonnummer', 'ePostadress', 'hemsida'];
+      it(`keeps contact details in ${site}Contact only`, () => {
+        const contactFields = ['phoneNumber', 'emailAddress', 'website'];
         for (const [name, object] of rootObjects) {
           const held = propertyNames(object).filter((field) => contactFields.includes(field));
-          if (name === 'kontaktuppgifterTillServeringsstallet') {
+          if (name === `${site}Contact`) {
             expect(propertyNames(object)).toEqual(held);
           } else {
             expect(held, `${name} carries contact fields`).toEqual([]);
           }
         }
-        expect(root.ePost).toBeUndefined();
       });
 
-      it('counts seats under sittplatserILokalen with the shared child names', () => {
+      it('counts seats under seating with the shared child names', () => {
         const holders = objectSchemas(schema).filter((object) =>
-          propertyNames(object).some((field) => field.startsWith('antalSittplatser'))
+          propertyNames(object).some((field) => field.startsWith('seats'))
         );
-        if (root.sittplatserILokalen === undefined) {
+        if (root.seating === undefined) {
           expect(holders).toEqual([]);
           return;
         }
-        expect(holders).toEqual([root.sittplatserILokalen]);
-        for (const field of propertyNames(root.sittplatserILokalen)) {
-          expect(['antalSittplatserInomhus', 'antalSittplatserUteservering']).toContain(field);
+        expect(holders).toEqual([root.seating]);
+        for (const field of propertyNames(root.seating)) {
+          expect(['seatsIndoor', 'seatsOutdoor']).toContain(field);
         }
       });
 
-      it('lists the drinks under alkoholdrycker', () => {
-        const drinkKeys = Object.keys(root).filter((field) => /alkoholdrycker/i.test(field));
+      it('lists the drinks under beverages', () => {
+        const drinkKeys = Object.keys(root).filter((field) => /beverages$/i.test(field));
         expect(drinkKeys.length).toBeLessThanOrEqual(1);
         if (drinkKeys.length === 0) return;
-        expect(drinkKeys).toEqual(['alkoholdrycker']);
-        const items = root.alkoholdrycker.items as RJSFSchema;
+        expect(drinkKeys).toEqual(['beverages']);
+        const items = root.beverages.items as RJSFSchema;
         expect(items.oneOf?.map((option) => (option as RJSFSchema).const)).toEqual([
-          'STARKOL',
-          'VIN',
-          'SPRITDRYCKER',
-          'CIDER_ELLER_ANDRA_JASTA_ALKOHOLDRYCKER',
+          'STRONG_BEER',
+          'WINE',
+          'SPIRITS',
+          'OTHER_FERMENTED_BEVERAGES',
         ]);
       });
 
-      it('describes the menu as serverasMat, menyval and menyBeskrivning', () => {
-        for (const legacy of ['beskrivUtbudetAvMat', 'meny', 'kommerNiAttServeraMat']) {
-          expect(root[legacy], `${legacy} is a retired key`).toBeUndefined();
-        }
-        if (root.menyval === undefined) {
-          expect(root.menyBeskrivning).toBeUndefined();
+      it('describes the menu as servesFood, menuChoice and menuDescription', () => {
+        if (root.menuChoice === undefined) {
+          expect(root.menuDescription).toBeUndefined();
           return;
         }
-        expect(root.menyval.oneOf?.map((option) => (option as RJSFSchema).const).sort()).toEqual([
-          'JAG_VILL_BESKRIVA',
-          'JAG_VILL_LADDA_UPP',
+        expect(root.menuChoice.oneOf?.map((option) => (option as RJSFSchema).const).sort()).toEqual([
+          'DESCRIBE',
+          'UPLOAD',
         ]);
-        expect(root.menyBeskrivning.type).toBe('string');
+        expect(root.menuDescription.type).toBe('string');
         const menu = attachmentTypesOfSchema(schema as Record<string, unknown>).find((type) => type.key === 'MENU');
         expect(menu?.requiredWhen).toEqual({
-          properties: { menyval: { const: 'JAG_VILL_LADDA_UPP' } },
-          required: ['menyval'],
+          properties: { menuChoice: { const: 'UPLOAD' } },
+          required: ['menuChoice'],
         });
       });
 
-      it('lists responsible staff under serveringsansvarigPersonal', () => {
-        const staffShape = ['fornamn', 'efternamn', 'fodelsedatum', 'fromDate'];
+      it('lists responsible staff under responsibleServingStaff', () => {
+        const staffShape = ['firstName', 'lastName', 'dateOfBirth', 'fromDate'];
         const holders = Object.entries(root).filter(([, child]) => {
           const items =
             child.type === 'array' && typeof child.items === 'object' ? (child.items as RJSFSchema) : undefined;
           return items !== undefined && [...propertyNames(items)].sort().join() === [...staffShape].sort().join();
         });
-        for (const [name] of holders) expect(name).toBe('serveringsansvarigPersonal');
+        for (const [name] of holders) expect(name).toBe('responsibleServingStaff');
       });
     });
   });

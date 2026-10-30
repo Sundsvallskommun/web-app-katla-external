@@ -1,19 +1,18 @@
 {
   "ui:order": [
-    "arDuFirmatecknare",
-    "fakturaadressSammaSomForetaget",
-    "fakturamottagare",
-    "fakturareferens",
-    "verksamhetsbeskrivningsval",
-    "verksamhetsbeskrivning",
-    "stadigvarandeForsaljningAvLivsmedel",
-    "tillverkarFolkolPaForsaljningsstallet",
-    "dokumentationKanVisasVidTillsyn",
-    "egenkontrollprogramFolkol",
-    "serveringsstalletsNamn",
-    "besoksadressSammaSomArendeagare",
-    "besoksadress",
-    "kontaktuppgifterTillServeringsstallet"
+    "isAuthorizedSignatory",
+    "invoiceAddressSameAsCompany",
+    "invoiceRecipient",
+    "invoiceReference",
+    "businessDescriptionChoice",
+    "businessDescription",
+    "isFoodRegistered",
+    "canShowFoodRegistrationAtInspection",
+    "selfMonitoringProgram",
+    "premisesName",
+    "premisesAddressSameAsCompany",
+    "premisesAddress",
+    "premisesContact"
   ],
   "ui:sections": [
     {
@@ -22,153 +21,149 @@
       "icon": "building-2",
       "defaultOpen": true,
       "fields": [
-        "arDuFirmatecknare",
-        "fakturaadressSammaSomForetaget",
-        "fakturamottagare",
-        "fakturareferens",
-        "verksamhetsbeskrivningsval",
-        "verksamhetsbeskrivning"
+        "isAuthorizedSignatory",
+        "invoiceAddressSameAsCompany",
+        "invoiceRecipient",
+        "invoiceReference",
+        "businessDescriptionChoice",
+        "businessDescription"
       ]
     },
     {
       "id": "ansokan",
-      "title": "Försäljning av folköl (klass 2)",
+      "title": "Servering och försäljning av folköl (klass 2)",
       "icon": "file-text",
       "defaultOpen": true,
       "fields": [
-        "stadigvarandeForsaljningAvLivsmedel",
-        "tillverkarFolkolPaForsaljningsstallet",
-        "dokumentationKanVisasVidTillsyn",
-        "egenkontrollprogramFolkol",
-        "serveringsstalletsNamn",
-        "besoksadressSammaSomArendeagare",
-        "besoksadress",
-        "kontaktuppgifterTillServeringsstallet"
+        "isFoodRegistered",
+        "canShowFoodRegistrationAtInspection",
+        "selfMonitoringProgram",
+        "premisesName",
+        "premisesAddressSameAsCompany",
+        "premisesAddress",
+        "premisesContact"
       ]
     }
   ],
-  "arDuFirmatecknare": {
+  "isAuthorizedSignatory": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
-  "fakturaadressSammaSomForetaget": {
+  "invoiceAddressSameAsCompany": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
   },
-  "fakturamottagare": {
+  "invoiceRecipient": {
     "ui:order": [
-      "cO",
-      "utdelningsadress",
-      "postnummer",
-      "postort"
+      "careOf",
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "cO": {
+    "careOf": {
       "ui:widget": "TextWidget"
     },
-    "utdelningsadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "fakturareferens": {
+  "invoiceReference": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     },
     "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
   },
-  "verksamhetsbeskrivningsval": {
+  "businessDescriptionChoice": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
-  "verksamhetsbeskrivning": {
+  "businessDescription": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[24rem]"
     }
   },
-  "egenkontrollprogramFolkol": {
+  "selfMonitoringProgram": {
     "ui:widget": "RadiobuttonWidget",
-    "ui:description": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig försäljningsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p>Om du svarar Ja bifogar du filen under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>"
+    "ui:description": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig serveringsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p>Om du svarar Ja bifogar du filen under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>"
   },
-  "serveringsstalletsNamn": {
+  "premisesName": {
     "ui:widget": "TextWidget",
     "ui:description": "<p>Det namn som du skyltar med till kund.</p>"
   },
-  "besoksadressSammaSomArendeagare": {
+  "premisesAddressSameAsCompany": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "besoksadress": {
+  "premisesAddress": {
     "ui:order": [
-      "gatuadress",
-      "postnummer",
-      "postort"
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "gatuadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "kontaktuppgifterTillServeringsstallet": {
+  "premisesContact": {
     "ui:order": [
-      "telefonnummer",
-      "ePostadress",
-      "hemsida"
+      "phoneNumber",
+      "emailAddress",
+      "website"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "telefonnummer": {
+    "phoneNumber": {
       "ui:widget": "TextWidget"
     },
-    "ePostadress": {
+    "emailAddress": {
       "ui:widget": "TextWidget"
     },
-    "hemsida": {
+    "website": {
       "ui:widget": "TextWidget"
     }
   },
-  "stadigvarandeForsaljningAvLivsmedel": {
+  "isFoodRegistered": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "tillverkarFolkolPaForsaljningsstallet": {
-    "ui:widget": "RadiobuttonWidget"
-  },
-  "dokumentationKanVisasVidTillsyn": {
+  "canShowFoodRegistrationAtInspection": {
     "ui:widget": "checkboxes",
     "ui:options": {
       "multiple": true,

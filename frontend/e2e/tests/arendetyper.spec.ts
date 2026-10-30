@@ -96,16 +96,16 @@ test.describe('Ärendetyper', () => {
       await fillSchemaForm(page, pair.schema, tasting.steps);
       await uploadRequiredAttachments(page, pair.schema, tasting.attachments);
       await fillSchemaForm(page, pair.schema, [
-        { text: 'besoksadress.postnummer', value: '8523' },
-        { text: 'personerTillKunskapsprovet.0.ePostadress', value: 'inte-en-adress' },
+        { text: 'premisesAddress.postalCode', value: '8523' },
+        { text: 'knowledgeTestParticipants.0.emailAddress', value: 'inte-en-adress' },
       ]);
 
       await page.getByTestId('register-errand').click();
 
-      await expect(page.locator('[data-invalid-field="root_besoksadress_postnummer"]')).toContainText(
+      await expect(page.locator('[data-invalid-field="root_premisesAddress_postalCode"]')).toContainText(
         'Värdet matchar inte det förväntade formatet'
       );
-      await expect(page.locator('[data-invalid-field="root_personerTillKunskapsprovet_0_ePostadress"]')).toContainText(
+      await expect(page.locator('[data-invalid-field="root_knowledgeTestParticipants_0_emailAddress"]')).toContainText(
         'Ange en giltig e-postadress'
       );
       await expect(page.getByTestId('submit-button')).toBeHidden();
@@ -123,14 +123,14 @@ test.describe('Ärendetyper', () => {
       expect(stopText).not.toBe('');
 
       const stop = page.getByTestId('schema-stop');
-      await fillSchemaForm(page, pair.schema, [{ radio: 'serverasMat', value: 'NEJ' }]);
+      await fillSchemaForm(page, pair.schema, [{ radio: 'servesFood', value: 'NO' }]);
       await expect(stop).toContainText(stopText);
       await page.getByTestId('register-errand').click();
       // Inline under the answer and once more as the toast.
       await expect(page.getByText(stopText)).toHaveCount(2);
       await expect(page.getByTestId('submit-button')).toBeHidden();
 
-      await fillSchemaForm(page, pair.schema, [{ radio: 'serverasMat', value: 'JA' }]);
+      await fillSchemaForm(page, pair.schema, [{ radio: 'servesFood', value: 'YES' }]);
       await expect(stop).toHaveCount(0);
     });
   });
