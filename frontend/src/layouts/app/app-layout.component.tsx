@@ -22,12 +22,7 @@ const AppLayout = ({ children }: ClientApplicationProps) => {
     void getMe();
   }, [getMe]);
 
-  return (
-    <GuiProvider colorScheme={colorScheme}>
-      {children}
-      {/* <InactivityMonitor /> */}
-    </GuiProvider>
-  );
+  return <GuiProvider colorScheme={colorScheme}>{children}</GuiProvider>;
 };
 
 export default AppLayout;
