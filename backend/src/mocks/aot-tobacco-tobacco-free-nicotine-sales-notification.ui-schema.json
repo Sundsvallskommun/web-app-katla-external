@@ -1,21 +1,21 @@
 {
   "ui:order": [
-    "arDuFirmatecknare",
-    "fakturaadressSammaSomForetaget",
-    "fakturamottagare",
-    "fakturareferens",
-    "verksamhetsbeskrivningsval",
-    "verksamhetsbeskrivning",
-    "tidsperiodForForsaljningen",
-    "startdatumForsaljning",
-    "periodTidsbegransadForsaljning",
-    "serveringsstalletsNamn",
-    "besoksadressSammaSomArendeagare",
-    "besoksadress",
-    "kontaktuppgifterTillServeringsstallet",
-    "bedriverAvenDistansforsaljning",
-    "hemsida",
-    "avtalMedTillverkareEllerPartihandlare"
+    "isAuthorizedSignatory",
+    "invoiceAddressSameAsCompany",
+    "invoiceRecipient",
+    "invoiceReference",
+    "businessDescriptionChoice",
+    "businessDescription",
+    "salesPeriod",
+    "salesStartDate",
+    "salesPeriodDates",
+    "pointOfSaleName",
+    "pointOfSaleAddressSameAsCompany",
+    "pointOfSaleAddress",
+    "pointOfSaleContact",
+    "includesDistanceSelling",
+    "distanceSellingWebsite",
+    "hasSupplierAgreement"
   ],
   "ui:sections": [
     {
@@ -24,12 +24,12 @@
       "icon": "building-2",
       "defaultOpen": true,
       "fields": [
-        "arDuFirmatecknare",
-        "fakturaadressSammaSomForetaget",
-        "fakturamottagare",
-        "fakturareferens",
-        "verksamhetsbeskrivningsval",
-        "verksamhetsbeskrivning"
+        "isAuthorizedSignatory",
+        "invoiceAddressSameAsCompany",
+        "invoiceRecipient",
+        "invoiceReference",
+        "businessDescriptionChoice",
+        "businessDescription"
       ]
     },
     {
@@ -38,166 +38,166 @@
       "icon": "file-text",
       "defaultOpen": true,
       "fields": [
-        "tidsperiodForForsaljningen",
-        "startdatumForsaljning",
-        "periodTidsbegransadForsaljning",
-        "serveringsstalletsNamn",
-        "besoksadressSammaSomArendeagare",
-        "besoksadress",
-        "kontaktuppgifterTillServeringsstallet",
-        "bedriverAvenDistansforsaljning",
-        "hemsida",
-        "avtalMedTillverkareEllerPartihandlare"
+        "salesPeriod",
+        "salesStartDate",
+        "salesPeriodDates",
+        "pointOfSaleName",
+        "pointOfSaleAddressSameAsCompany",
+        "pointOfSaleAddress",
+        "pointOfSaleContact",
+        "includesDistanceSelling",
+        "distanceSellingWebsite",
+        "hasSupplierAgreement"
       ]
     }
   ],
-  "arDuFirmatecknare": {
+  "isAuthorizedSignatory": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
-  "fakturaadressSammaSomForetaget": {
+  "invoiceAddressSameAsCompany": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
   },
-  "fakturamottagare": {
+  "invoiceRecipient": {
     "ui:order": [
-      "cO",
-      "utdelningsadress",
-      "postnummer",
-      "postort"
+      "careOf",
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "cO": {
+    "careOf": {
       "ui:widget": "TextWidget"
     },
-    "utdelningsadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "fakturareferens": {
+  "invoiceReference": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     },
     "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
   },
-  "verksamhetsbeskrivningsval": {
+  "businessDescriptionChoice": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
-  "verksamhetsbeskrivning": {
+  "businessDescription": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[24rem]"
     }
   },
-  "tidsperiodForForsaljningen": {
+  "salesPeriod": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "startdatumForsaljning": {
+  "salesStartDate": {
     "ui:order": [],
     "ui:options": {
       "showObjectFieldset": true
     }
   },
-  "periodTidsbegransadForsaljning": {
+  "salesPeriodDates": {
     "ui:order": [
-      "startDate",
-      "endDate"
+      "fromDate",
+      "toDate"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "startDate": {
+    "fromDate": {
       "ui:widget": "DateWidget"
     },
-    "endDate": {
+    "toDate": {
       "ui:widget": "DateWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "startDate",
-          "endDate"
+          "fromDate",
+          "toDate"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "serveringsstalletsNamn": {
+  "pointOfSaleName": {
     "ui:widget": "TextWidget"
   },
-  "besoksadressSammaSomArendeagare": {
+  "pointOfSaleAddressSameAsCompany": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "besoksadress": {
+  "pointOfSaleAddress": {
     "ui:order": [
-      "gatuadress",
-      "postnummer",
-      "postort"
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "gatuadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "kontaktuppgifterTillServeringsstallet": {
+  "pointOfSaleContact": {
     "ui:order": [
-      "telefonnummer",
-      "ePostadress"
+      "phoneNumber",
+      "emailAddress"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "telefonnummer": {
+    "phoneNumber": {
       "ui:widget": "TextWidget"
     },
-    "ePostadress": {
+    "emailAddress": {
       "ui:widget": "TextWidget"
     }
   },
-  "bedriverAvenDistansforsaljning": {
+  "includesDistanceSelling": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Distansförsäljning är försäljning av varor via postorder, telefon eller internet där leverantören ansvarar för leveransen av varorna.</p>"
   },
-  "hemsida": {
+  "distanceSellingWebsite": {
     "ui:widget": "TextWidget"
   },
-  "avtalMedTillverkareEllerPartihandlare": {
+  "hasSupplierAgreement": {
     "ui:widget": "RadiobuttonWidget"
   }
 }

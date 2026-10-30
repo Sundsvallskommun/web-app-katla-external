@@ -1,41 +1,41 @@
 {
   "ui:order": [
-    "arDuFirmatecknare",
-    "fakturaadressSammaSomForetaget",
-    "fakturamottagare",
-    "fakturareferens",
-    "verksamhetsbeskrivningsval",
-    "verksamhetsbeskrivning",
-    "kunskapOmAlkohollagen",
-    "personnummer",
-    "organisationsnummer",
-    "anmalPersonerTillKunskapsprovet",
-    "personerTillKunskapsprovet",
-    "angeMellanVilkaDatumDetTillfalliga",
-    "ovrigaUppgifterGallandeDatum",
-    "klockslagForServeringen",
-    "alkoholdrycker",
-    "dryckesmenyval",
-    "dryckesmeny",
-    "serverasMat",
-    "menyval",
-    "menyBeskrivning",
-    "finansiering",
-    "egnaMedel",
-    "banklan",
-    "privatlan",
-    "annanFinansiering",
-    "ovrigaUpplysningarFinansiering",
-    "beraknatAntalGaster",
-    "vadArDetForTypAvTillstallning",
-    "serveringsstalletsNamn",
-    "kontaktuppgifterTillServeringsstallet",
-    "besoksadress",
-    "serveringsansvarigPersonal",
-    "ordningOchNykterhet",
-    "sittplatserILokalen",
-    "maximaltAntalPersonerILokalen",
-    "finnsPolistillstand"
+    "isAuthorizedSignatory",
+    "invoiceAddressSameAsCompany",
+    "invoiceRecipient",
+    "invoiceReference",
+    "businessDescriptionChoice",
+    "businessDescription",
+    "knowledgeOfAlcoholAct",
+    "knowledgeTestPassedBy",
+    "otherLicensedBusiness",
+    "knowledgeTestRegistration",
+    "knowledgeTestParticipants",
+    "permitPeriodDates",
+    "permitPeriodNotes",
+    "dailyServingHours",
+    "beverages",
+    "drinksMenuChoice",
+    "drinksMenuDescription",
+    "servesFood",
+    "menuChoice",
+    "menuDescription",
+    "financing",
+    "ownFunds",
+    "bankLoans",
+    "privateLoans",
+    "otherFinancing",
+    "financingNotes",
+    "expectedGuests",
+    "eventType",
+    "premisesName",
+    "premisesContact",
+    "premisesAddress",
+    "responsibleServingStaff",
+    "orderAndSobriety",
+    "seating",
+    "maxPersonsInPremises",
+    "hasAppliedForPolicePermit"
   ],
   "ui:sections": [
     {
@@ -44,12 +44,12 @@
       "icon": "building-2",
       "defaultOpen": true,
       "fields": [
-        "arDuFirmatecknare",
-        "fakturaadressSammaSomForetaget",
-        "fakturamottagare",
-        "fakturareferens",
-        "verksamhetsbeskrivningsval",
-        "verksamhetsbeskrivning"
+        "isAuthorizedSignatory",
+        "invoiceAddressSameAsCompany",
+        "invoiceRecipient",
+        "invoiceReference",
+        "businessDescriptionChoice",
+        "businessDescription"
       ]
     },
     {
@@ -58,141 +58,141 @@
       "icon": "file-text",
       "defaultOpen": true,
       "fields": [
-        "kunskapOmAlkohollagen",
-        "personnummer",
-        "organisationsnummer",
-        "anmalPersonerTillKunskapsprovet",
-        "personerTillKunskapsprovet",
-        "angeMellanVilkaDatumDetTillfalliga",
-        "ovrigaUppgifterGallandeDatum",
-        "klockslagForServeringen",
-        "alkoholdrycker",
-        "dryckesmenyval",
-        "dryckesmeny",
-        "serverasMat",
-        "menyval",
-        "menyBeskrivning",
-        "finansiering",
-        "egnaMedel",
-        "banklan",
-        "privatlan",
-        "annanFinansiering",
-        "ovrigaUpplysningarFinansiering",
-        "beraknatAntalGaster",
-        "vadArDetForTypAvTillstallning",
-        "serveringsstalletsNamn",
-        "kontaktuppgifterTillServeringsstallet",
-        "besoksadress",
-        "serveringsansvarigPersonal",
-        "ordningOchNykterhet",
-        "sittplatserILokalen",
-        "maximaltAntalPersonerILokalen",
-        "finnsPolistillstand"
+        "knowledgeOfAlcoholAct",
+        "knowledgeTestPassedBy",
+        "otherLicensedBusiness",
+        "knowledgeTestRegistration",
+        "knowledgeTestParticipants",
+        "permitPeriodDates",
+        "permitPeriodNotes",
+        "dailyServingHours",
+        "beverages",
+        "drinksMenuChoice",
+        "drinksMenuDescription",
+        "servesFood",
+        "menuChoice",
+        "menuDescription",
+        "financing",
+        "ownFunds",
+        "bankLoans",
+        "privateLoans",
+        "otherFinancing",
+        "financingNotes",
+        "expectedGuests",
+        "eventType",
+        "premisesName",
+        "premisesContact",
+        "premisesAddress",
+        "responsibleServingStaff",
+        "orderAndSobriety",
+        "seating",
+        "maxPersonsInPremises",
+        "hasAppliedForPolicePermit"
       ]
     }
   ],
-  "arDuFirmatecknare": {
+  "isAuthorizedSignatory": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
   },
-  "fakturaadressSammaSomForetaget": {
+  "invoiceAddressSameAsCompany": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
   },
-  "fakturamottagare": {
+  "invoiceRecipient": {
     "ui:order": [
-      "cO",
-      "utdelningsadress",
-      "postnummer",
-      "postort"
+      "careOf",
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "cO": {
+    "careOf": {
       "ui:widget": "TextWidget"
     },
-    "utdelningsadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "fakturareferens": {
+  "invoiceReference": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     },
     "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
   },
-  "verksamhetsbeskrivningsval": {
+  "businessDescriptionChoice": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
   },
-  "verksamhetsbeskrivning": {
+  "businessDescription": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[24rem]"
     }
   },
-  "angeMellanVilkaDatumDetTillfalliga": {
+  "permitPeriodDates": {
     "ui:order": [
-      "startDate",
-      "endDate"
+      "fromDate",
+      "toDate"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "startDate": {
+    "fromDate": {
       "ui:widget": "DateWidget"
     },
-    "endDate": {
+    "toDate": {
       "ui:widget": "DateWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "startDate",
-          "endDate"
+          "fromDate",
+          "toDate"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "ovrigaUppgifterGallandeDatum": {
+  "permitPeriodNotes": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     }
   },
-  "klockslagForServeringen": {
+  "dailyServingHours": {
     "ui:order": [
-      "startTime",
-      "endTime"
+      "from",
+      "to"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "startTime": {
+    "from": {
       "ui:widget": "TimeWidget",
       "ui:options": {
         "step": 900
       }
     },
-    "endTime": {
+    "to": {
       "ui:widget": "TimeWidget",
       "ui:options": {
         "step": 900
@@ -201,82 +201,82 @@
     "ui:rows": [
       {
         "fields": [
-          "startTime",
-          "endTime"
+          "from",
+          "to"
         ],
         "gap": "gap-24"
       }
     ],
     "ui:description": "<p>Ange när servering önskas påbörjas, samt avslutas (standard är 11:00-01:00 om inte annat beslutas).</p>"
   },
-  "alkoholdrycker": {
+  "beverages": {
     "ui:widget": "checkboxes",
     "ui:options": {
       "multiple": true,
       "className": "w-full max-w-[48rem]"
     }
   },
-  "beraknatAntalGaster": {
+  "expectedGuests": {
     "ui:order": [
-      "antal"
+      "count"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "antal": {
+    "count": {
       "ui:widget": "TextWidget"
     }
   },
-  "vadArDetForTypAvTillstallning": {
+  "eventType": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     }
   },
-  "serveringsstalletsNamn": {
+  "premisesName": {
     "ui:widget": "TextWidget"
   },
-  "kontaktuppgifterTillServeringsstallet": {
+  "premisesContact": {
     "ui:order": [
-      "telefonnummer"
+      "phoneNumber"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "telefonnummer": {
+    "phoneNumber": {
       "ui:widget": "TextWidget"
     },
     "ui:description": "<p>Om ingen fast telefon finns, lämna mobilnummer till företrädare.</p>"
   },
-  "besoksadress": {
+  "premisesAddress": {
     "ui:order": [
-      "gatuadress",
-      "postnummer",
-      "postort"
+      "street",
+      "postalCode",
+      "city"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "gatuadress": {
+    "street": {
       "ui:widget": "TextWidget"
     },
-    "postnummer": {
+    "postalCode": {
       "ui:widget": "TextWidget"
     },
-    "postort": {
+    "city": {
       "ui:widget": "TextWidget"
     },
     "ui:rows": [
       {
         "fields": [
-          "postnummer",
-          "postort"
+          "postalCode",
+          "city"
         ],
         "gap": "gap-24"
       }
     ]
   },
-  "serveringsansvarigPersonal": {
+  "responsibleServingStaff": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -284,18 +284,18 @@
     },
     "items": {
       "ui:order": [
-        "fornamn",
-        "efternamn",
-        "fodelsedatum",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
         "fromDate"
       ],
-      "fornamn": {
+      "firstName": {
         "ui:widget": "TextWidget"
       },
-      "efternamn": {
+      "lastName": {
         "ui:widget": "TextWidget"
       },
-      "fodelsedatum": {
+      "dateOfBirth": {
         "ui:widget": "DateWidget"
       },
       "fromDate": {
@@ -304,66 +304,66 @@
     },
     "ui:description": "<p>Nedan anger du namn och födelsedatum till den person eller de personer som ska vara ansvariga för serveringen av alkohol. En person som är serveringsansvarig måste vara <u>minst 20 år</u>.</p>"
   },
-  "sittplatserILokalen": {
+  "seating": {
     "ui:order": [
-      "antalSittplatserInomhus"
+      "seatsIndoor"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "antalSittplatserInomhus": {
+    "seatsIndoor": {
       "ui:widget": "TextWidget"
     }
   },
-  "maximaltAntalPersonerILokalen": {
+  "maxPersonsInPremises": {
     "ui:order": [
-      "antalPersoner"
+      "maxPersons"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "antalPersoner": {
+    "maxPersons": {
       "ui:widget": "TextWidget"
     }
   },
-  "finnsPolistillstand": {
+  "hasAppliedForPolicePermit": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "dryckesmenyval": {
+  "drinksMenuChoice": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>"
   },
-  "dryckesmeny": {
+  "drinksMenuDescription": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     }
   },
-  "serverasMat": {
+  "servesFood": {
     "ui:widget": "RadiobuttonWidget"
   },
-  "menyval": {
+  "menuChoice": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>"
   },
-  "menyBeskrivning": {
+  "menuDescription": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     }
   },
-  "kunskapOmAlkohollagen": {
+  "knowledgeOfAlcoholAct": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>För att få ett serveringstillstånd behöver du eller annan person som är ansvarig i företaget ha kunskap om ansvarsfull alkoholservering och alkohollagen. Denna kunskap kan du visa på flera sätt.</p>"
   },
-  "personnummer": {
+  "knowledgeTestPassedBy": {
     "ui:order": [
-      "personnummer"
+      "personalIdentityNumber"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "personnummer": {
+    "personalIdentityNumber": {
       "ui:widget": "TextWidget",
       "ui:options": {
         "hideLabel": true
@@ -371,14 +371,14 @@
     },
     "ui:description": "<p>Ange personnummer på den person i företaget som har genomfört och fått godkänt på Folkhälsomyndighetens kunskapsprov under de senaste 5 åren.</p>"
   },
-  "organisationsnummer": {
+  "otherLicensedBusiness": {
     "ui:order": [
-      "organisationsnummer"
+      "organizationNumber"
     ],
     "ui:options": {
       "showObjectFieldset": true
     },
-    "organisationsnummer": {
+    "organizationNumber": {
       "ui:widget": "TextWidget",
       "ui:options": {
         "hideLabel": true
@@ -386,11 +386,11 @@
     },
     "ui:description": "<p>Vilket företag med gällande serveringstillstånd driver du eller annan person som är ansvarig i företaget idag?<br />\nOm du eller annan företrädare för organisationen har ett serveringstillstånd idag som minst motsvarar den aktuella ansökan, och det inte finns skäl att ifrågasätta kunskaperna, kan det vara så att kunskaperna inte behöver styrkas med ett kunskapsprov.</p>"
   },
-  "anmalPersonerTillKunskapsprovet": {
+  "knowledgeTestRegistration": {
     "ui:widget": "RadiobuttonWidget",
     "ui:description": "<p>Om ditt ärende gäller en ansökan om stadigvarande serveringstillstånd så kan inte tillståndet beviljas innan minst en av de personer som du uppger här har genomfört och fått godkänt på kunskapsprovet.</p>"
   },
-  "personerTillKunskapsprovet": {
+  "knowledgeTestParticipants": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -398,30 +398,30 @@
     },
     "items": {
       "ui:order": [
-        "fornamn",
-        "efternamn",
-        "personnummer",
-        "telefonnummer",
-        "ePostadress"
+        "firstName",
+        "lastName",
+        "personalIdentityNumber",
+        "phoneNumber",
+        "emailAddress"
       ],
-      "fornamn": {
+      "firstName": {
         "ui:widget": "TextWidget"
       },
-      "efternamn": {
+      "lastName": {
         "ui:widget": "TextWidget"
       },
-      "personnummer": {
+      "personalIdentityNumber": {
         "ui:widget": "TextWidget"
       },
-      "telefonnummer": {
+      "phoneNumber": {
         "ui:widget": "TextWidget"
       },
-      "ePostadress": {
+      "emailAddress": {
         "ui:widget": "TextWidget"
       }
     }
   },
-  "finansiering": {
+  "financing": {
     "ui:widget": "checkboxes",
     "ui:options": {
       "multiple": true,
@@ -429,7 +429,7 @@
     },
     "ui:description": "<p>För att så långt det är möjligt säkerställa att restaurangbranschens präglas av sund konkurrens på lika villkor prövas finansieringen av verksamheten när du ansöker om serveringstillstånd. Du måste därför visa hur köpet och investeringar i verksamheten är finansierade samt hur första årets drift av verksamheten är finansierad. Verksamheten kan till exempel vara finansierad med banklån eller privatlån (lån från privatpersoner) och egna sparade medel. Du visar hur verksamheten är finansierad genom att bifoga lånehandlingar från långivaren eller genom kontoutdrag som visar att du sparat ihop till de pengar som du finansierar verksamheten med.</p>"
   },
-  "egnaMedel": {
+  "ownFunds": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -438,21 +438,21 @@
     "items": {
       "ui:order": [
         "bank",
-        "kontonummer",
-        "beloppKronor"
+        "accountNumber",
+        "amountSek"
       ],
       "bank": {
         "ui:widget": "TextWidget"
       },
-      "kontonummer": {
+      "accountNumber": {
         "ui:widget": "TextWidget"
       },
-      "beloppKronor": {
+      "amountSek": {
         "ui:widget": "TextWidget"
       }
     }
   },
-  "banklan": {
+  "bankLoans": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -460,18 +460,18 @@
     },
     "items": {
       "ui:order": [
-        "langivare",
-        "beloppKronor"
+        "lender",
+        "amountSek"
       ],
-      "langivare": {
+      "lender": {
         "ui:widget": "TextWidget"
       },
-      "beloppKronor": {
+      "amountSek": {
         "ui:widget": "TextWidget"
       }
     }
   },
-  "privatlan": {
+  "privateLoans": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -479,18 +479,18 @@
     },
     "items": {
       "ui:order": [
-        "langivare",
-        "beloppKronor"
+        "lender",
+        "amountSek"
       ],
-      "langivare": {
+      "lender": {
         "ui:widget": "TextWidget"
       },
-      "beloppKronor": {
+      "amountSek": {
         "ui:widget": "TextWidget"
       }
     }
   },
-  "annanFinansiering": {
+  "otherFinancing": {
     "ui:options": {
       "addable": true,
       "orderable": false,
@@ -498,28 +498,28 @@
     },
     "items": {
       "ui:order": [
-        "lanetyp",
-        "langivare",
-        "beloppKronor"
+        "loanType",
+        "lender",
+        "amountSek"
       ],
-      "lanetyp": {
+      "loanType": {
         "ui:widget": "TextWidget"
       },
-      "langivare": {
+      "lender": {
         "ui:widget": "TextWidget"
       },
-      "beloppKronor": {
+      "amountSek": {
         "ui:widget": "TextWidget"
       }
     }
   },
-  "ovrigaUpplysningarFinansiering": {
+  "financingNotes": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
     }
   },
-  "ordningOchNykterhet": {
+  "orderAndSobriety": {
     "ui:widget": "TexteditorWidget",
     "ui:options": {
       "className": "w-full min-h-[14rem]"
