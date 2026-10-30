@@ -76,7 +76,8 @@ export const AboutErrandContent: React.FC = () => {
       displayName: 'Kommun',
       values: [municipalityCode],
     };
-    setValue('parameters', municipalityCode ? [p] : []);
+    const others = (getValues('parameters') ?? []).filter((parameter) => parameter.key !== p.key);
+    setValue('parameters', municipalityCode ? [...others, p] : others);
   };
 
   const municipalityHasError =
