@@ -21,6 +21,7 @@ import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, Resolver, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { PREMISES_MUNICIPALITY_KEY } from 'src/constants/parameters';
 import { MOBILE_BREAKPOINT } from 'src/constants/responsive';
 import { servicePath } from 'src/constants/services';
 import { useLoadMetadata } from 'src/hooks/use-load-metadata';
@@ -51,7 +52,7 @@ const createDefaultErrand = (): ErrandFormDTO => ({
   //TODO: Change channel to ESERVICE_KATLA?
   channel: 'ESERVICE',
   resolution: 'INFORMED',
-  parameters: [{ key: 'premisesMunicipality', values: ['2281'] }],
+  parameters: [{ key: PREMISES_MUNICIPALITY_KEY, values: ['2281'] }],
 });
 
 interface ErrandRouteContentProps {

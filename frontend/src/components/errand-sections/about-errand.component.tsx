@@ -18,9 +18,10 @@ import { Info } from 'lucide-react';
 import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { PREMISES_MUNICIPALITY_KEY } from 'src/constants/parameters';
 import { useMetadataStore } from 'src/stores/metadata-store';
 
-const MUNICIPALITY_FIELD_ID = 'premisesMunicipality';
+const MUNICIPALITY_FIELD_ID = 'errand-municipality';
 const CATEGORY_FIELD_ID = 'errand-category';
 const TYPE_FIELD_ID = 'errand-type';
 
@@ -72,15 +73,16 @@ export const AboutErrandContent: React.FC = () => {
 
   const setPremisesMunicipality = (municipalityCode: string) => {
     const p = {
-      key: 'premisesMunicipality',
+      key: PREMISES_MUNICIPALITY_KEY,
       displayName: 'Kommun',
       values: [municipalityCode],
     };
-    setValue('parameters', municipalityCode ? [p] : []);
+    const others = (getValues('parameters') ?? []).filter((parameter) => parameter.key !== p.key);
+    setValue('parameters', municipalityCode ? [...others, p] : others);
   };
 
   const municipalityHasError =
-    showValidation && !getValues().parameters?.some((p) => p.key === 'premisesMunicipality' && p?.values?.length);
+    showValidation && !getValues().parameters?.some((p) => p.key === PREMISES_MUNICIPALITY_KEY && p?.values?.length);
   const categoryHasError = showValidation && !selected.CATEGORY;
   const typeHasError = showValidation && !!selected.CATEGORY && !selected.TYPE;
 
@@ -108,12 +110,12 @@ export const AboutErrandContent: React.FC = () => {
         className="w-full sm:w-[calc(50%-10px)]"
         {...(municipalityHasError ? { [INVALID_FIELD_ATTRIBUTE]: MUNICIPALITY_FIELD_ID } : {})}
       >
-        <FormLabel htmlFor="premisesMunicipality">Välj kommun</FormLabel>
+        <FormLabel htmlFor={MUNICIPALITY_FIELD_ID}>Välj kommun</FormLabel>
         <Select
           id={MUNICIPALITY_FIELD_ID}
           data-cy="errand-municipality-select"
           className="w-full"
-          value={watch().parameters?.find((p) => p.key === 'premisesMunicipality')?.values?.[0]}
+          value={watch().parameters?.find((p) => p.key === PREMISES_MUNICIPALITY_KEY)?.values?.[0]}
           aria-invalid={municipalityHasError}
           onChange={(event) => {
             setPremisesMunicipality(event.target.value);

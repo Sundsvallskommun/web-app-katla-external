@@ -79,6 +79,8 @@ const SELF: StakeholderDTO = { externalId: 'f1e2d3c4-0000-4000-8000-000000000009
 const SELF_AS_CONTACT: StakeholderDTO = { ...SELF, role: 'CONTACT', externalIdType: 'PRIVATE' };
 const WITH_CITIZEN: ErrandFormDTO['stakeholders'] = [...OWNER, SELF_AS_CONTACT];
 
+const MUNICIPALITY: ErrandFormDTO['parameters'] = [{ key: 'premisesMunicipalityId', values: ['2281'] }];
+
 const CLASSIFICATION: ErrandFormDTO['labels'] = [
   { id: 'alkohol', classification: 'CATEGORY' },
   { id: 'folkol', classification: 'TYPE' },
@@ -87,7 +89,7 @@ const CLASSIFICATION: ErrandFormDTO['labels'] = [
 // `self: null` renders without a known citizen; the default argument would swallow `undefined`.
 const renderButtons = (defaultValues: Partial<ErrandFormDTO> = {}, self: StakeholderDTO | null = SELF) => {
   const TestForm: React.FC = () => {
-    const methods = useForm<ErrandFormDTO>({ defaultValues });
+    const methods = useForm<ErrandFormDTO>({ defaultValues: { parameters: MUNICIPALITY, ...defaultValues } });
 
     return (
       <FormProvider {...methods}>
@@ -123,6 +125,14 @@ describe('What registration requires before it will submit', () => {
     });
     expect(screen.queryByRole('button', { name: 'errand-information:submit_confirm.submit' })).not.toBeInTheDocument();
   };
+
+  it('refuses to register an errand without a municipality', async () => {
+    renderButtons({ parameters: [], labels: CLASSIFICATION, stakeholders: OWNER });
+
+    clickRegister();
+
+    await expectReported('validation:municipality.required');
+  });
 
   it('refuses to register an errand that has not been categorized', async () => {
     renderButtons({ stakeholders: OWNER });
