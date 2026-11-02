@@ -331,7 +331,7 @@ describe('errand layout route identity', () => {
       channel: 'ESERVICE',
       parameters: [
         {
-          key: 'premisesMunicipality',
+          key: 'premisesMunicipalityId',
           values: ['2281'],
         },
       ],

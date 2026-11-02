@@ -198,14 +198,14 @@ describe('AboutErrand categorization', () => {
 
   it('changes only the municipality parameter, keeping the others', async () => {
     const other = { key: 'otherParameter', values: ['kept'] };
-    renderAbout({ parameters: [other, { key: 'premisesMunicipality', values: ['2281'] }] });
+    renderAbout({ parameters: [other, { key: 'premisesMunicipalityId', values: ['2281'] }] });
 
     fireEvent.change(getCy('errand-municipality-select'), { target: { value: '2262' } });
 
     await waitFor(() => {
       expect(JSON.parse(screen.getByTestId('parameters').textContent ?? '')).toEqual([
         other,
-        { key: 'premisesMunicipality', displayName: 'Kommun', values: ['2262'] },
+        { key: 'premisesMunicipalityId', displayName: 'Kommun', values: ['2262'] },
       ]);
     });
 

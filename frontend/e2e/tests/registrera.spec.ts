@@ -84,7 +84,7 @@ const registerErrand = async (page: Page, expectedStakeholderCount: number) => {
   // parameters and no schema answers — only the stakeholders carry information so far.
   expect(body.parameters ?? []).toEqual([
     {
-      key: 'premisesMunicipality',
+      key: 'premisesMunicipalityId',
       values: ['2281'],
     },
   ]);

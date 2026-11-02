@@ -62,7 +62,7 @@ function TestForm() {
   const methods = useForm<ErrandFormDTO>({
     defaultValues: {
       // Registration refuses an errand without a municipality or owner before it looks at the form data.
-      parameters: [{ key: 'premisesMunicipality', values: ['2281'] }],
+      parameters: [{ key: 'premisesMunicipalityId', values: ['2281'] }],
       stakeholders: [ownerStakeholderFor(mockOrganization)],
       // Labels select the schema; without them the broken entry is filtered out before the save.
       labels: [

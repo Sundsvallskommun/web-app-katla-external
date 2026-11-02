@@ -79,7 +79,7 @@ const SELF: StakeholderDTO = { externalId: 'f1e2d3c4-0000-4000-8000-000000000009
 const SELF_AS_CONTACT: StakeholderDTO = { ...SELF, role: 'CONTACT', externalIdType: 'PRIVATE' };
 const WITH_CITIZEN: ErrandFormDTO['stakeholders'] = [...OWNER, SELF_AS_CONTACT];
 
-const MUNICIPALITY: ErrandFormDTO['parameters'] = [{ key: 'premisesMunicipality', values: ['2281'] }];
+const MUNICIPALITY: ErrandFormDTO['parameters'] = [{ key: 'premisesMunicipalityId', values: ['2281'] }];
 
 const CLASSIFICATION: ErrandFormDTO['labels'] = [
   { id: 'alkohol', classification: 'CATEGORY' },

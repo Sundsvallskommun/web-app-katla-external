@@ -43,7 +43,7 @@ const LABELS: ErrandFormDTO['labels'] = [
 const [SCHEMA_NAME] = schemaNamesForErrand(LABELS, 'AOT');
 const OTHER_SCHEMA_NAME = 'aot_tobacco_sales_permit_application';
 
-const MUNICIPALITY = { key: 'premisesMunicipality', values: ['2281'] };
+const MUNICIPALITY = { key: 'premisesMunicipalityId', values: ['2281'] };
 
 const errand = (overrides: Partial<ErrandFormDTO> = {}): ErrandFormDTO => ({
   parameters: [MUNICIPALITY],
