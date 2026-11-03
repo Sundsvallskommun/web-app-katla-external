@@ -1,17 +1,19 @@
 import { StakeholderCard } from '@components/card/stakeholder-card.component';
 import { useIsContentLocked } from '@contexts/errand-content-lock-context';
+import { useMyStakeholder } from '@contexts/my-stakeholder-context';
 import { ErrandDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getMyStakeholder, getStakeholderUsingPersonNumber } from '@services/citizen/citizen-service';
+import { getStakeholderUsingPersonNumber } from '@services/citizen/citizen-service';
 import { Button, cx, FormControl, FormErrorMessage, FormLabel, Input, SearchField, Select } from '@sk-web-gui/react';
 import {
   asPersonStakeholder,
   createStakeholderSchema,
   emptyStakeholder,
+  isCitizen,
   phoneNumberFormatter,
   shouldShowContactDetails,
 } from '@utils/stakeholder';
-import { Pen, Plus, UserRound } from 'lucide-react';
+import { Pen, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, Resolver, useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -23,18 +25,15 @@ export const StakeholderList: React.FC<{
   roles: string[];
   maxCount?: number;
   hideRoleSelect?: boolean;
-  /** Offers the logged in citizen as a stakeholder, filled in from the session. */
-  allowAddSelf?: boolean;
-}> = ({ roles, maxCount, hideRoleSelect = false, allowAddSelf = false }) => {
+}> = ({ roles, maxCount, hideRoleSelect = false }) => {
   const [query, setQuery] = useState<string>('');
   const [searchResult, setSearchResult] = useState<boolean>(false);
   const [emptyResult, setEmptyResult] = useState<boolean>(false);
   const [manualEntryOpen, setManualEntryOpen] = useState<boolean>(false);
-  const [selfLookupFailed, setSelfLookupFailed] = useState<boolean>(false);
-  const [selfExternalId, setSelfExternalId] = useState<string>();
   const { metadata } = useMetadataStore();
   const { t } = useTranslation();
   const isLocked = useIsContentLocked();
+  const self = useMyStakeholder();
 
   const context = useFormContext<ErrandDTO>();
   const { stakeholders } = context.watch();
@@ -69,10 +68,6 @@ export const StakeholderList: React.FC<{
   // them unclickable, leaving a person search field and an add button that responded to nothing.
   const showAddButton =
     !isLocked && !maxCountReached && (!hasPrimaryRole || (hasPrimaryRole && !hasPrimaryStakeholder));
-  const hasStakeholderWithId = (externalId: string | undefined) =>
-    externalId !== undefined &&
-    (stakeholders?.some((s) => roles.includes(s.role ?? '') && s.externalId === externalId) ?? false);
-  const showAddSelfButton = allowAddSelf && showAddButton && !hasStakeholderWithId(selfExternalId);
 
   const clearStakeholderForm = () => {
     setQuery('');
@@ -100,21 +95,6 @@ export const StakeholderList: React.FC<{
       .catch(() => {
         setEmptyResult(true);
       });
-  };
-
-  // Added straight away: the citizen is known, contact details are edited on the card. The id
-  // is only known after the lookup, so a reloaded draft is checked for a duplicate here too.
-  const onAddSelfHandler = async () => {
-    setSelfLookupFailed(false);
-    try {
-      const { data: self } = await getMyStakeholder();
-      setSelfExternalId(self.externalId);
-      if (!hasStakeholderWithId(self.externalId)) {
-        append(asPersonStakeholder({ ...self, role: roles[0] }));
-      }
-    } catch {
-      setSelfLookupFailed(true);
-    }
   };
 
   const addStakeholderToErrand = (stakeholder: StakeholderDTO) => {
@@ -259,6 +239,7 @@ export const StakeholderList: React.FC<{
             stakeholder={stakeholder}
             isEditable
             roles={roles}
+            hideRemove={isCitizen(stakeholder, self)}
             onRemove={() => {
               remove(index);
             }}
@@ -267,44 +248,21 @@ export const StakeholderList: React.FC<{
       })}
 
       {showAddButton && (
-        <div className="mt-6 flex flex-col gap-8">
-          <div className="flex flex-wrap gap-8">
-            <Button
-              data-cy="add-manual-person-button"
-              variant="primary"
-              size="sm"
-              color="vattjom"
-              inverted={true}
-              className="w-fit"
-              leftIcon={<Pen />}
-              onClick={() => {
-                setManualEntryOpen(true);
-              }}
-            >
-              {t('errand-information:stakeholder.add_manually')}
-            </Button>
-            {showAddSelfButton && (
-              <Button
-                data-cy="add-self-button"
-                variant="primary"
-                size="sm"
-                color="vattjom"
-                inverted={true}
-                className="w-fit"
-                leftIcon={<UserRound />}
-                onClick={() => {
-                  void onAddSelfHandler();
-                }}
-              >
-                {t('errand-information:stakeholder.add_self')}
-              </Button>
-            )}
-          </div>
-          {selfLookupFailed && (
-            <FormErrorMessage data-cy="add-self-error">
-              {t('errand-information:stakeholder.self_lookup_failed')}
-            </FormErrorMessage>
-          )}
+        <div className="mt-6">
+          <Button
+            data-cy="add-manual-person-button"
+            variant="primary"
+            size="sm"
+            color="vattjom"
+            inverted={true}
+            className="w-fit"
+            leftIcon={<Pen />}
+            onClick={() => {
+              setManualEntryOpen(true);
+            }}
+          >
+            {t('errand-information:stakeholder.add_manually')}
+          </Button>
         </div>
       )}
 

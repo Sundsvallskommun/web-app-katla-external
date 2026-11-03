@@ -1,0 +1,173 @@
+{
+  "ui:order": [
+    "isAuthorizedSignatory",
+    "invoiceAddressSameAsCompany",
+    "invoiceRecipient",
+    "invoiceReference",
+    "businessDescriptionChoice",
+    "businessDescription",
+    "isFoodRegistered",
+    "canShowFoodRegistrationAtInspection",
+    "selfMonitoringProgram",
+    "premisesName",
+    "premisesAddressSameAsCompany",
+    "premisesAddress",
+    "premisesContact"
+  ],
+  "ui:sections": [
+    {
+      "id": "foretag",
+      "title": "Företag och fakturering",
+      "icon": "building-2",
+      "defaultOpen": true,
+      "fields": [
+        "isAuthorizedSignatory",
+        "invoiceAddressSameAsCompany",
+        "invoiceRecipient",
+        "invoiceReference",
+        "businessDescriptionChoice",
+        "businessDescription"
+      ]
+    },
+    {
+      "id": "ansokan",
+      "title": "Servering och försäljning av folköl (klass 2)",
+      "icon": "file-text",
+      "defaultOpen": true,
+      "fields": [
+        "isFoodRegistered",
+        "canShowFoodRegistrationAtInspection",
+        "selfMonitoringProgram",
+        "premisesName",
+        "premisesAddressSameAsCompany",
+        "premisesAddress",
+        "premisesContact"
+      ]
+    }
+  ],
+  "isAuthorizedSignatory": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Om du svarar Nej behöver du bifoga en fullmakt som visar att du får företräda företaget. Du bifogar den under Bilagor längst ner i formuläret.</p>"
+  },
+  "invoiceAddressSameAsCompany": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Kommunen kan komma att ta ut en avgift. Om du vill att fakturan ska gå till den adress som företaget är registrerad på anger du \"Ja\" i fältet nedan. Om du vill att fakturan ska gå till en annan adress anger du \"Nej\" och fyller sedan i den. Du har även möjlighet att ange en fakturareferens.</p>"
+  },
+  "invoiceRecipient": {
+    "ui:order": [
+      "careOf",
+      "street",
+      "postalCode",
+      "city"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "careOf": {
+      "ui:widget": "TextWidget"
+    },
+    "street": {
+      "ui:widget": "TextWidget"
+    },
+    "postalCode": {
+      "ui:widget": "TextWidget"
+    },
+    "city": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postalCode",
+          "city"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "invoiceReference": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[14rem]"
+    },
+    "ui:description": "<p>Ange här om du vill att fakturan ska ha någon specifik märkning, exempelvis ett namn eller nummer.</p>"
+  },
+  "businessDescriptionChoice": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Du måste lämna en detaljerad beskrivning av företagets verksamhet.</p>\n\n<p>Om du väljer att bifoga en fil bifogar du den under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Hur vill du lämna verksamhetsbeskrivningen?</strong></p>"
+  },
+  "businessDescription": {
+    "ui:widget": "TexteditorWidget",
+    "ui:options": {
+      "className": "w-full min-h-[24rem]"
+    }
+  },
+  "selfMonitoringProgram": {
+    "ui:widget": "RadiobuttonWidget",
+    "ui:description": "<p>Din verksamhet behöver ha ett så kallat \"egenkontrollprogram\".<br />\nEtt egenkontrollprogram fungerar som ett stöd för dig som näringsidkare i egenkontrollen och är ett viktigt underlag för kommunen när det blir tillsyn.<br />\nOm du och din verksamhet inte följer alkohollagens bestämmelser kan kommunen ge dig serveringsförbud eller en varning. Det gäller också om din verksamhet inte har ett egenkontrollprogram.</p>\n\n<p>Om du svarar Ja bifogar du filen under Bilagor längst ner i formuläret.</p>\n\n<p><strong>Vill du bifoga ifyllt egenkontrollprogram i denna anmälan?</strong></p>"
+  },
+  "premisesName": {
+    "ui:widget": "TextWidget",
+    "ui:description": "<p>Det namn som du skyltar med till kund.</p>"
+  },
+  "premisesAddressSameAsCompany": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "premisesAddress": {
+    "ui:order": [
+      "street",
+      "postalCode",
+      "city"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "street": {
+      "ui:widget": "TextWidget"
+    },
+    "postalCode": {
+      "ui:widget": "TextWidget"
+    },
+    "city": {
+      "ui:widget": "TextWidget"
+    },
+    "ui:rows": [
+      {
+        "fields": [
+          "postalCode",
+          "city"
+        ],
+        "gap": "gap-24"
+      }
+    ]
+  },
+  "premisesContact": {
+    "ui:order": [
+      "phoneNumber",
+      "emailAddress",
+      "website"
+    ],
+    "ui:options": {
+      "showObjectFieldset": true
+    },
+    "phoneNumber": {
+      "ui:widget": "TextWidget"
+    },
+    "emailAddress": {
+      "ui:widget": "TextWidget"
+    },
+    "website": {
+      "ui:widget": "TextWidget"
+    }
+  },
+  "isFoodRegistered": {
+    "ui:widget": "RadiobuttonWidget"
+  },
+  "canShowFoodRegistrationAtInspection": {
+    "ui:widget": "checkboxes",
+    "ui:options": {
+      "multiple": true,
+      "className": "w-full max-w-[48rem]"
+    }
+  }
+}

@@ -32,10 +32,10 @@ test.describe('Language switching', () => {
     await expect(page.getByTestId('register-errand')).toBeEnabled();
 
     // Added parties are the only entered data the form holds until the AoT fields exist, so the
-    // handover is measured on them.
+    // handover is measured on them: the citizen's own card plus the one added here.
     const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
     await addStakeholder(page, ovrigaParter, 'CONTACT');
-    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(1);
+    await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
 
     await switchLanguageTo(page, 'English');
 
@@ -43,7 +43,7 @@ test.describe('Language switching', () => {
 
     // Switching language remounts the whole errand tree. Without the handover the user faces an
     // empty form, and changing language costs them a fresh start.
-    await expect(disclosureByTitle(page, 'Other parties').getByTestId('stakeholder-card')).toHaveCount(1);
+    await expect(disclosureByTitle(page, 'Other parties').getByTestId('stakeholder-card')).toHaveCount(2);
   });
 
   test.describe('on a phone', () => {

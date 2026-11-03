@@ -5,13 +5,17 @@ import {
   errandFormDataContractErrorMessage,
   jsonParametersToErrandFormData,
 } from '@components/json/utils/schema-utils';
+import { useMyStakeholder } from '@contexts/my-stakeholder-context';
 import { ErrandDTO } from '@data-contracts/backend/data-contracts';
 import { ErrandFormDTO, ErrandLifecycle } from '@interfaces/errand-form';
 import { createErrand, updateErrand } from '@services/errand-service/errand-service';
 import { useSnackbar } from '@sk-web-gui/react';
 import { SaveIntent, validateErrandForSave } from '@utils/errand-preconditions';
 import { prepareErrandForApi } from '@utils/prepare-errand';
+import { hasCitizen, withCitizenAsContact } from '@utils/stakeholder';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { errandPath } from 'src/constants/services';
@@ -25,6 +29,9 @@ import { useMetadataStore } from 'src/stores/metadata-store';
  * preconditions, prepare, create or update, send the pending bilagor, then reset the form to what
  * upstream answered. `saveDraft` validates on its own. Registration is confirmed in a dialog
  * first, so the surface calls `validate('register')` before opening it and `register` only saves.
+ *
+ * Every errand lists the citizen, as owner or as contact person. A form where they are neither is
+ * completed in `validate` after the citizen has seen `citizenPrompt`, which the surface renders.
  */
 export const useSaveErrand = () => {
   const { t } = useTranslation();
@@ -34,17 +41,46 @@ export const useSaveErrand = () => {
   const toastMessage = useSnackbar();
   const reportValidationError = useReportValidationError();
   const router = useRouter();
-  const { getValues, reset, watch } = useFormContext<ErrandFormDTO>();
+  const { getValues, reset, setValue, watch } = useFormContext<ErrandFormDTO>();
+  const self = useMyStakeholder();
+  const [citizenPromptResolve, setCitizenPromptResolve] = useState<((proceed: boolean) => void) | null>(null);
   const namespace = useMetadataStore((state) => state.metadata?.namespace);
   const uploadAttachments = useAttachmentUpload();
   const errandId = watch('id');
 
+  const ensureCitizenIncluded = async (): Promise<boolean> => {
+    if (!self || hasCitizen(getValues('stakeholders'), self)) return true;
+
+    const proceed = await new Promise<boolean>((resolve) => {
+      setCitizenPromptResolve(() => resolve);
+    });
+    setCitizenPromptResolve(null);
+    if (!proceed) return false;
+
+    setValue('stakeholders', withCitizenAsContact(getValues('stakeholders'), self), { shouldDirty: true });
+    return true;
+  };
+
   const validate = async (intent: SaveIntent): Promise<boolean> => {
     const errors = await validateErrandForSave(getValues(), intent, { t, tForms, locale, namespace });
-    if (errors.length === 0) return true;
+    if (errors.length > 0) {
+      reportValidationError(errors[0]);
+      return false;
+    }
 
-    reportValidationError(errors[0]);
-    return false;
+    return ensureCitizenIncluded();
+  };
+
+  // The backend answers a refused save with a status but no upstream body, so the status is the
+  // only clue the citizen gets about what went wrong; 429 is the one they can act on themselves.
+  const saveErrorMessage = (error: unknown): string => {
+    const contractMessage = errandFormDataContractErrorMessage(error, tForms);
+    if (contractMessage) return contractMessage;
+    const status = isAxiosError(error) ? error.response?.status : undefined;
+    if (status === 429) return t('errand-information:save_message.too_many_requests');
+    return status === undefined ?
+        t('errand-information:save_message.error')
+      : t('errand-information:save_message.error_with_status', { status });
   };
 
   const save = async (lifecycle: ErrandLifecycle, successMessage: string): Promise<ErrandDTO | undefined> => {
@@ -57,11 +93,7 @@ export const useSaveErrand = () => {
       reset({ ...errand, errandFormData });
       return errand;
     } catch (error: unknown) {
-      toastMessage({
-        position: 'bottom',
-        status: 'error',
-        message: errandFormDataContractErrorMessage(error, tForms) ?? t('errand-information:save_message.error'),
-      });
+      toastMessage({ position: 'bottom', status: 'error', message: saveErrorMessage(error) });
       return undefined;
     }
   };
@@ -79,5 +111,11 @@ export const useSaveErrand = () => {
     if (errand) router.push(logout ? '/logout' : errandPath(service, errand.errandNumber));
   };
 
-  return { validate, saveDraft, register };
+  const citizenPrompt = {
+    show: citizenPromptResolve !== null,
+    onClose: () => citizenPromptResolve?.(false),
+    onConfirm: () => citizenPromptResolve?.(true),
+  };
+
+  return { validate, saveDraft, register, citizenPrompt };
 };

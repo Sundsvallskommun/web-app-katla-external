@@ -4,7 +4,6 @@ import { expect } from '@playwright/test';
 import { mockOrganization } from '../fixtures/getMyOrganizations';
 import { ownerStakeholderFor } from '../fixtures/getOwnerStakeholder';
 import { mockSelfStakeholder } from '../fixtures/mockStakeholder';
-import { jsonRoute } from './routes';
 import { disclosureByTitle } from './stakeholder';
 
 export const errandOwnerSection = (page: Page): Locator => disclosureByTitle(page, 'Kontaktuppgifter');
@@ -24,7 +23,6 @@ export const selectErrandOwner = async (page: Page, organization = mockOrganizat
 /** Makes the logged in citizen the errand owner, as a private person. */
 export const addSelfAsErrandOwner = async (page: Page) => {
   const section = errandOwnerSection(page);
-  await page.route('**/citizen/me', jsonRoute(mockSelfStakeholder));
 
   const selfResponse = page.waitForResponse('**/citizen/me');
   await section.getByTestId('add-self-owner-button').dispatchEvent('click');

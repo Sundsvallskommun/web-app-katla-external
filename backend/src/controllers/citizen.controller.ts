@@ -7,6 +7,7 @@ import { CitizenExtended } from '@/data-contracts/citizen/data-contracts';
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { personLookupRateLimit } from '@/middlewares/rate-limit.middleware';
 import { StakeholderDTO } from '@/responses/supportmanagement.response';
 import ApiService from '@/services/api.service';
 import { addHyphenToPersonNumber } from '@/utils/stakeholder-mapping';
@@ -34,7 +35,7 @@ export class CitizenController {
 
   @Get('/citizen/person/:personNumber')
   @OpenAPI({ summary: 'Get stakeholder using personNumber' })
-  @UseBefore(authMiddleware)
+  @UseBefore(authMiddleware, personLookupRateLimit)
   async getErrand(@Req() req: RequestWithUser, @Param('personNumber') personNumber: string): Promise<StakeholderDTO | null> {
     const personIdUrl = `${this.apiBase}/${MUNICIPALITY_ID}/${personNumber}/guid/`;
 

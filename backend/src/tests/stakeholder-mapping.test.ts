@@ -53,6 +53,22 @@ describe('stakeholder serveringsstalle mapping', () => {
     expect(mapStakeholderToStakeholderDTO({ role: 'PRIMARY' }).serveringsstalle).toBeUndefined();
   });
 
+  // Older errands hold lowercase types and Draken writes 'Phone'/'Email'; both must still map.
+  it('reads contact channels regardless of type case', () => {
+    const upstream: Stakeholder = {
+      role: 'PRIMARY',
+      contactChannels: [
+        { type: 'email', value: 'A@B.se' },
+        { type: 'Phone', value: '+46701234567' },
+      ],
+    };
+
+    const returned = mapStakeholderToStakeholderDTO(upstream);
+
+    expect(returned.emails).toEqual(['a@b.se']);
+    expect(returned.phoneNumbers).toEqual(['+46701234567']);
+  });
+
   it('reads the organisation number back off the parameters', () => {
     const upstream: Stakeholder = {
       role: 'PRIMARY',

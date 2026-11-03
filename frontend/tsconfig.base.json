@@ -32,7 +32,8 @@
       "@utils/*": ["src/utils/*"],
       "@middlewares/*": ["src/utils/middlewares/*"],
       "@public/*": ["public/*"],
-      "@data-contracts/*": ["src/data-contracts/*"]
+      "@data-contracts/*": ["src/data-contracts/*"],
+      "@e2e/*": ["e2e/*"]
     }
   }
 }

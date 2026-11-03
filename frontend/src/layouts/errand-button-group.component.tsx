@@ -1,4 +1,5 @@
 import { CancelErrandDialog } from '@components/cancel-errand-dialog.component';
+import { CitizenContactDialog } from '@components/citizen-contact-dialog.component';
 import { ErrandFormDTO } from '@interfaces/errand-form';
 import { Button, Dialog } from '@sk-web-gui/react';
 import { appURL } from '@utils/app-url';
@@ -21,7 +22,7 @@ export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErran
   const { t } = useTranslation();
   const service = useService();
   const { watch } = useFormContext<ErrandFormDTO>();
-  const { validate, saveDraft, register } = useSaveErrand();
+  const { validate, saveDraft, register, citizenPrompt } = useSaveErrand();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isCancelOpen, setIsCancelOpen] = useState<boolean>(false);
 
@@ -86,6 +87,7 @@ export const ErrandButtonGroup: React.FC<ErrandButtonGroupProps> = ({ isNewErran
           window.location.assign(appURL(`${process.env.NEXT_PUBLIC_BASE_PATH}${servicePath(service)}`));
         }}
       />
+      <CitizenContactDialog {...citizenPrompt} />
       <Dialog show={isOpen}>
         <Dialog.Content className="-mt-20">
           <CenterDiv>

@@ -7,8 +7,9 @@ import { ErrandFormDTO } from '@interfaces/errand-form';
 import { validateErrandAttachments } from '@utils/errand-attachments';
 import { getSelectedLabels } from '@utils/label-tree';
 import { validateErrandStops } from '@utils/schema-stops';
-import { getPrimaryStakeholder } from '@utils/stakeholder';
+import { getPrimaryStakeholder, hasOwnerDetails } from '@utils/stakeholder';
 import type { TFunction } from 'i18next';
+import { PREMISES_MUNICIPALITY_KEY } from 'src/constants/parameters';
 
 /** What the errand is about to be saved as. A draft is held to fewer rules than a registration. */
 export type SaveIntent = 'draft' | 'register';
@@ -31,6 +32,17 @@ export const validateCategorization = (values: ErrandFormDTO, t: TFunction): str
 // citizen who filed it could not read it back.
 export const validateOwner = (values: ErrandFormDTO, t: TFunction): string[] =>
   getPrimaryStakeholder(values.stakeholders) ? [] : [t('validation:owner.required')];
+
+export const validateMunicipality = (values: ErrandFormDTO, t: TFunction): string[] =>
+  values?.parameters?.some((p) => p.key === PREMISES_MUNICIPALITY_KEY && p.values?.length) ?
+    []
+  : [t('validation:municipality.required')];
+
+// Only the citizen can supply these, so a registration stops here rather than in Draken's review.
+export const validateOwnerDetails = (values: ErrandFormDTO, t: TFunction): string[] => {
+  const owner = getPrimaryStakeholder(values.stakeholders);
+  return owner && !hasOwnerDetails(owner) ? [t('validation:owner.details_required')] : [];
+};
 
 /**
  * Upstream validates the filed answers against their schema, so an invalid form is shown here
@@ -60,8 +72,10 @@ export async function validateErrandForSave(
   const rules: (() => string[] | Promise<string[]>)[] =
     intent === 'register' ?
       [
+        () => validateMunicipality(values, t),
         () => validateCategorization(values, t),
         () => validateOwner(values, t),
+        () => validateOwnerDetails(values, t),
         () => validateFormData(values, intent, tForms, locale, namespace),
         () => validateErrandStops(values, t, locale, namespace),
         () => validateErrandAttachments(values, t, locale, namespace),

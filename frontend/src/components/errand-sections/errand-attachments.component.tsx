@@ -289,10 +289,11 @@ const AttachmentsForSchema: React.FC<{ requirements: AttachmentRequirements }> =
       <FormProvider {...uploadFormMethods}>
         {!isLocked && (
           /* The library prints the raw accept list (MIME types) truncated with an ellipsis; hide
-             that row and describe the allowed formats in plain language below instead. */
+             that row and describe the allowed formats in plain language below instead. The field
+             has no size props: full width and a taller button make the whole drop area easy to hit. */
           <FileUpload.Field
             accept={ALLOWED_ATTACHMENT_MIME_TYPES}
-            className="[&_.sk-form-file-upload-field-button-content-restrictions-mimetypes]:hidden"
+            className="w-full [&_.sk-form-file-upload-field-button]:min-h-[20rem] [&_.sk-form-file-upload-field-button-content-restrictions-mimetypes]:hidden"
             data-cy="attachment-upload-field"
             maxFileSizeMB={MAX_ATTACHMENT_SIZE_MB}
             onChange={(event) => {

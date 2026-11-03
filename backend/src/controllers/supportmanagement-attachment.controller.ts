@@ -14,6 +14,7 @@ import {
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { writeRateLimit } from '@/middlewares/rate-limit.middleware';
 import { CreateErrandAttachmentDTO, ErrandAttachmentDTO, UpdateErrandAttachmentDTO } from '@/responses/supportmanagement-attachment.response';
 import ApiService from '@/services/api.service';
 import { attachmentIdFromLocation, resolveAttachmentPurpose } from '@/utils/attachment-purposes';
@@ -68,7 +69,7 @@ export class SupportManagementAttachmentController {
   @Post('/supportmanagement/errand/:id/attachments')
   @HttpCode(201)
   @OpenAPI({ summary: 'Attach a file to an errand' })
-  @UseBefore(authMiddleware)
+  @UseBefore(authMiddleware, writeRateLimit)
   async createAttachment(
     @Req() req: RequestWithUser,
     @Param('id') id: string,

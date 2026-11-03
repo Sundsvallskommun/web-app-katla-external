@@ -46,7 +46,8 @@ export const mockSecondaryOrganizationName = 'Andra Testbolaget AB';
 // The value below is a test email, it is not a real email
 export const mockEmail = 'anna@example.com';
 // The value below is a test phone number from Post- och telestyrelsen, it is not a real number
-export const mockPhoneNumber = '+46701740635';
+export const mockCountryCodePhoneNumber = '+46701740635';
+export const mockPhoneNumber = '0701740635';
 
 // Errand identifiers
 export const mockErrandId = '3f1b0c9e-0000-4000-8000-000000000001';

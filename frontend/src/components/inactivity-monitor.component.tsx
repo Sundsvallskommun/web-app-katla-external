@@ -1,7 +1,9 @@
 'use client';
 
 import CountdownTimer from '@components/countdown/countdown-timer.component';
+import { useUserStore } from '@services/user-service/user-service';
 import { Button, Dialog } from '@sk-web-gui/react';
+import { useInactivityTrigger } from '@utils/use-inactivity-trigger.hook';
 import { AlarmClock } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -20,73 +22,47 @@ const INACTIVITY_ENABLED = !!(INACTIVITY_WARNING_TIMEOUT && INACTIVITY_COUNTDOWN
 const INACTIVITY_WARNING_TIME = TEST_MODE ? 0 : parseInt((INACTIVITY_WARNING_TIMEOUT ?? '') || '0', 10);
 const WARNING_COUNTDOWN_TIME = TEST_MODE ? 3600000 : parseInt((INACTIVITY_COUNTDOWN_TIMEOUT ?? '') || '0', 10);
 
+/** Warns after a period of inactivity and logs the user out unless they choose to stay. */
 export const InactivityMonitor: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  // The hook must always run; it must not sit behind an early return.
   const { t } = useTranslation('session');
+  const isLoggedIn = useUserStore((state) => !!state.user.name);
 
   const [showWarning, setShowWarning] = useState(false);
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const isActive = INACTIVITY_ENABLED && !pathname?.includes('login') && !pathname?.includes('logout');
+  const isActive = INACTIVITY_ENABLED && isLoggedIn && !pathname?.includes('logout');
 
   const handleLogout = useCallback(() => {
-    if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-    if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+    clearTimeout(countdownTimerRef.current);
     setShowWarning(false);
     router.push('/logout');
   }, [router]);
 
-  const startCountdown = useCallback(() => {
+  const handleInactive = useCallback(() => {
     setShowWarning(true);
-    countdownTimerRef.current = setTimeout(() => {
-      handleLogout();
-    }, WARNING_COUNTDOWN_TIME);
+    countdownTimerRef.current = setTimeout(handleLogout, WARNING_COUNTDOWN_TIME);
   }, [handleLogout]);
 
-  const startInactivityTimer = useCallback(() => {
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-    }
-    if (!isActive) return;
-
-    inactivityTimerRef.current = setTimeout(() => {
-      startCountdown();
-    }, INACTIVITY_WARNING_TIME);
-  }, [isActive, startCountdown]);
+  // Activity while the dialog is open must not count; the user has to answer it.
+  useInactivityTrigger({
+    onInactive: handleInactive,
+    timeout: INACTIVITY_WARNING_TIME,
+    enabled: isActive && !showWarning,
+  });
 
   const handleStayLoggedIn = useCallback(() => {
-    if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+    clearTimeout(countdownTimerRef.current);
     setShowWarning(false);
-    startInactivityTimer();
-  }, [startInactivityTimer]);
+  }, []);
 
-  useEffect(() => {
-    if (!isActive) return;
-
-    const handleActivity = () => {
-      if (!showWarning) {
-        startInactivityTimer();
-      }
-    };
-
-    const events: (keyof DocumentEventMap)[] = ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
-    events.forEach((event) => {
-      document.addEventListener(event, handleActivity);
-    });
-
-    startInactivityTimer();
-
-    return () => {
-      events.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
-      });
-      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-      if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
-    };
-  }, [isActive, showWarning, startInactivityTimer]);
+  useEffect(
+    () => () => {
+      clearTimeout(countdownTimerRef.current);
+    },
+    []
+  );
 
   if (!INACTIVITY_ENABLED) {
     return null;
@@ -105,9 +81,9 @@ export const InactivityMonitor: React.FC = () => {
           <div className="text-center">
             <span className="text-dark-secondary text-md font-normal">{t('warning_message')} </span>
             <span className="text-dark-secondary text-md font-bold">
-              <CountdownTimer timeout={WARNING_COUNTDOWN_TIME} />
+              {showWarning && <CountdownTimer timeout={WARNING_COUNTDOWN_TIME} />}
             </span>
-            <span className="text-dark-secondary text-md font-normal">. {t('warning_message_suffix')}</span>
+            <span className="text-dark-secondary text-md font-normal"> {t('warning_message_suffix')}</span>
           </div>
         </div>
 

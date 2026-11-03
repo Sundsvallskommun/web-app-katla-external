@@ -7,6 +7,7 @@ import { Errand, ErrandLifecycleEnum, Label, PageErrand } from '@/data-contracts
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { writeRateLimit } from '@/middlewares/rate-limit.middleware';
 import { ErrandCountDTO, ErrandDTO, ErrandsQueryDTO, PageErrandDTO } from '@/responses/supportmanagement.response';
 import { MetadataResponseDTO } from '@/responses/supportmanagement-metadata.response';
 import ApiService from '@/services/api.service';
@@ -14,6 +15,7 @@ import { selectCategorizationSubtree, withCategorizationSubtree } from '@/utils/
 import { assertDraftOwnedByUser, ownedWithinScope, requireOwnerPartyIds } from '@/utils/errand-access';
 import { fetchMetadata } from '@/utils/fetch-metadata';
 import { assertLabelsOffered, labelsChanged } from '@/utils/internal-labels';
+import { withOriginalCopies, withoutOriginalCopies } from '@/utils/json-parameters';
 import { completePrimaryStakeholders } from '@/utils/primary-stakeholder';
 import { requireNamespace } from '@/utils/service-context';
 import { mapStakeholderDTOToStakeholder, mapStakeholderToStakeholderDTO } from '@/utils/stakeholder-mapping';
@@ -65,7 +67,7 @@ export class SupportManagementController {
 
   @Post('/supportmanagement/errand/create')
   @OpenAPI({ summary: 'Create new errand' })
-  @UseBefore(authMiddleware)
+  @UseBefore(authMiddleware, writeRateLimit)
   @ResponseSchema(ErrandDTO)
   async createErrand(@Req() req: RequestWithUser, @Body() errand: ErrandDTO): Promise<ErrandDTO> {
     const url = `${MUNICIPALITY_ID}/${requireNamespace(req)}/errands`;
@@ -81,6 +83,7 @@ export class SupportManagementController {
       ...(newErrand as Errand),
       reporterUserId: req.user.partyId,
       stakeholders: await completePrimaryStakeholders(newErrand.stakeholders?.map(mapStakeholderDTOToStakeholder), req),
+      jsonParameters: withOriginalCopies(newErrand.jsonParameters),
     };
 
     const res = await this.apiService.post<Partial<Errand>>({ baseURL, url, data: errandInformation, propagateClientError: true }, req);
@@ -94,6 +97,7 @@ export class SupportManagementController {
     return {
       ...res.data,
       stakeholders,
+      jsonParameters: withoutOriginalCopies(res.data.jsonParameters),
     };
   }
 
@@ -135,6 +139,7 @@ export class SupportManagementController {
       ...errandData,
       ...(classification?.category || classification?.type ? { classification } : {}),
       stakeholders: await completePrimaryStakeholders(errandData.stakeholders?.map(mapStakeholderDTOToStakeholder), req),
+      jsonParameters: withOriginalCopies(errandData.jsonParameters),
     };
 
     const res = await this.apiService.patch<Partial<Errand>>({ baseURL, url, data: errandInformation, propagateClientError: true }, req);
@@ -145,6 +150,7 @@ export class SupportManagementController {
     return {
       ...res.data,
       stakeholders,
+      jsonParameters: withoutOriginalCopies(res.data.jsonParameters),
     };
   }
 
@@ -169,6 +175,7 @@ export class SupportManagementController {
     return {
       ...matchedErrand,
       stakeholders,
+      jsonParameters: withoutOriginalCopies(matchedErrand.jsonParameters),
     };
   }
 

@@ -71,25 +71,22 @@ export const StakeholderCard: React.FC<{
             <div className="flex text-md mb-10 flex-col sm:flex-row gap-y-4 gap-x-15 break-words">
               <div className="flex flex-col min-w-0">
                 {organizationNumber && <div data-cy="stakeholder-organizationNumber">{organizationNumber}</div>}
-                {stakeholder.serveringsstalle && (
-                  <div data-cy="stakeholder-serveringsstalle">
-                    <strong>{t('errand-information:owner.serveringsstalle')}:</strong> {stakeholder.serveringsstalle}
-                  </div>
-                )}
               </div>
               <div className="flex flex-col min-w-0">
-                {(stakeholder.address ?? stakeholder.city) && (
-                  <div data-cy="stakeholder-address">
-                    {[stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
+                <div data-cy="stakeholder-address">
+                  {(stakeholder.address ?? stakeholder.city) ?
+                    [stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
                       .filter(Boolean)
-                      .join(' ')}
-                  </div>
-                )}
-                {stakeholder.phoneNumbers?.map((phoneNumber) => (
-                  <div key={phoneNumber} data-cy="stakeholder-phonenumber">
-                    {phoneNumber}
-                  </div>
-                ))}
+                      .join(' ')
+                  : t('errand-information:stakeholder.missing_address')}
+                </div>
+                {stakeholder.phoneNumbers?.length ?
+                  stakeholder.phoneNumbers.map((phoneNumber) => (
+                    <div key={phoneNumber} data-cy="stakeholder-phonenumber">
+                      {phoneNumber}
+                    </div>
+                  ))
+                : <div data-cy="stakeholder-phonenumber">{t('errand-information:stakeholder.missing_phone')}</div>}
                 {stakeholder.emails?.map((email) => (
                   <div key={email} data-cy="stakeholder-email">
                     {email}
@@ -117,11 +114,6 @@ export const StakeholderCard: React.FC<{
                     {[stakeholder.address, stakeholder.careOf, stakeholder.zipCode, stakeholder.city]
                       .filter(Boolean)
                       .join(' ')}
-                  </div>
-                )}
-                {isPrivateOwner && stakeholder.serveringsstalle && (
-                  <div data-cy="stakeholder-serveringsstalle">
-                    <strong>{t('errand-information:owner.serveringsstalle')}:</strong> {stakeholder.serveringsstalle}
                   </div>
                 )}
                 {stakeholder.department && (

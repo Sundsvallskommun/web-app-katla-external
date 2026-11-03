@@ -4,9 +4,13 @@ export const APIS = [
     name: 'simulatorserver',
     version: '2.0',
   },
+  // {
+  //   name: 'support-management-alkt-sprint',
+  //   version: '17.0',
+  // },
   {
-    name: 'support-management-alkt-sprint',
-    version: '17.0',
+    name: 'supportmanagement',
+    version: '17.2',
   },
   {
     name: 'citizen',
@@ -29,7 +33,7 @@ export const APIS = [
 // Temporary routing for the Support Management development sprint.
 // Remove this alias and rename the APIS entry to supportmanagement when the sprint API is retired.
 const API_SERVICE_ALIASES: Readonly<Record<string, string>> = {
-  supportmanagement: 'support-management-alkt-sprint',
+  //  supportmanagement: 'support-management-alkt-sprint',
 };
 
 export function getApiBase(name: string): string {

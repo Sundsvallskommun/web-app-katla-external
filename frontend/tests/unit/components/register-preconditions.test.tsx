@@ -1,4 +1,8 @@
 import { FormValidationProvider } from '@contexts/form-validation-provider';
+import { MyStakeholderContext } from '@contexts/my-stakeholder-context';
+import type { StakeholderDTO } from '@data-contracts/backend/data-contracts';
+import { mockOrganization } from '@e2e/fixtures/getMyOrganizations';
+import { ownerStakeholderFor } from '@e2e/fixtures/getOwnerStakeholder';
 import type { ErrandFormDTO } from '@interfaces/errand-form';
 import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -67,24 +71,33 @@ vi.mock('@sk-web-gui/react', () => {
   return { Button, cx, Dialog, useSnackbar: () => snackbarMock };
 });
 
-const OWNER: ErrandFormDTO['stakeholders'] = [
-  { role: 'PRIMARY', externalId: 'f1e2d3c4-0000-4000-8000-000000000001', organizationName: 'Acme Restaurang AB' },
-];
+const OWNER: ErrandFormDTO['stakeholders'] = [ownerStakeholderFor(mockOrganization)];
+const { address, zipCode, city, phoneNumbers } = ownerStakeholderFor(mockOrganization);
+const OWNER_DETAILS = { address, zipCode, city, phoneNumbers };
+
+const SELF: StakeholderDTO = { externalId: 'f1e2d3c4-0000-4000-8000-000000000009', firstName: 'Anna' };
+const SELF_AS_CONTACT: StakeholderDTO = { ...SELF, role: 'CONTACT', externalIdType: 'PRIVATE' };
+const WITH_CITIZEN: ErrandFormDTO['stakeholders'] = [...OWNER, SELF_AS_CONTACT];
+
+const MUNICIPALITY: ErrandFormDTO['parameters'] = [{ key: 'premisesMunicipalityId', values: ['2281'] }];
 
 const CLASSIFICATION: ErrandFormDTO['labels'] = [
   { id: 'alkohol', classification: 'CATEGORY' },
   { id: 'folkol', classification: 'TYPE' },
 ];
 
-const renderButtons = (defaultValues: Partial<ErrandFormDTO> = {}) => {
+// `self: null` renders without a known citizen; the default argument would swallow `undefined`.
+const renderButtons = (defaultValues: Partial<ErrandFormDTO> = {}, self: StakeholderDTO | null = SELF) => {
   const TestForm: React.FC = () => {
-    const methods = useForm<ErrandFormDTO>({ defaultValues });
+    const methods = useForm<ErrandFormDTO>({ defaultValues: { parameters: MUNICIPALITY, ...defaultValues } });
 
     return (
       <FormProvider {...methods}>
-        <FormValidationProvider>
-          <ErrandButtonGroup isNewErrand />
-        </FormValidationProvider>
+        <MyStakeholderContext.Provider value={self ?? undefined}>
+          <FormValidationProvider>
+            <ErrandButtonGroup isNewErrand />
+          </FormValidationProvider>
+        </MyStakeholderContext.Provider>
       </FormProvider>
     );
   };
@@ -113,6 +126,14 @@ describe('What registration requires before it will submit', () => {
     expect(screen.queryByRole('button', { name: 'errand-information:submit_confirm.submit' })).not.toBeInTheDocument();
   };
 
+  it('refuses to register an errand without a municipality', async () => {
+    renderButtons({ parameters: [], labels: CLASSIFICATION, stakeholders: OWNER });
+
+    clickRegister();
+
+    await expectReported('validation:municipality.required');
+  });
+
   it('refuses to register an errand that has not been categorized', async () => {
     renderButtons({ stakeholders: OWNER });
 
@@ -137,8 +158,16 @@ describe('What registration requires before it will submit', () => {
     await expectReported('validation:owner.required');
   });
 
+  it('refuses to register while the owner lacks the details Draken requires', async () => {
+    renderButtons({ labels: CLASSIFICATION, stakeholders: [{ ...OWNER[0], phoneNumbers: [] }] });
+
+    clickRegister();
+
+    await expectReported('validation:owner.details_required');
+  });
+
   it('opens the confirmation once the errand is categorized and has an owner', async () => {
-    renderButtons({ labels: CLASSIFICATION, stakeholders: OWNER });
+    renderButtons({ labels: CLASSIFICATION, stakeholders: WITH_CITIZEN });
 
     clickRegister();
 
@@ -173,15 +202,123 @@ describe('What registration requires before it will submit', () => {
 
   it('saves a draft that has an owner, before anything else is filled in', async () => {
     createErrandMock.mockResolvedValue({ id: 'id-1', errandNumber: 'AOT-1', jsonParameters: [] });
-    renderButtons({ stakeholders: OWNER });
+    renderButtons({ stakeholders: WITH_CITIZEN });
 
     clickSaveDraft();
 
     await waitFor(() => {
       expect(createErrandMock).toHaveBeenCalledWith(
-        expect.objectContaining({ lifecycle: 'DRAFT', stakeholders: OWNER })
+        expect.objectContaining({ lifecycle: 'DRAFT', stakeholders: WITH_CITIZEN })
       );
     });
     expect(snackbarMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'success' }));
+  });
+
+  describe('when the backend refuses the save', () => {
+    const rejectWith = (status: number) =>
+      createErrandMock.mockRejectedValue({ isAxiosError: true, response: { status } });
+
+    it('names the status so the citizen can say what went wrong', async () => {
+      rejectWith(502);
+      renderButtons({ stakeholders: WITH_CITIZEN });
+
+      clickSaveDraft();
+
+      await expectReported('errand-information:save_message.error_with_status');
+    });
+
+    it('asks the citizen to wait when the limit on writes is hit', async () => {
+      rejectWith(429);
+      renderButtons({ stakeholders: WITH_CITIZEN });
+
+      clickSaveDraft();
+
+      await expectReported('errand-information:save_message.too_many_requests');
+    });
+  });
+
+  // Every errand lists the citizen; the prompt is the only way to put them back on an errand
+  // where they are neither owner nor contact person.
+  describe('when the citizen is missing from the stakeholders', () => {
+    const promptContinue = () => screen.queryByRole('button', { name: 'errand-information:citizen_contact.continue' });
+    const promptCancel = () => screen.getByRole('button', { name: 'errand-information:citizen_contact.cancel' });
+    const submitConfirm = () => screen.queryByRole('button', { name: 'errand-information:submit_confirm.submit' });
+
+    it('tells the citizen before registering that they will be added as contact person', async () => {
+      renderButtons({ labels: CLASSIFICATION, stakeholders: OWNER });
+
+      clickRegister();
+
+      expect(await screen.findByText('errand-information:citizen_contact.title')).toBeInTheDocument();
+      expect(submitConfirm()).not.toBeInTheDocument();
+      expect(snackbarMock).not.toHaveBeenCalled();
+    });
+
+    it('lets the citizen back out, leaving the errand unregistered', async () => {
+      renderButtons({ labels: CLASSIFICATION, stakeholders: OWNER });
+
+      clickRegister();
+      fireEvent.click(await screen.findByRole('button', { name: 'errand-information:citizen_contact.cancel' }));
+
+      await waitFor(() => {
+        expect(promptContinue()).not.toBeInTheDocument();
+      });
+      expect(submitConfirm()).not.toBeInTheDocument();
+      expect(createErrandMock).not.toHaveBeenCalled();
+    });
+
+    it('files the citizen as contact person when they continue', async () => {
+      createErrandMock.mockResolvedValue({ id: 'id-1', errandNumber: 'AOT-1', jsonParameters: [] });
+      renderButtons({ labels: CLASSIFICATION, stakeholders: OWNER });
+
+      clickRegister();
+      fireEvent.click(await screen.findByRole('button', { name: 'errand-information:citizen_contact.continue' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'errand-information:submit_confirm.submit' }));
+
+      await waitFor(() => {
+        expect(createErrandMock).toHaveBeenCalledWith(
+          expect.objectContaining({ lifecycle: 'ACTIVE', stakeholders: WITH_CITIZEN })
+        );
+      });
+      expect(promptCancel).toThrow();
+    });
+
+    it('completes a draft the same way', async () => {
+      createErrandMock.mockResolvedValue({ id: 'id-1', errandNumber: 'AOT-1', jsonParameters: [] });
+      renderButtons({ stakeholders: OWNER });
+
+      clickSaveDraft();
+      fireEvent.click(await screen.findByRole('button', { name: 'errand-information:citizen_contact.continue' }));
+
+      await waitFor(() => {
+        expect(createErrandMock).toHaveBeenCalledWith(
+          expect.objectContaining({ lifecycle: 'DRAFT', stakeholders: WITH_CITIZEN })
+        );
+      });
+    });
+
+    it('asks nothing when the citizen is the owner', async () => {
+      renderButtons({
+        labels: CLASSIFICATION,
+        stakeholders: [{ ...SELF, ...OWNER_DETAILS, role: 'PRIMARY', externalIdType: 'PRIVATE' }],
+      });
+
+      clickRegister();
+
+      expect(
+        await screen.findByRole('button', { name: 'errand-information:submit_confirm.submit' })
+      ).toBeInTheDocument();
+      expect(promptContinue()).not.toBeInTheDocument();
+    });
+
+    it('asks nothing when the citizen is unknown', async () => {
+      renderButtons({ labels: CLASSIFICATION, stakeholders: OWNER }, null);
+
+      clickRegister();
+
+      expect(
+        await screen.findByRole('button', { name: 'errand-information:submit_confirm.submit' })
+      ).toBeInTheDocument();
+    });
   });
 });

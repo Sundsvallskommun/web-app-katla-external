@@ -152,8 +152,8 @@ describe('SupportManagement HTTP error contracts', () => {
     expect(stakeholder).not.toHaveProperty('emails');
     expect(stakeholder).not.toHaveProperty('phoneNumbers');
     expect(stakeholder.contactChannels).toEqual([
-      { type: 'email', value: mockEmail },
-      { type: 'phone', value: mockPhoneNumber },
+      { type: 'EMAIL', value: mockEmail },
+      { type: 'PHONE', value: mockPhoneNumber },
     ]);
   });
 

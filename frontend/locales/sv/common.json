@@ -10,7 +10,8 @@
     "errands": "Ärendena kunde inte hämtas. Försök igen senare.",
     "counts": "Antalet ärenden kunde inte hämtas. Försök igen senare.",
     "errand": "Ärendet kunde inte hämtas. Försök igen senare.",
-    "organizations": "Dina företag och organisationer kunde inte hämtas. Försök igen senare."
+    "organizations": "Dina företag och organisationer kunde inte hämtas. Försök igen senare.",
+    "citizen": "Dina uppgifter kunde inte hämtas. Försök igen senare."
   },
   "errand-table": {
     "loading": "Laddar ärenden",
