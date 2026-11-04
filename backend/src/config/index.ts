@@ -19,6 +19,7 @@ export const {
   API_BASE_URL,
   LOG_FORMAT,
   LOG_DIR,
+  LOG_LEVEL,
   ORIGIN,
   SECRET_KEY,
   CLIENT_KEY,
