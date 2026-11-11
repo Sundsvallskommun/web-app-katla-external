@@ -91,4 +91,46 @@ describe('my organizations', () => {
       expect(get).not.toHaveBeenCalled();
     });
   });
+  describe('lookup by organisation number', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('returns any organisation as a stakeholder, registered details included', async () => {
+      get.mockResolvedValueOnce({ data: mockForeignOrganizationPartyId }).mockResolvedValueOnce({
+        data: {
+          name: 'Främmande AB',
+          address: { addressArea: 'Storgatan 1', postalCode: '85230', city: 'Sundsvall' },
+          phoneNumber: mockPhoneNumber,
+        },
+      });
+
+      const stakeholder = await new LegalEntityController().organizationStakeholder(requestWithOrganizations([]), '3333334444');
+
+      expect(stakeholder).toEqual({
+        externalId: mockForeignOrganizationPartyId,
+        externalIdType: 'COMPANY',
+        organizationName: 'Främmande AB',
+        organizationNumber: '333333-4444',
+        address: 'Storgatan 1',
+        zipCode: '85230',
+        city: 'Sundsvall',
+        phoneNumbers: [mockPhoneNumber],
+      });
+    });
+
+    it('answers null when LegalEntity does not know the number', async () => {
+      get.mockRejectedValueOnce(new Error('404'));
+
+      expect(await new LegalEntityController().organizationStakeholder(requestWithOrganizations([]), '333333-4444')).toBeNull();
+    });
+
+    it('rejects anything but an organisation number before calling upstream', async () => {
+      await expect(new LegalEntityController().organizationStakeholder(requestWithOrganizations([]), '../333333-4444')).rejects.toMatchObject({
+        status: 400,
+      });
+
+      expect(get).not.toHaveBeenCalled();
+    });
+  });
 });

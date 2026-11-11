@@ -9,6 +9,19 @@ export const ORGANIZATION_NUMBER_PARAMETER = 'organizationNumber';
 export const EMAIL_CHANNEL = 'EMAIL';
 export const PHONE_CHANNEL = 'PHONE';
 
+/** Draken's format: NNNNNN-NNNN. */
+export const formatOrganizationNumber = (organizationNumber: string): string => {
+  const digits = organizationNumber.replace(/\D/g, '');
+
+  return digits.length === 10 ? `${digits.slice(0, 6)}-${digits.slice(6)}` : organizationNumber;
+};
+
+export const organizationNumberParameter = (organizationNumber: string): Parameter => ({
+  key: ORGANIZATION_NUMBER_PARAMETER,
+  displayName: 'Organisationsnummer',
+  values: [formatOrganizationNumber(organizationNumber)],
+});
+
 export function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder): StakeholderDTO {
   const { contactChannels, parameters, ...rest } = stakeholder;
 
@@ -41,7 +54,7 @@ export function mapStakeholderToStakeholderDTO(stakeholder: Stakeholder): Stakeh
 
 export function mapStakeholderDTOToStakeholder(stakeholder: StakeholderDTO): Stakeholder {
   delete stakeholder.personNumber;
-  const { emails, phoneNumbers, title, department, serveringsstalle, organizationNumber: _organizationNumber, ...rest } = stakeholder;
+  const { emails, phoneNumbers, title, department, serveringsstalle, organizationNumber, ...rest } = stakeholder;
 
   const contactChannels: ContactChannel[] = [
     ...(emails?.map(email => ({
@@ -73,6 +86,10 @@ export function mapStakeholderDTOToStakeholder(stakeholder: StakeholderDTO): Sta
       key: SERVERINGSSTALLE_PARAMETER,
       values: [serveringsstalle],
     });
+  }
+  // The owner's number comes from the session (primary-stakeholder.ts), never from the client.
+  if (organizationNumber && stakeholder.role !== 'PRIMARY') {
+    parameters.push(organizationNumberParameter(organizationNumber));
   }
 
   return {

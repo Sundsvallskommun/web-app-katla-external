@@ -1,6 +1,11 @@
 import type { StakeholderDTO } from '@data-contracts/backend/data-contracts';
 
-import { MOCK_COUNTRY_CODE_PHONE_NUMBER, MOCK_EMAIL, MOCK_HYPHEN_PERSON_NUMBER } from '../utils/constants';
+import {
+  MOCK_COUNTRY_CODE_PHONE_NUMBER,
+  MOCK_EMAIL,
+  MOCK_HYPHEN_PERSON_NUMBER,
+  MOCK_ORGANIZATION_NUMBER,
+} from '../utils/constants';
 
 export const mockReporterStakeholder: StakeholderDTO = {
   externalId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
@@ -47,4 +52,15 @@ export const mockSelfStakeholder: StakeholderDTO = {
   address: 'Storgatan 1',
   zipCode: '85230',
   careOf: '',
+};
+
+/** Any organisation, as /organization/:organizationNumber hands it back. */
+export const mockOrganizationStakeholder: StakeholderDTO = {
+  externalId: 'bbbbbbbb-0000-4000-8000-000000000003',
+  externalIdType: 'COMPANY',
+  organizationName: 'Kontaktbolaget AB',
+  organizationNumber: MOCK_ORGANIZATION_NUMBER,
+  address: 'Bolagsvägen 3',
+  zipCode: '85231',
+  city: 'Sundsvall',
 };

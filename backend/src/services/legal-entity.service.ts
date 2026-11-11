@@ -39,6 +39,7 @@ export interface OrganizationAddress {
 
 /** What LegalEntity holds of the details Draken requires on the owner; each only when complete. */
 export interface OrganizationDetails {
+  name?: string;
   address?: OrganizationAddress;
   phone?: string;
 }
@@ -50,6 +51,7 @@ export const getOrganizationDetails = async (partyId: string, req: Sender, api: 
   const phone = res.data?.phoneNumber?.trim();
 
   return {
+    name: res.data?.name ?? undefined,
     address:
       address?.addressArea && address.postalCode && address.city
         ? { address: address.addressArea, zipCode: address.postalCode, city: address.city }

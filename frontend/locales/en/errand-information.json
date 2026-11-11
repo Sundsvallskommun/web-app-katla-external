@@ -12,7 +12,8 @@
   "errand": "Case: ",
   "draft": "Draft: ",
   "search": {
-    "PERSON": "Search by personal identity number"
+    "PERSON": "Search by personal identity number",
+    "ORGANIZATION": "Search by organisation number"
   },
   "save_message": {
     "draft": "Draft saved",
@@ -69,8 +70,15 @@
       "role": "Role",
       "save_edit": "Save changes",
       "save_add": "Add",
-      "cancel": "Cancel"
-    }
+      "cancel": "Cancel",
+      "edit_organization_title": "Edit organisation"
+    },
+    "type_label": "Who do you want to add?",
+    "type_person": "Private person",
+    "type_organization": "Organisation",
+    "no_organization_found": "No organisation was found",
+    "add_organization": "Add organisation",
+    "organization_role": "The organisation's role"
   },
   "submit_confirm": {
     "question": "Do you want to submit the case?",

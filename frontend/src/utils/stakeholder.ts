@@ -11,7 +11,7 @@ export const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
 /** SupportManagement's externalIdType for a private person. */
 export const PERSON_EXTERNAL_ID_TYPE = 'PRIVATE';
 
-/** Every non-owner stakeholder this app files is a private person, however they were added. */
+/** A non-owner stakeholder added by person search or by hand is a private person. */
 export const asPersonStakeholder = (stakeholder: StakeholderDTO): StakeholderDTO => ({
   ...stakeholder,
   externalIdType: PERSON_EXTERNAL_ID_TYPE,
@@ -102,6 +102,7 @@ export const emptyStakeholder: StakeholderDTO = {
 };
 
 const personNumberRegex = /^\d{8}-?\d{4}$/;
+const organizationNumberRegex = /^\d{6}-?\d{4}$/;
 const phoneRegExp = /^$|^(?:\+|0)[0-9\s-]{6,19}$/;
 const emailRegExp =
   /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,}$/;
@@ -131,8 +132,31 @@ export function phoneNumberFormatter(phoneNumber: string | undefined | null): st
  */
 export const createStakeholderSchema = (t: TFunction) =>
   yup.object({
-    firstName: yup.string().trim().required(t('validation:stakeholder.first_name_required')),
-    lastName: yup.string().trim().required(t('validation:stakeholder.last_name_required')),
+    // An organisation carries a name of its own and no person name.
+    firstName: yup
+      .string()
+      .trim()
+      .when('externalIdType', {
+        is: ORGANIZATION_EXTERNAL_ID_TYPE,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required(t('validation:stakeholder.first_name_required')),
+      }),
+    lastName: yup
+      .string()
+      .trim()
+      .when('externalIdType', {
+        is: ORGANIZATION_EXTERNAL_ID_TYPE,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required(t('validation:stakeholder.last_name_required')),
+      }),
+    organizationNumber: yup
+      .string()
+      .nullable()
+      .notRequired()
+      .matches(organizationNumberRegex, {
+        message: t('validation:stakeholder.organization_number_format'),
+        excludeEmptyString: true,
+      }),
     personNumber: yup
       .string()
       .nullable()
