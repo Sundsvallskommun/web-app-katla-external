@@ -5,7 +5,7 @@ import ApiService from '@/services/api.service';
 import { getOrganizationDetails, OrganizationAddress } from '@/services/legal-entity.service';
 import { logger } from '@/utils/logger';
 import { requireServiceKey } from '@/utils/service-context';
-import { ORGANIZATION_NUMBER_PARAMETER, PHONE_CHANNEL } from '@/utils/stakeholder-mapping';
+import { ORGANIZATION_NUMBER_PARAMETER, organizationNumberParameter, PHONE_CHANNEL } from '@/utils/stakeholder-mapping';
 
 const PRIMARY_STAKEHOLDER_ROLE = 'PRIMARY';
 const ORGANIZATION_EXTERNAL_ID_TYPE = 'COMPANY';
@@ -22,16 +22,9 @@ export const primaryStakeholderFor = (organization: OrganizationDTO): Stakeholde
   organizationName: organization.organizationName,
 });
 
-/** Draken's format: NNNNNN-NNNN. */
-const formatOrganizationNumber = (organizationNumber: string): string => {
-  const digits = organizationNumber.replace(/\D/g, '');
-
-  return digits.length === 10 ? `${digits.slice(0, 6)}-${digits.slice(6)}` : organizationNumber;
-};
-
 const withOrganizationNumber = (parameters: Parameter[] | undefined, organizationNumber: string): Parameter[] => [
   ...(parameters ?? []).filter(parameter => parameter.key !== ORGANIZATION_NUMBER_PARAMETER),
-  { key: ORGANIZATION_NUMBER_PARAMETER, displayName: 'Organisationsnummer', values: [formatOrganizationNumber(organizationNumber)] },
+  organizationNumberParameter(organizationNumber),
 ];
 
 const filled = (value: string | null | undefined): string | undefined => (value?.trim() ? value : undefined);

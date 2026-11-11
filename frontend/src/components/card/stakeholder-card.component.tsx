@@ -21,7 +21,7 @@ export const StakeholderCard: React.FC<{
   onRemove?: () => void;
   index?: number;
   roles?: string[];
-  /** Not carried by the stakeholder — SupportManagement stores only the organisation name. */
+  /** Overrides the stakeholder's own, which a new owner does not carry yet. */
   organizationNumber?: string;
   /** Overrides the metadata lookup, which is empty for roles the namespace does not name. */
   roleLabel?: string;
@@ -70,7 +70,11 @@ export const StakeholderCard: React.FC<{
           {isOrganization && (
             <div className="flex text-md mb-10 flex-col sm:flex-row gap-y-4 gap-x-15 break-words">
               <div className="flex flex-col min-w-0">
-                {organizationNumber && <div data-cy="stakeholder-organizationNumber">{organizationNumber}</div>}
+                {(organizationNumber ?? stakeholder.organizationNumber) && (
+                  <div data-cy="stakeholder-organizationNumber">
+                    {organizationNumber ?? stakeholder.organizationNumber}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col min-w-0">
                 <div data-cy="stakeholder-address">
@@ -80,8 +84,8 @@ export const StakeholderCard: React.FC<{
                       .join(' ')
                   : t('errand-information:stakeholder.missing_address')}
                 </div>
-                {stakeholder.phoneNumbers?.length ?
-                  stakeholder.phoneNumbers.map((phoneNumber) => (
+                {stakeholder.phoneNumbers?.some(Boolean) ?
+                  stakeholder.phoneNumbers.filter(Boolean).map((phoneNumber) => (
                     <div key={phoneNumber} data-cy="stakeholder-phonenumber">
                       {phoneNumber}
                     </div>

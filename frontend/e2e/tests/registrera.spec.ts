@@ -11,18 +11,25 @@ import {
   mockTypeFolkol,
   mockTypeServering,
 } from '../fixtures/mockMetadata';
-import { mockManualEditStakeholder, mockSelfStakeholder, mockStakeholder } from '../fixtures/mockStakeholder';
+import {
+  mockManualEditStakeholder,
+  mockOrganizationStakeholder,
+  mockSelfStakeholder,
+  mockStakeholder,
+} from '../fixtures/mockStakeholder';
 import { aboutErrandSection, selectCategorization } from '../utils/categorization';
 import {
   MOCK_COUNTRY_CODE_PHONE_NUMBER,
   MOCK_EMAIL,
   MOCK_HYPHEN_PERSON_NUMBER,
+  MOCK_ORGANIZATION_NUMBER,
   MOCK_PHONE_NUMBER,
 } from '../utils/constants';
 import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
 import { emptyRoute, jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
 import {
+  addOrganizationStakeholder,
   addStakeholder,
   disclosureByTitle,
   expectSelfAsContact,
@@ -434,6 +441,39 @@ test.describe('Register new errand page', () => {
 
     expect(body.stakeholders).toContainEqual(
       expect.objectContaining({ role: 'CONTACT', externalIdType: 'PRIVATE', externalId: mockStakeholder.externalId })
+    );
+  });
+
+  test('Adds an organisation as contact using organisation number and registers the errand', async ({ page }) => {
+    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await addOrganizationStakeholder(page, ovrigaParter);
+
+    const card = ovrigaParter.getByTestId('stakeholder-card').last();
+    await expect(card.getByTestId('stakeholder-name')).toHaveText(mockOrganizationStakeholder.organizationName ?? '');
+    await expect(card.getByTestId('stakeholder-organizationNumber')).toHaveText(MOCK_ORGANIZATION_NUMBER);
+    await expect(card.getByTestId('stakeholder-email')).toHaveText(MOCK_EMAIL);
+
+    // Only the contact details are editable; the name comes from the register.
+    await card.getByTestId('edit-card-button').dispatchEvent('click');
+    const modal = page.getByTestId('manual-person-modal');
+    await expect(modal.getByTestId('modal-firstName-input')).toHaveCount(0);
+    await modal.getByTestId('modal-add-person-button').click();
+    await expect(modal).toHaveCount(0);
+
+    await selectCategorization(page);
+    await selectErrandOwner(page);
+    const body = await registerErrand(page, 3);
+
+    expect(body.stakeholders).toContainEqual(
+      expect.objectContaining({
+        role: 'CONTACT',
+        externalIdType: 'COMPANY',
+        externalId: mockOrganizationStakeholder.externalId,
+        organizationName: mockOrganizationStakeholder.organizationName,
+        organizationNumber: MOCK_ORGANIZATION_NUMBER,
+        emails: [MOCK_EMAIL],
+        phoneNumbers: [MOCK_COUNTRY_CODE_PHONE_NUMBER],
+      })
     );
   });
 

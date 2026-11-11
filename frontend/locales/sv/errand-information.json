@@ -12,7 +12,8 @@
   "errand": "Ärende: ",
   "draft": "Utkast: ",
   "search": {
-    "PERSON": "Sök på personnummer"
+    "PERSON": "Sök på personnummer",
+    "ORGANIZATION": "Sök på organisationsnummer"
   },
   "save_message": {
     "draft": "Utkast sparades",
@@ -69,8 +70,15 @@
       "role": "Roll",
       "save_edit": "Ändra uppgifter",
       "save_add": "Lägg till",
-      "cancel": "Avbryt"
-    }
+      "cancel": "Avbryt",
+      "edit_organization_title": "Redigera organisation"
+    },
+    "type_label": "Vem vill du lägga till?",
+    "type_person": "Privatperson",
+    "type_organization": "Organisation",
+    "no_organization_found": "Ingen organisation hittades",
+    "add_organization": "Lägg till organisation",
+    "organization_role": "Organisationens roll"
   },
   "submit_confirm": {
     "question": "Vill du skicka in ärendet?",

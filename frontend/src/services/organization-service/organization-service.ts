@@ -1,5 +1,6 @@
 import { MyOrganizationsDTO, OrganizationDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { apiService } from '@services/api-service';
+import { AxiosResponse } from 'axios';
 
 /**
  * The organisations the logged-in citizen may act for. The backend answers from the session, so
@@ -16,3 +17,9 @@ export const getOwnerStakeholder = async (partyId: string): Promise<StakeholderD
     .get<StakeholderDTO>(`my-organizations/${encodeURIComponent(partyId)}/stakeholder`)
     .then((res) => res.data);
 };
+
+/** Any organisation by organisation number; 204 when none is found. */
+export const getStakeholderUsingOrganizationNumber = async (
+  organizationNumber: string
+): Promise<AxiosResponse<StakeholderDTO>> =>
+  apiService.get<StakeholderDTO>(`organization/${organizationNumber.replace('-', '')}`);
