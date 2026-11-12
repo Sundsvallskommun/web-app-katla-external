@@ -13,7 +13,7 @@ export interface ErrandFormHandover {
   /** The path without language prefix, so the handover applies only to the page that wrote it. */
   path: string;
   values: ErrandFormDTO;
-  wizardStep: number;
+  wizardStepId: string;
   storedAt: number;
 }
 

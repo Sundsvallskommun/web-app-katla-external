@@ -25,18 +25,24 @@ import {
   MOCK_ORGANIZATION_NUMBER,
   MOCK_PHONE_NUMBER,
 } from '../utils/constants';
-import { addSelfAsErrandOwner, errandOwnerSection, selectErrandOwner } from '../utils/errand-owner';
+import {
+  addSelfAsErrandOwner,
+  errandOwnerSection,
+  goToOwnerStep,
+  passBasicSteps,
+  selectErrandOwner,
+} from '../utils/errand-owner';
 import { emptyRoute, jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
 import {
   addOrganizationStakeholder,
   addStakeholder,
-  disclosureByTitle,
   expectSelfAsContact,
   manuallyAddStakeholder,
   manuallyEditStakeholder,
 } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
+import { currentStep, goToStep, nextStep, STEP, stepTitle } from '../utils/wizard';
 
 const OWNER_REQUIRED_MESSAGE =
   'Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson.';
@@ -62,10 +68,11 @@ interface CreateErrandRequestBody {
 }
 
 /**
- * Opens the confirmation dialog and returns the submit button. Shared by successful and failed
- * registrations so both paths go through the same checks.
+ * Walks to the summary, opens the confirmation dialog and returns the submit button. Shared by
+ * successful and failed registrations so both paths go through the same checks.
  */
 const openRegistrationConfirmation = async (page: Page) => {
+  await goToStep(page, STEP.summary);
   const registerButton = page.getByTestId('register-errand');
   await expect(registerButton).toBeEnabled();
   await registerButton.click();
@@ -110,9 +117,9 @@ test.describe('Register new errand page', () => {
     await page.route('**/schemas/**', emptyRoute(404));
     await page.goto(appUrl(SERVICE_PATH));
 
-    // Visible sections do not prove the server-rendered page has hydrated.
-    // The client enables the register button, so it is the flow's readiness boundary.
-    await expect(page.getByTestId('register-errand')).toBeEnabled();
+    // A visible step does not prove the server-rendered page has hydrated.
+    // The client enables the next button, so it is the flow's readiness boundary.
+    await expect(page.getByTestId('wizard-next')).toBeEnabled();
   });
 
   test('Offers the categories the metadata allows, and keeps the type behind that choice', async ({ page }) => {
@@ -141,6 +148,7 @@ test.describe('Register new errand page', () => {
 
   test('Files a type without subtypes as two labels', async ({ page }) => {
     await selectCategorization(page, mockCategoryAlkohol, mockTypeFolkol);
+    await nextStep(page);
     await selectErrandOwner(page);
 
     const submitButton = await openRegistrationConfirmation(page);
@@ -153,21 +161,41 @@ test.describe('Register new errand page', () => {
     expect(body.labels).toEqual([mockCategoryAlkohol, mockTypeFolkol].map(asErrandLabel));
   });
 
-  test('Shows the section scaffolding while the AoT fields are not built yet', async ({ page }) => {
-    await expect(page.locator('main').first()).toBeVisible();
+  test('Walks through the steps in order and moves focus to each new step', async ({ page }) => {
+    await expect(page.getByText('Steg 1/6')).toBeVisible();
+    await expect(stepTitle(page)).toHaveText(STEP.about);
+    // The page's own focus stays put until the user moves on.
+    await expect(stepTitle(page)).not.toBeFocused();
 
-    for (const title of ['Vad vill du ansöka/anmäla om?', 'Kontaktuppgifter', 'Övriga parter']) {
-      await expect(disclosureByTitle(page, title)).toBeVisible();
+    await goToOwnerStep(page);
+    await expect(stepTitle(page)).toBeFocused();
+    await selectErrandOwner(page);
+
+    for (const [index, title] of [STEP.otherParties, STEP.details, STEP.attachments, STEP.summary].entries()) {
+      await nextStep(page);
+      await expect(stepTitle(page)).toHaveText(title);
+      await expect(stepTitle(page)).toBeFocused();
+      await expect(page.getByText(`Steg ${String(index + 3)}/6`)).toBeVisible();
     }
+    await expect(page.getByTestId('wizard-next')).toHaveCount(0);
+    await expect(page.getByTestId('register-errand')).toBeVisible();
 
-    // These sections belong to the app this one was cloned from and must not remain.
-    await expect(disclosureByTitle(page, 'Brukare')).toHaveCount(0);
-    await expect(disclosureByTitle(page, 'Rapportör')).toHaveCount(0);
+    await page.getByTestId('wizard-back').click();
+    await expect(stepTitle(page)).toHaveText(STEP.attachments);
+    await expect(stepTitle(page)).toBeFocused();
+  });
 
-    await expect(page.getByRole('heading', { name: '2. Ärendeuppgifter' })).toBeVisible();
+  test('Returns to a step from the summary', async ({ page }) => {
+    await passBasicSteps(page, STEP.summary);
+
+    await page.getByTestId('wizard-summary-other-parties').getByRole('button', { name: 'Ändra' }).click();
+
+    await expect(stepTitle(page)).toHaveText(STEP.otherParties);
+    await expectSelfAsContact(currentStep(page));
   });
 
   test('Lists the organizations the citizen has engagements in as errand owner', async ({ page }) => {
+    await goToOwnerStep(page);
     const select = errandOwnerSection(page).getByTestId('errand-owner-select');
 
     // The placeholder option, so nothing is chosen while there is a choice to make.
@@ -183,6 +211,7 @@ test.describe('Register new errand page', () => {
   });
 
   test('Shows the chosen organization as a card, and swaps it rather than adding a second', async ({ page }) => {
+    await goToOwnerStep(page);
     const owner = errandOwnerSection(page);
 
     await selectErrandOwner(page, mockOrganization);
@@ -199,6 +228,7 @@ test.describe('Register new errand page', () => {
   });
 
   test('Clearing the choice removes the owner card', async ({ page }) => {
+    await goToOwnerStep(page);
     const owner = errandOwnerSection(page);
     await selectErrandOwner(page, mockOrganization);
 
@@ -208,6 +238,7 @@ test.describe('Register new errand page', () => {
   });
 
   test('Removes the owner from the card action', async ({ page }) => {
+    await goToOwnerStep(page);
     const owner = errandOwnerSection(page);
     await selectErrandOwner(page, mockOrganization);
 
@@ -219,7 +250,7 @@ test.describe('Register new errand page', () => {
 
   test('Edits the owner contact details and files them with the errand', async ({ page }) => {
     const owner = errandOwnerSection(page);
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await selectErrandOwner(page, mockOrganization);
 
     await owner.getByTestId('edit-owner-button').click();
@@ -267,6 +298,7 @@ test.describe('Register new errand page', () => {
   });
 
   test('Discards owner edits that were cancelled', async ({ page }) => {
+    await goToOwnerStep(page);
     const owner = errandOwnerSection(page);
     await selectErrandOwner(page, mockOrganization);
 
@@ -281,36 +313,34 @@ test.describe('Register new errand page', () => {
     await expect(page.getByTestId('owner-careOf-input')).toHaveValue('');
   });
 
-  test('Refuses to register an errand before it has been categorized', async ({ page }) => {
-    await page.getByTestId('register-errand').click();
+  test('Stays on the first step until the errand is categorized', async ({ page }) => {
+    await page.getByTestId('wizard-next').click();
 
     await expect(page.getByTestId('errand-category-error')).toContainText(CATEGORY_REQUIRED_MESSAGE);
     await expect(page.locator('#react-toast').getByText(CATEGORY_REQUIRED_MESSAGE)).toBeVisible();
-    await expect(page.getByTestId('submit-button')).toHaveCount(0);
+    await expect(stepTitle(page)).toHaveText(STEP.about);
   });
 
-  test('Refuses to register an errand before an owner has been chosen', async ({ page }) => {
-    await selectCategorization(page);
-    await page.getByTestId('register-errand').click();
+  test('Stays on the owner step until an owner has been chosen', async ({ page }) => {
+    await goToOwnerStep(page);
+    await page.getByTestId('wizard-next').click();
 
     // The message is deliberately in two places: the toast reports the failed attempt, the
     // inline error marks the field to fix. Assert each rather than an unscoped text match.
     await expect(page.getByTestId('errand-owner-error')).toContainText(OWNER_REQUIRED_MESSAGE);
     await expect(page.locator('#react-toast').getByText(OWNER_REQUIRED_MESSAGE)).toBeVisible();
-    await expect(page.getByTestId('submit-button')).toHaveCount(0);
+    await expect(stepTitle(page)).toHaveText(STEP.owner);
   });
 
   test('Registers an errand without any form fields filled in', async ({ page }) => {
-    await expect(page.locator('main').first()).toBeVisible();
-
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await selectErrandOwner(page);
 
     await registerErrand(page, 2);
   });
 
   test('Files the chosen organization as the errand owner', async ({ page }) => {
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await selectErrandOwner(page, mockSecondOrganization);
 
     const submitButton = await openRegistrationConfirmation(page);
@@ -328,14 +358,12 @@ test.describe('Register new errand page', () => {
 
   test('Files the logged in citizen as a private errand owner', async ({ page }) => {
     const owner = errandOwnerSection(page);
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await addSelfAsErrandOwner(page);
 
     await expect(owner.getByTestId('stakeholder-role')).toHaveText('Ärendeägare');
     await expect(owner.getByTestId('stakeholder-personNumber')).toHaveText(MOCK_HYPHEN_PERSON_NUMBER);
     await expect(owner.getByTestId('stakeholder-address')).toContainText('Storgatan 1 85230 Sundsvall');
-    // The owner is on the errand already, so the contact entry goes.
-    await expect(disclosureByTitle(page, 'Övriga parter').getByTestId('stakeholder-card')).toHaveCount(0);
 
     // Identity comes from the login and is not theirs to change; the address is.
     await owner.getByTestId('edit-owner-button').click();
@@ -349,6 +377,10 @@ test.describe('Register new errand page', () => {
     await page.getByTestId('owner-modal-save').click();
     await expect(owner.getByTestId('stakeholder-address')).toContainText('c/o Festlokalen');
     await expect(owner.getByTestId('stakeholder-phonenumber')).toHaveText(MOCK_COUNTRY_CODE_PHONE_NUMBER);
+
+    // The owner is on the errand already, so the contact entry goes.
+    await nextStep(page);
+    await expect(currentStep(page).getByTestId('stakeholder-card')).toHaveCount(0);
 
     const submitButton = await openRegistrationConfirmation(page);
     const createRequest = page.waitForRequest(
@@ -369,19 +401,20 @@ test.describe('Register new errand page', () => {
     ]);
   });
 
-  test('Refuses to register while the owner lacks a phone number', async ({ page }) => {
+  test('Stays on the owner step while the owner lacks a phone number', async ({ page }) => {
     const owner = errandOwnerSection(page);
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await addSelfAsErrandOwner(page);
 
-    await page.getByTestId('register-errand').click();
+    await page.getByTestId('wizard-next').click();
 
     await expect(owner.getByTestId('errand-owner-details-error')).toContainText(OWNER_DETAILS_REQUIRED_MESSAGE);
     await expect(page.locator('#react-toast').getByText(OWNER_DETAILS_REQUIRED_MESSAGE)).toBeVisible();
-    await expect(page.getByTestId('submit-button')).toHaveCount(0);
+    await expect(stepTitle(page)).toHaveText(STEP.owner);
   });
 
   test('Removing the private owner offers the organizations and the citizen again', async ({ page }) => {
+    await goToOwnerStep(page);
     const owner = errandOwnerSection(page);
     await addSelfAsErrandOwner(page);
 
@@ -394,12 +427,14 @@ test.describe('Register new errand page', () => {
 
   test('Puts the citizen back as contact person before registering an errand that lost them', async ({ page }) => {
     const owner = errandOwnerSection(page);
-    await selectCategorization(page);
+    await goToOwnerStep(page);
     await addSelfAsErrandOwner(page);
     await owner.getByTestId('remove-owner-button').click();
     await selectErrandOwner(page);
-    await expect(disclosureByTitle(page, 'Övriga parter').getByTestId('stakeholder-card')).toHaveCount(0);
+    await nextStep(page);
+    await expect(currentStep(page).getByTestId('stakeholder-card')).toHaveCount(0);
 
+    await goToStep(page, STEP.summary);
     await page.getByTestId('register-errand').click();
     await expect(page.getByText('Du läggs till som kontaktperson')).toBeVisible();
     await page.getByTestId('citizen-contact-cancel').click();
@@ -407,7 +442,6 @@ test.describe('Register new errand page', () => {
 
     await page.getByTestId('register-errand').click();
     await page.getByTestId('citizen-contact-continue').click();
-    await expectSelfAsContact(disclosureByTitle(page, 'Övriga parter'));
     const submitButton = page.getByTestId('submit-button');
     await expect(submitButton).toBeEnabled();
     const createRequest = page.waitForRequest(
@@ -427,16 +461,14 @@ test.describe('Register new errand page', () => {
   });
 
   test('Adds a stakeholder using personnumber and registers the errand', async ({ page }) => {
-    await expect(page.locator('main').first()).toBeVisible();
+    await passBasicSteps(page, STEP.otherParties);
 
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    const ovrigaParter = currentStep(page);
     await addStakeholder(page, ovrigaParter, 'CONTACT');
     await expect(ovrigaParter.getByTestId('edit-card-button').first()).toBeVisible();
     await expect(ovrigaParter.getByTestId('remove-card-button').first()).toBeVisible();
     await expect(ovrigaParter.getByTestId('add-manual-person-button')).toBeVisible();
 
-    await selectCategorization(page);
-    await selectErrandOwner(page);
     const body = await registerErrand(page, 3);
 
     expect(body.stakeholders).toContainEqual(
@@ -445,7 +477,8 @@ test.describe('Register new errand page', () => {
   });
 
   test('Adds an organisation as contact using organisation number and registers the errand', async ({ page }) => {
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await passBasicSteps(page, STEP.otherParties);
+    const ovrigaParter = currentStep(page);
     await addOrganizationStakeholder(page, ovrigaParter);
 
     const card = ovrigaParter.getByTestId('stakeholder-card').last();
@@ -460,8 +493,6 @@ test.describe('Register new errand page', () => {
     await modal.getByTestId('modal-add-person-button').click();
     await expect(modal).toHaveCount(0);
 
-    await selectCategorization(page);
-    await selectErrandOwner(page);
     const body = await registerErrand(page, 3);
 
     expect(body.stakeholders).toContainEqual(
@@ -478,7 +509,8 @@ test.describe('Register new errand page', () => {
   });
 
   test('Lists the logged in citizen as a contact person from the start and registers the errand', async ({ page }) => {
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await passBasicSteps(page, STEP.otherParties);
+    const ovrigaParter = currentStep(page);
     await expectSelfAsContact(ovrigaParter);
 
     const card = ovrigaParter.getByTestId('stakeholder-card');
@@ -488,8 +520,6 @@ test.describe('Register new errand page', () => {
     await expect(card.getByTestId('stakeholder-email')).toHaveText('E-postadress saknas');
     await expect(ovrigaParter.getByTestId('add-manual-person-button')).toBeVisible();
 
-    await selectCategorization(page);
-    await selectErrandOwner(page);
     const body = await registerErrand(page, 2);
 
     expect(body.stakeholders).toContainEqual(
@@ -507,11 +537,10 @@ test.describe('Register new errand page', () => {
   test('Preserves entered data and stays on the form when registration fails', async ({ page }) => {
     await page.route('**/supportmanagement/errand/create', jsonRoute({ message: 'Upstream unavailable' }, 502));
 
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await passBasicSteps(page, STEP.otherParties);
+    const ovrigaParter = currentStep(page);
     await addStakeholder(page, ovrigaParter, 'CONTACT');
     await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
-    await selectCategorization(page);
-    await selectErrandOwner(page);
 
     const submitButton = await openRegistrationConfirmation(page);
     const failedResponse = page.waitForResponse(
@@ -523,15 +552,15 @@ test.describe('Register new errand page', () => {
     expect(response.status()).toBe(502);
 
     await expect(page).toHaveURL(/\/alkoholtillstand$/);
+    await page.getByTestId('wizard-summary-other-parties').getByRole('button', { name: 'Ändra' }).click();
     await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
     await expect(page.getByText('Något gick fel när ärendet sparades')).toBeVisible();
     await expect(page.getByText('Ärendet skickades in')).toHaveCount(0);
   });
 
   test('Manually adds a stakeholder and registers the errand', async ({ page }) => {
-    await expect(page.locator('main').first()).toBeVisible();
-
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await passBasicSteps(page, STEP.otherParties);
+    const ovrigaParter = currentStep(page);
     await ovrigaParter.getByTestId('add-manual-person-button').dispatchEvent('click');
 
     await manuallyAddStakeholder(page);
@@ -548,8 +577,6 @@ test.describe('Register new errand page', () => {
     await expect(ovrigaParter.getByTestId('remove-card-button')).toBeVisible();
     await expect(ovrigaParter.getByTestId('add-manual-person-button')).toBeVisible();
 
-    await selectCategorization(page);
-    await selectErrandOwner(page);
     const body = await registerErrand(page, 3);
 
     expect(body.stakeholders).toContainEqual(
@@ -558,9 +585,8 @@ test.describe('Register new errand page', () => {
   });
 
   test('Manually edits and removes a stakeholder', async ({ page }) => {
-    await expect(page.locator('main').first()).toBeVisible();
-
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    await passBasicSteps(page, STEP.otherParties);
+    const ovrigaParter = currentStep(page);
     await addStakeholder(page, ovrigaParter, 'CONTACT');
     // The citizen's own card comes first and has no remove action.
     const stakeholderCard = ovrigaParter.getByTestId('stakeholder-card').last();
@@ -594,8 +620,6 @@ test.describe('Register new errand page', () => {
       `${mockManualEditStakeholder.address ?? ''} ${mockManualEditStakeholder.city ?? ''}`
     );
 
-    await selectCategorization(page);
-    await selectErrandOwner(page);
     await registerErrand(page, 3);
   });
 });

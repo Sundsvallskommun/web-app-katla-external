@@ -13,6 +13,6 @@ test.describe('Start page', () => {
     await page.getByTestId('service-link-alkoholtillstand').click();
 
     await expect(page).toHaveURL(/\/alkoholtillstand$/);
-    await expect(page.getByTestId('register-errand')).toBeEnabled();
+    await expect(page.getByTestId('wizard-next')).toBeEnabled();
   });
 });

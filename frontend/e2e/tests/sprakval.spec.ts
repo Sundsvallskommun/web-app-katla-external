@@ -3,10 +3,12 @@ import type { Page } from '@playwright/test';
 import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
 import { selectCategorization } from '../utils/categorization';
+import { passBasicSteps } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
-import { addStakeholder, disclosureByTitle } from '../utils/stakeholder';
+import { addStakeholder } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
+import { currentStep, STEP, stepTitle } from '../utils/wizard';
 
 /**
  * The language choice must be reachable from the header, without going through the user menu.
@@ -29,11 +31,12 @@ test.describe('Language switching', () => {
   });
 
   test('keeps the entered registration form when the language changes', async ({ page }) => {
-    await expect(page.getByTestId('register-errand')).toBeEnabled();
+    await expect(page.getByTestId('wizard-next')).toBeEnabled();
+    await passBasicSteps(page, STEP.otherParties);
 
-    // Added parties are the only entered data the form holds until the AoT fields exist, so the
-    // handover is measured on them: the citizen's own card plus the one added here.
-    const ovrigaParter = disclosureByTitle(page, 'Övriga parter');
+    // The handover is measured on the added parties: the citizen's own card plus the one added
+    // here.
+    const ovrigaParter = currentStep(page);
     await addStakeholder(page, ovrigaParter, 'CONTACT');
     await expect(ovrigaParter.getByTestId('stakeholder-card')).toHaveCount(2);
 
@@ -42,8 +45,9 @@ test.describe('Language switching', () => {
     await expect(page).toHaveURL(/\/en\/alkoholtillstand$/);
 
     // Switching language remounts the whole errand tree. Without the handover the user faces an
-    // empty form, and changing language costs them a fresh start.
-    await expect(disclosureByTitle(page, 'Other parties').getByTestId('stakeholder-card')).toHaveCount(2);
+    // empty form on the first step, and changing language costs them a fresh start.
+    await expect(stepTitle(page)).toHaveText('Other parties');
+    await expect(currentStep(page).getByTestId('stakeholder-card')).toHaveCount(2);
   });
 
   test.describe('on a phone', () => {

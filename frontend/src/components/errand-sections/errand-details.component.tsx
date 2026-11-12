@@ -2,6 +2,7 @@
 
 import { useFormSchema } from '@components/json/hooks/use-form-schema';
 import SchemaForm from '@components/json/schema/schema-form.component';
+import type { SchemaSection } from '@components/json/utils/schema-sections';
 import {
   errandFormDataContractErrorMessage,
   isJsonObject,
@@ -20,9 +21,10 @@ import { useMetadataStore } from 'src/stores/metadata-store';
 interface SchemaFormFieldProps {
   schemaName: string;
   compact?: boolean;
+  fields?: readonly string[];
 }
 
-function SchemaFormField({ schemaName, compact }: SchemaFormFieldProps) {
+function SchemaFormField({ schemaName, compact, fields }: SchemaFormFieldProps) {
   const { getValues, watch, setValue } = useFormContext<ErrandFormDTO>();
   const { showValidation } = useFormValidation();
   const { t } = useTranslation('forms');
@@ -91,15 +93,18 @@ function SchemaFormField({ schemaName, compact }: SchemaFormFieldProps) {
       showValidation={showValidation}
       disabled={isLocked}
       compact={compact}
+      fields={fields}
     />
   );
 }
 
 interface ErrandDetailsProps {
   compact?: boolean;
+  /** Shows only this part of the form, as a wizard step does. */
+  section?: SchemaSection;
 }
 
-export const ErrandDetails: React.FC<ErrandDetailsProps> = ({ compact }) => {
+export const ErrandDetails: React.FC<ErrandDetailsProps> = ({ compact, section }) => {
   const { t } = useTranslation('errand-information');
   const { watch } = useFormContext<ErrandFormDTO>();
   const namespace = useMetadataStore((state) => state.metadata?.namespace);
@@ -110,6 +115,10 @@ export const ErrandDetails: React.FC<ErrandDetailsProps> = ({ compact }) => {
   // "the schema failed to load".
   if (schemaNames.length === 0) {
     return <span className="text-dark-secondary">{t('section_placeholder')}</span>;
+  }
+
+  if (section && schemaNames.includes(section.schemaName)) {
+    return <SchemaFormField schemaName={section.schemaName} compact={compact} fields={section.fields} />;
   }
 
   return (

@@ -4,16 +4,15 @@ import { pathWithoutLocale } from '@app/locale-path';
 import { jsonParametersToErrandFormData } from '@components/json/utils/schema-utils';
 import { ErrorAlertList } from '@components/misc/error-alert.component';
 import { visibleTabsFor } from '@components/tabs/tabs';
-import { MobileWizard } from '@components/wizard/mobile-wizard.component';
+import { Wizard } from '@components/wizard/wizard.component';
 import { FormValidationProvider } from '@contexts/form-validation-provider';
 import { MyStakeholderContext } from '@contexts/my-stakeholder-context';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ErrandFormDTO } from '@interfaces/errand-form';
 import BaseErrandLayout from '@layouts/base-errand-layout/base-errand-layout.component';
-import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import Main from '@layouts/main/main.component';
 import { getErrandUsingErrandNumber } from '@services/errand-service/errand-service';
-import { cx, Spinner, Tabs } from '@sk-web-gui/react';
+import { Spinner, Tabs } from '@sk-web-gui/react';
 import { ErrandFormHandover, takeErrandFormHandover } from '@utils/errand-form-handover';
 import { withCitizenAsContact } from '@utils/stakeholder';
 import { default as NextLink } from 'next/link';
@@ -22,11 +21,9 @@ import { useEffect, useRef, useState } from 'react';
 import { FormProvider, Resolver, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { PREMISES_MUNICIPALITY_KEY } from 'src/constants/parameters';
-import { MOBILE_BREAKPOINT } from 'src/constants/responsive';
 import { servicePath } from 'src/constants/services';
 import { useLoadMetadata } from 'src/hooks/use-load-metadata';
 import { useLoadMyStakeholder } from 'src/hooks/use-load-my-stakeholder';
-import { useMediaQuery } from 'src/hooks/use-media-query';
 import { useService } from 'src/hooks/use-service';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { useWizardStore } from 'src/stores/wizard-store';
@@ -71,7 +68,6 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
   const registerNewErrand = route.kind === 'register';
   const requestedErrandNumber = route.kind === 'existing' ? route.errandNumber : null;
   const initialFocus = useRef<HTMLBodyElement>(null);
-  const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
   const wizardReset = useWizardStore((s) => s.reset);
   const wizardGoToStep = useWizardStore((s) => s.goToStep);
   const pathname = usePathname();
@@ -116,7 +112,7 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
     if (registerNewErrand) {
       if (handover) {
         reset(handover.values);
-        wizardGoToStep(handover.wizardStep);
+        wizardGoToStep(handover.wizardStepId);
       } else {
         wizardReset();
       }
@@ -138,7 +134,7 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
         // carries only what has been saved.
         if (handover) {
           reset(handover.values);
-          wizardGoToStep(handover.wizardStep);
+          wizardGoToStep(handover.wizardStepId);
         } else {
           reset({ ...errand, errandFormData });
         }
@@ -162,12 +158,9 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
 
   const errandNumber = methods.watch('errandNumber');
   const isDraft = methods.watch('lifecycle') === 'DRAFT';
-  // A draft is the same unfinished work whether just created or resumed, and the wizard is the
-  // interface built for narrow screens. Without this condition a resumed draft switched to the
-  // tab view on mobile.
-  const showMobileWizard = isMobile && (registerNewErrand || isDraft);
-  // Mirrors ErrandButtonGroup's visibility; keeps the submit action reachable while scrolling.
-  const showSubmitBar = registerNewErrand || isDraft;
+  // A draft is the same unfinished work whether just created or resumed, so both are edited in
+  // the wizard. Only a submitted errand gets the read-only tab view.
+  const showWizard = registerNewErrand || isDraft;
 
   const getHeaderTitle = () => {
     if (registerNewErrand) {
@@ -219,18 +212,13 @@ const ErrandRouteContent: React.FC<ErrandRouteContentProps> = ({ children, route
             {t('layout:header.goto_content')}
           </NextLink>
           <BaseErrandLayout registerNewErrand={registerNewErrand}>
-            {showMobileWizard ?
-              <MobileWizard />
-            : <div
-                className={cx('grow shrink overflow-y-auto', showSubmitBar && 'scroll-pt-[16rem] md:scroll-pt-[12rem]')}
-              >
+            {showWizard ?
+              <Wizard title={getHeaderTitle()} />
+            : <div className="grow shrink overflow-y-auto">
                 <div className="bg-transparent">
                   <div className="mb-xl">
-                    <div className={cx(showSubmitBar && 'sticky top-0 z-10 bg-background-100')}>
-                      <div className="mx-auto max-w-[108rem] flex flex-col md:flex-row justify-between pt-16 md:pt-32 pb-12 px-16 md:px-0 gap-12">
-                        <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
-                        <ErrandButtonGroup isNewErrand={registerNewErrand} />
-                      </div>
+                    <div className="mx-auto max-w-[108rem] pt-16 md:pt-32 pb-12 px-16 md:px-0">
+                      <h1 className="text-h2-sm md:text-h2-lg">{getHeaderTitle()}</h1>
                     </div>
                     <Main>
                       <Tabs

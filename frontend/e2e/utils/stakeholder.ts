@@ -20,10 +20,6 @@ import {
 } from './constants';
 import { emptyRoute, jsonRoute } from './routes';
 
-/** Finds the disclosure section with the given title. */
-export const disclosureByTitle = (page: Page, title: string): Locator =>
-  page.locator('.sk-disclosure').filter({ has: page.locator('.sk-disclosure-header-title', { hasText: title }) });
-
 /**
  * Buttons in the search and form sections are covered by a transparent
  * .sk-form-control-wrapper that captures pointer events, so an ordinary Playwright click does

@@ -300,6 +300,27 @@ function schemaFieldValidationError(
     : t('form_error', { schemaTitle, message });
 }
 
+/** The first error in the data, counting only errors under `fields` when given. */
+function schemaDataError(
+  schema: RJSFSchema,
+  schemaId: string,
+  schemaName: string,
+  data: unknown,
+  fields: readonly string[] | undefined,
+  t?: TFunction
+): string | undefined {
+  const { errors } = getJsonValueSchemaValidator(schemaId).validateFormData(data, schema);
+  // An error without a field (a failed `if`) belongs to no section; its field reports its own error.
+  const relevant =
+    fields ?
+      errors.filter((error) =>
+        fields.includes((error.property ?? '').split('.').find((segment) => segment !== '') ?? '')
+      )
+    : errors;
+
+  return relevant.length > 0 ? schemaFieldValidationError(schema, schemaName, relevant, t) : undefined;
+}
+
 /**
  * Validates all errand form data against its schemas. Returns a list of error messages, empty
  * when everything is valid.
@@ -314,7 +335,9 @@ export async function validateErrandFormData(
   // wrong language in the error summary.
   locale = i18nConfig.defaultLocale,
   // Injectable so the fail-closed rule can be covered even while the real list is empty.
-  requiredSchemaNames: readonly string[] = []
+  requiredSchemaNames: readonly string[] = [],
+  // Limits the check to these root fields, for a form filled in one section at a time.
+  fields?: readonly string[]
 ): Promise<string[]> {
   const errors: string[] = [];
   const entries = errandFormDataForSchemas(formDataEntries, requiredSchemaNames);
@@ -324,10 +347,17 @@ export async function validateErrandFormData(
 
   for (const schemaName of missingSchemaNames) {
     // An errand type whose flow has no schema has nothing to fill in, so it cannot be missing it.
+    let loaded: Awaited<ReturnType<typeof loadFormSchema>> | undefined;
     try {
-      await loadFormSchema(schemaName, t, locale);
+      loaded = await loadFormSchema(schemaName, t, locale);
     } catch (error) {
       if (error instanceof SchemaNotFoundError) continue;
+    }
+    // A section is judged by its own questions, which an untouched form leaves unanswered.
+    if (loaded && fields) {
+      const sectionError = schemaDataError(loaded.schema, loaded.schemaId, schemaName, {}, fields, t);
+      if (sectionError) errors.push(sectionError);
+      continue;
     }
     errors.push(requiredFormDataError(schemaName, t));
   }
@@ -349,12 +379,8 @@ export async function validateErrandFormData(
 
     try {
       const { schema, schemaId } = await loadFormSchemaForEntry(entry.schemaName, entry.schemaId, t, locale);
-      const validator = getJsonValueSchemaValidator(schemaId);
-      const { errors: validationErrors } = validator.validateFormData(parsedData.value, schema);
-
-      if (validationErrors.length > 0) {
-        errors.push(schemaFieldValidationError(schema, entry.schemaName, validationErrors, t));
-      }
+      const dataError = schemaDataError(schema, schemaId, entry.schemaName, parsedData.value, fields, t);
+      if (dataError) errors.push(dataError);
     } catch (error: unknown) {
       errors.push(errandFormDataContractErrorMessage(error, t) ?? schemaValidationError(entry.schemaName, t));
     }

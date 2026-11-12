@@ -2,11 +2,11 @@ import type { Page } from '@playwright/test';
 
 import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
-import { selectCategorization } from '../utils/categorization';
-import { selectErrandOwner } from '../utils/errand-owner';
+import { passBasicSteps } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
 import { expect, test } from '../utils/test';
+import { goToStep, STEP, stepTitle } from '../utils/wizard';
 
 const STOP_TEXT = 'Du kan inte anmäla försäljning av folköl om du varken säljer livsmedel eller tillverkar folköl.';
 
@@ -52,9 +52,8 @@ test.describe('Stopp', () => {
     await page.route('**/supportmanagement/metadata', jsonRoute({ ...mockMetadata, namespace: 'AOT' }));
     await page.route('**/schemas/**', jsonRoute(schemaWithStop));
     await page.goto(appUrl(SERVICE_PATH));
-    await expect(page.getByTestId('register-errand')).toBeEnabled();
-    await selectCategorization(page);
-    await selectErrandOwner(page);
+    await expect(page.getByTestId('wizard-next')).toBeEnabled();
+    await passBasicSteps(page, STEP.details);
   });
 
   test('explains the stop under the answer and blocks registration until it changes', async ({ page }) => {
@@ -67,13 +66,14 @@ test.describe('Stopp', () => {
     await expect(stop).toContainText(STOP_TEXT);
     await expect(stop.getByRole('group', { name: 'Tillverkar du folköl?' })).toBeVisible();
 
-    await page.getByTestId('register-errand').click();
+    await page.getByTestId('wizard-next').click();
     await expect(page.getByText(STOP_TEXT)).toHaveCount(2);
-    await expect(page.getByTestId('submit-button')).toBeHidden();
+    await expect(stepTitle(page)).toHaveText(STEP.details);
 
     await answer(page, 'Tillverkar du folköl?', 'Ja');
     await expect(stop).toHaveCount(0);
 
+    await goToStep(page, STEP.summary);
     await page.getByTestId('register-errand').click();
     await expect(page.getByTestId('submit-button')).toBeEnabled();
   });

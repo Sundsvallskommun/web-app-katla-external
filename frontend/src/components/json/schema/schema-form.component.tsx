@@ -46,6 +46,8 @@ interface SchemaFormProps {
   showValidation?: boolean;
   disabled?: boolean;
   compact?: boolean;
+  /** Root fields to render; the rest of the form keeps its data but is not shown. */
+  fields?: readonly string[];
 }
 
 export default function SchemaForm({
@@ -59,6 +61,7 @@ export default function SchemaForm({
   showValidation,
   disabled = false,
   compact = false,
+  fields,
 }: SchemaFormProps) {
   const { t } = useTranslation('validation');
   const [localData, setLocalData] = useState<Record<string, unknown>>({});
@@ -97,8 +100,8 @@ export default function SchemaForm({
   // matched to its own sub-schema rather than to the root's.
   const schemaById = useMemo(() => collectSchemasById(schema), [schema]);
   const formContext = useMemo(
-    () => ({ originalSchema: schema, schemaById, compact, validationActive: shouldValidate }),
-    [schema, schemaById, compact, shouldValidate]
+    () => ({ originalSchema: schema, schemaById, compact, validationActive: shouldValidate, fields }),
+    [schema, schemaById, compact, shouldValidate, fields]
   );
 
   return (

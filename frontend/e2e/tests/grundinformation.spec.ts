@@ -110,14 +110,13 @@ test.describe('Errand basic information page', () => {
     await expect(page.getByTestId('read-only-notice')).toHaveCount(0);
   });
 
-  test('Draft errand still uses the tab layout on desktop', async ({ appUrl, page }) => {
+  test('Draft errand resumes in the wizard on desktop', async ({ appUrl, page }) => {
     await page.setViewportSize(DESKTOP_VIEWPORT);
     await openErrand(page, appUrl, 'DRAFT');
 
-    await expect(page.getByTestId('stakeholder-card').first()).toBeVisible();
-    await expect(page.getByText(/^Steg 1\/\d+$/)).toHaveCount(0);
-    // Drafts are editable, so the actions stay here.
-    await expect(page.getByTestId('edit-card-button').first()).toBeVisible();
-    await expect(page.getByTestId('person-number-input').first()).toBeVisible();
+    await expect(page.getByText(/^Steg 1\/\d+$/)).toBeVisible();
+    await expect(page.getByTestId('read-only-notice')).toHaveCount(0);
+    // A saved draft is kept, not cancelled.
+    await expect(page.getByRole('button', { name: 'Avbryt' })).toHaveCount(0);
   });
 });

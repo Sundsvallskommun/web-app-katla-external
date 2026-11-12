@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-import { disclosureByTitle } from './stakeholder';
+import { currentStep, goToStep } from './wizard';
 
 // The published schemas are authored here; see Formulärscheman in CLAUDE.md.
 const MOCKS_DIR = path.resolve(__dirname, '../../../backend/src/mocks');
@@ -23,7 +23,7 @@ export interface FormSchema {
 export interface SchemaPair {
   schemaId: string;
   schema: FormSchema;
-  uiSchema: Record<string, unknown>;
+  uiSchema: { 'ui:sections'?: { title: string; fields: string[] }[] } & Record<string, unknown>;
 }
 
 const readJson = (file: string): unknown => JSON.parse(fs.readFileSync(path.join(MOCKS_DIR, file), 'utf-8'));
@@ -32,8 +32,21 @@ const readJson = (file: string): unknown => JSON.parse(fs.readFileSync(path.join
 export const loadSchemaPair = (name: string): SchemaPair => ({
   schemaId: name,
   schema: readJson(`${name}.schema.json`) as FormSchema,
-  uiSchema: readJson(`${name}.ui-schema.json`) as Record<string, unknown>,
+  uiSchema: readJson(`${name}.ui-schema.json`) as SchemaPair['uiSchema'],
 });
+
+/** The wizard step a root field is asked on: its `ui:sections` entry. */
+export const sectionTitleOf = (pair: SchemaPair, field: string): string => {
+  const section = pair.uiSchema['ui:sections']?.find((candidate) => candidate.fields.includes(field));
+  if (!section) throw new Error(`${field} is in no section`);
+  return section.title;
+};
+
+export const firstSectionTitle = (pair: SchemaPair): string => {
+  const [first] = pair.uiSchema['ui:sections'] ?? [];
+  if (!first) throw new Error(`${pair.schemaId} has no sections`);
+  return first.title;
+};
 
 /**
  * One answer in a form, addressed by the schema property. Nested object members use a dotted path.
@@ -131,21 +144,34 @@ const applyStep = async (page: Page, schema: FormSchema, answers: Answers, step:
   }
 };
 
+const rootFieldOf = (step: Step): string => {
+  const fieldPath =
+    'radio' in step ? step.radio
+    : 'check' in step ? step.check
+    : 'text' in step ? step.text
+    : 'time' in step ? step.time
+    : 'rich' in step ? step.rich
+    : step.row;
+  return fieldPath.split('.')[0] ?? fieldPath;
+};
+
 /**
  * Fills the form in the given order and returns the answers the errand should carry. Conditional
  * fields mount only after their controlling answer, so a step that depends on another comes after it.
+ * Each answer is given on its section's wizard step, so the steps follow the sections' order.
  */
-export const fillSchemaForm = async (page: Page, schema: FormSchema, steps: Step[]): Promise<Answers> => {
+export const fillSchemaForm = async (page: Page, pair: SchemaPair, steps: Step[]): Promise<Answers> => {
   const answers: Answers = {};
   for (const step of steps) {
-    await applyStep(page, schema, answers, step);
+    await goToStep(page, sectionTitleOf(pair, rootFieldOf(step)));
+    await applyStep(page, pair.schema, answers, step);
   }
   return answers;
 };
 
 const pdf = (name: string) => ({ name, mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n%%EOF\n') });
 
-export const attachmentsSection = (page: Page): Locator => disclosureByTitle(page, 'Bilagor');
+export const attachmentsSection = (page: Page): Locator => currentStep(page);
 
 /**
  * Checks that every category is demanded, uploads one file per category and types it, and checks

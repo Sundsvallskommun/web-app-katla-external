@@ -2,18 +2,18 @@ import type { Request } from '@playwright/test';
 
 import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
-import { selectCategorization } from '../utils/categorization';
-import { selectErrandOwner } from '../utils/errand-owner';
+import { passBasicSteps } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
 import { SERVICE_PATH } from '../utils/service';
-import { disclosureByTitle } from '../utils/stakeholder';
 import { expect, test } from '../utils/test';
+import { currentStep, goToStep, STEP } from '../utils/wizard';
 
 const schemaWithPowerOfAttorney = {
   schemaId: 'bilagor-1',
   schema: {
     type: 'object',
-    properties: {},
+    // Registration needs the form filled in before the bilagor step.
+    properties: { namn: { type: 'string', title: 'Namn' } },
     'x-attachments': [{ key: 'POWER_OF_ATTORNEY', label: 'Fullmakt', requiredWhen: {} }],
   },
   uiSchema: {},
@@ -31,17 +31,18 @@ test.describe('Bilagor', () => {
     await page.route('**/supportmanagement/metadata', jsonRoute({ ...mockMetadata, namespace: 'AOT' }));
     await page.route('**/schemas/**', jsonRoute(schemaWithPowerOfAttorney));
     await page.goto(appUrl(SERVICE_PATH));
-    await expect(page.getByTestId('register-errand')).toBeEnabled();
+    await expect(page.getByTestId('wizard-next')).toBeEnabled();
   });
 
   test('takes several files of the same type and sends each of them', async ({ page }) => {
     await page.route('**/supportmanagement/errand/*/attachments', (route) =>
       route.request().method() === 'POST' ? jsonRoute({ message: 'success' }, 201)(route) : jsonRoute([])(route)
     );
-    await selectCategorization(page);
-    await selectErrandOwner(page);
+    await passBasicSteps(page, STEP.details);
+    await page.getByLabel('Namn').fill('Festen');
+    await goToStep(page, STEP.attachments);
 
-    const section = disclosureByTitle(page, 'Bilagor');
+    const section = currentStep(page);
     await section
       .getByTestId('attachment-upload-field')
       .locator('input[type="file"]')

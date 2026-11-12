@@ -1,11 +1,14 @@
+import { WizardBottomBar } from '@components/wizard/wizard-bottom-bar.component';
+import { getActiveWizardSteps } from '@components/wizard/wizard-steps';
+import { WizardStepsContext } from '@components/wizard/wizard-steps-context';
 import { FormValidationProvider } from '@contexts/form-validation-provider';
 import { mockOrganization } from '@e2e/fixtures/getMyOrganizations';
 import { ownerStakeholderFor } from '@e2e/fixtures/getOwnerStakeholder';
 import type { ErrandFormDTO } from '@interfaces/errand-form';
-import { ErrandButtonGroup } from '@layouts/errand-button-group.component';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { appConfig } from 'src/config/appconfig';
 import { useMetadataStore } from 'src/stores/metadata-store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -19,6 +22,8 @@ const { createErrandMock, routerPushMock, snackbarMock, updateErrandMock } = vi.
 vi.mock('@components/cancel-errand-dialog.component', () => ({
   CancelErrandDialog: () => null,
 }));
+
+vi.mock('src/hooks/use-media-query', () => ({ useMediaQuery: () => false }));
 
 vi.mock('@services/errand-service/errand-service', () => ({
   createErrand: createErrandMock,
@@ -83,13 +88,19 @@ function TestForm() {
   return (
     <FormProvider {...methods}>
       <FormValidationProvider>
-        <ErrandButtonGroup isNewErrand />
+        <WizardStepsContext.Provider value={ON_SUMMARY}>
+          <WizardBottomBar />
+        </WizardStepsContext.Provider>
       </FormValidationProvider>
     </FormProvider>
   );
 }
 
-describe('ErrandButtonGroup JSON save contract', () => {
+const STEPS = getActiveWizardSteps(appConfig.features.otherPartiesDisclosure);
+// Registration is offered on the last step.
+const ON_SUMMARY = { steps: STEPS, current: STEPS.length - 1 };
+
+describe('WizardBottomBar JSON save contract', () => {
   beforeEach(() => {
     useMetadataStore.setState({ metadata: { namespace: 'AOT' } });
     createErrandMock.mockReset();

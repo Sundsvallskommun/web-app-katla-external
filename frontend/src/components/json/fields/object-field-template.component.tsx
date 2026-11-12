@@ -3,6 +3,7 @@ import { SectionStatus, SectionStatusLabel } from '@components/disclosure/sectio
 import { ErrandContentLock } from '@components/errand-content-lock/errand-content-lock.component';
 import { ROW_INDEX_PLACEHOLDER } from '@components/json/utils/row-index-placeholder';
 import { visibleFields as fieldsVisibleIn } from '@components/json/utils/schema-conditions';
+import { getSectionDefinitions, type SectionDefinition } from '@components/json/utils/schema-sections';
 import { ErrorAlert } from '@components/misc/error-alert.component';
 import type { ErrorSchema, ObjectFieldTemplateProps, RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Checkbox, Disclosure, Divider, Label } from '@sk-web-gui/react';
@@ -18,20 +19,14 @@ interface RowDefinition {
   gap?: string;
 }
 
-interface SectionDefinition {
-  id: string;
-  title: string;
-  icon?: string;
-  fields: string[];
-  defaultOpen?: boolean;
-}
-
 interface FormContext {
   originalSchema?: RJSFSchema;
   /** Sub-schema per RJSF field id, so a nested object is judged by its own conditions. */
   schemaById?: Record<string, RJSFSchema>;
   compact?: boolean;
   validationActive?: boolean;
+  /** Root fields to render, when the form is shown one section at a time. */
+  fields?: readonly string[];
 }
 
 /**
@@ -39,13 +34,6 @@ interface FormContext {
  */
 function getRowDefinitions(uiSchema: UiSchema | undefined): RowDefinition[] {
   return (uiSchema?.['ui:rows'] ?? []) as RowDefinition[];
-}
-
-/**
- * Extracts section definitions from uiSchema
- */
-function getSectionDefinitions(uiSchema: UiSchema | undefined): SectionDefinition[] {
-  return (uiSchema?.['ui:sections'] ?? []) as SectionDefinition[];
 }
 
 /**
@@ -261,6 +249,25 @@ export function ObjectFieldTemplate(props: ObjectFieldTemplateProps) {
 
   const compact = ctx?.compact ?? false;
   const validationActive = ctx?.validationActive ?? false;
+
+  // One section per wizard step: the step heading carries the section title, so no disclosure.
+  const onlyFields = props.idSchema.$id === 'root' ? ctx?.fields : undefined;
+  if (onlyFields) {
+    return (
+      <div className="flex flex-col gap-32">
+        {renderFields(
+          order.filter((f) => onlyFields.includes(f)),
+          properties,
+          visibleFields,
+          rows,
+          rowFieldNames,
+          new Set<string>(),
+          compact,
+          stops
+        )}
+      </div>
+    );
+  }
 
   // If no sections defined, use original flat rendering
   if (sections.length === 0) {

@@ -39,7 +39,7 @@ export default function BaseErrandLayout({ children, registerNewErrand }: BaseEr
     storeErrandFormHandover({
       path: pathWithoutLocale(pathname),
       values: getValues(),
-      wizardStep: useWizardStore.getState().currentStep,
+      wizardStepId: useWizardStore.getState().currentStepId,
     });
   }, [getValues, pathname]);
 

@@ -9,9 +9,17 @@ const context = { t, tForms: t, locale: 'sv', namespace: 'AOT' };
 const aboutStep = ALL_WIZARD_STEPS.find((step) => step.id === 'about');
 if (!aboutStep) throw new Error('The wizard has no about step');
 
-const formValues = (labels?: ErrandFormDTO['labels']): ErrandFormDTO => ({ labels });
+const MUNICIPALITY: ErrandFormDTO['parameters'] = [{ key: 'premisesMunicipalityId', values: ['2281'] }];
+
+const formValues = (labels?: ErrandFormDTO['labels']): ErrandFormDTO => ({ parameters: MUNICIPALITY, labels });
 
 describe('wizard about step', () => {
+  it('asks for the municipality before the category', async () => {
+    await expect(validateStep(aboutStep, { parameters: [] }, context)).resolves.toEqual([
+      'validation:municipality.required',
+    ]);
+  });
+
   it('asks for a category while nothing has been chosen', async () => {
     await expect(validateStep(aboutStep, formValues(), context)).resolves.toEqual([
       'validation:categorization.category_required',

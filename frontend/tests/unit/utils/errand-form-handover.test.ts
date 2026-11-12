@@ -22,23 +22,23 @@ describe('errand form handover', () => {
   });
 
   it('carries the form and the wizard step across a language switch', () => {
-    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStep: 2 });
+    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStepId: 'other-parties' });
 
     const handover = takeErrandFormHandover('/alkoholtillstand');
 
     expect(handover?.values).toEqual(values);
-    expect(handover?.wizardStep).toBe(2);
+    expect(handover?.wizardStepId).toBe('other-parties');
   });
 
   it('is consumed once so it does not resurface in a later empty form', () => {
-    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStep: 1 });
+    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStepId: 'owner' });
 
     expect(takeErrandFormHandover('/alkoholtillstand')).not.toBeNull();
     expect(takeErrandFormHandover('/alkoholtillstand')).toBeNull();
   });
 
   it('ignores a handover written on another page', () => {
-    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStep: 1 });
+    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStepId: 'owner' });
 
     // The key is the path without language prefix. Another errand is another page, and its
     // values do not belong here.
@@ -46,7 +46,7 @@ describe('errand form handover', () => {
   });
 
   it('ignores a handover that outlived the navigation that wrote it', () => {
-    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStep: 1 });
+    storeErrandFormHandover({ path: '/alkoholtillstand', values, wizardStepId: 'owner' });
 
     vi.setSystemTime(new Date('2026-08-14T08:00:30Z'));
 

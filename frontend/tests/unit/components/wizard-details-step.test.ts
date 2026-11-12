@@ -5,10 +5,14 @@ import type { ErrandFormDTO } from '@interfaces/errand-form';
 import type { TFunction } from 'i18next';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { validateErrandFormDataMock } = vi.hoisted(() => ({ validateErrandFormDataMock: vi.fn() }));
+const { loadFormSchemaMock, validateErrandFormDataMock } = vi.hoisted(() => ({
+  loadFormSchemaMock: vi.fn(),
+  validateErrandFormDataMock: vi.fn(),
+}));
 
 vi.mock('@components/json/utils/schema-utils', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@components/json/utils/schema-utils')>()),
+  loadFormSchema: loadFormSchemaMock,
   validateErrandFormData: validateErrandFormDataMock,
 }));
 
@@ -26,6 +30,7 @@ const LABELS: ErrandFormDTO['labels'] = [
 
 beforeEach(() => {
   validateErrandFormDataMock.mockReset().mockResolvedValue([]);
+  loadFormSchemaMock.mockReset().mockResolvedValue({ schema: { type: 'object' } });
 });
 
 describe('wizard details step', () => {
@@ -42,5 +47,20 @@ describe('wizard details step', () => {
     validateErrandFormDataMock.mockResolvedValue(['forms:form_error']);
 
     await expect(validateStep(detailsStep, { labels: LABELS }, context)).resolves.toEqual(['forms:form_error']);
+  });
+
+  it('holds a valid form back while one of its answers rules the application out', async () => {
+    const [schemaName = ''] = schemaNamesForErrand(LABELS, 'AOT');
+    loadFormSchemaMock.mockResolvedValue({
+      schema: {
+        type: 'object',
+        'x-stops': [
+          { when: { properties: { serverasMat: { const: 'NEJ' } }, required: ['serverasMat'] }, text: 'Stopp' },
+        ],
+      },
+    });
+    const errandFormData = [{ schemaName, schemaId: 'schema-v1', data: JSON.stringify({ serverasMat: 'NEJ' }) }];
+
+    await expect(validateStep(detailsStep, { labels: LABELS, errandFormData }, context)).resolves.toEqual(['Stopp']);
   });
 });

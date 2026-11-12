@@ -3,12 +3,19 @@ import type { Page, Request } from '@playwright/test';
 import { mockErrand } from '../fixtures/mockErrand';
 import { mockMetadata } from '../fixtures/mockMetadata';
 import { branches, happyPaths, type SchemaCase } from '../fixtures/schemaCases';
-import { selectCategorization } from '../utils/categorization';
-import { selectErrandOwner } from '../utils/errand-owner';
+import { passBasicSteps } from '../utils/errand-owner';
 import { jsonRoute } from '../utils/routes';
-import { fillSchemaForm, loadSchemaPair, type SchemaPair, uploadRequiredAttachments } from '../utils/schema-form';
+import {
+  fillSchemaForm,
+  firstSectionTitle,
+  loadSchemaPair,
+  type SchemaPair,
+  sectionTitleOf,
+  uploadRequiredAttachments,
+} from '../utils/schema-form';
 import { SERVICE_PATH } from '../utils/service';
 import { expect, test } from '../utils/test';
+import { goToStep, STEP, stepTitle } from '../utils/wizard';
 
 interface CreateErrandRequestBody {
   jsonParameters?: { key: string; value: unknown; schemaId: string }[];
@@ -32,12 +39,13 @@ const openFormWithSchema = async (page: Page, appUrl: (path: string) => string, 
     route.request().method() === 'POST' ? jsonRoute({ message: 'success' }, 201)(route) : jsonRoute([])(route)
   );
   await page.goto(appUrl(SERVICE_PATH));
-  await expect(page.getByTestId('register-errand')).toBeEnabled();
-  await selectCategorization(page);
-  await selectErrandOwner(page);
+  await expect(page.getByTestId('wizard-next')).toBeEnabled();
+  // The form's sections are its steps.
+  await passBasicSteps(page, firstSectionTitle(pair));
 };
 
 const register = async (page: Page): Promise<CreateErrandRequestBody> => {
+  await goToStep(page, STEP.summary);
   await page.getByTestId('register-errand').click();
   const submitButton = page.getByTestId('submit-button');
   await expect(submitButton).toBeEnabled();
@@ -60,7 +68,8 @@ const registersWithSchema =
       if (isAttachmentUpload(request)) uploads.push(request);
     });
 
-    const expected = await fillSchemaForm(page, pair.schema, schemaCase.steps);
+    const expected = await fillSchemaForm(page, pair, schemaCase.steps);
+    await goToStep(page, STEP.attachments);
     await uploadRequiredAttachments(page, pair.schema, schemaCase.attachments);
     const body = await register(page);
 
@@ -93,14 +102,13 @@ test.describe('Ärendetyper', () => {
       if (!tasting) throw new Error('tasting case missing');
       const pair = loadSchemaPair(tasting.schema);
       await openFormWithSchema(page, appUrl, pair);
-      await fillSchemaForm(page, pair.schema, tasting.steps);
-      await uploadRequiredAttachments(page, pair.schema, tasting.attachments);
-      await fillSchemaForm(page, pair.schema, [
+      await fillSchemaForm(page, pair, tasting.steps);
+      await fillSchemaForm(page, pair, [
         { text: 'premisesAddress.postalCode', value: '8523' },
         { text: 'knowledgeTestParticipants.0.emailAddress', value: 'inte-en-adress' },
       ]);
 
-      await page.getByTestId('register-errand').click();
+      await page.getByTestId('wizard-next').click();
 
       await expect(page.locator('[data-invalid-field="root_premisesAddress_postalCode"]')).toContainText(
         'Värdet matchar inte det förväntade formatet'
@@ -108,7 +116,7 @@ test.describe('Ärendetyper', () => {
       await expect(page.locator('[data-invalid-field="root_knowledgeTestParticipants_0_emailAddress"]')).toContainText(
         'Ange en giltig e-postadress'
       );
-      await expect(page.getByTestId('submit-button')).toBeHidden();
+      await expect(stepTitle(page)).toHaveText(sectionTitleOf(pair, 'premisesAddress'));
     });
 
     test('catering utan mat stoppas tills svaret ändras', async ({ appUrl, page }) => {
@@ -117,20 +125,19 @@ test.describe('Ärendetyper', () => {
       if (!catering) throw new Error('catering case missing');
       const pair = loadSchemaPair(catering.schema);
       await openFormWithSchema(page, appUrl, pair);
-      await fillSchemaForm(page, pair.schema, catering.steps);
-      await uploadRequiredAttachments(page, pair.schema, catering.attachments);
+      await fillSchemaForm(page, pair, catering.steps);
       const stopText = pair.schema['x-stops']?.[0]?.text ?? '';
       expect(stopText).not.toBe('');
 
       const stop = page.getByTestId('schema-stop');
-      await fillSchemaForm(page, pair.schema, [{ radio: 'servesFood', value: 'NO' }]);
+      await fillSchemaForm(page, pair, [{ radio: 'servesFood', value: 'NO' }]);
       await expect(stop).toContainText(stopText);
-      await page.getByTestId('register-errand').click();
+      await page.getByTestId('wizard-next').click();
       // Inline under the answer and once more as the toast.
       await expect(page.getByText(stopText)).toHaveCount(2);
-      await expect(page.getByTestId('submit-button')).toBeHidden();
+      await expect(stepTitle(page)).toHaveText(sectionTitleOf(pair, 'servesFood'));
 
-      await fillSchemaForm(page, pair.schema, [{ radio: 'servesFood', value: 'YES' }]);
+      await fillSchemaForm(page, pair, [{ radio: 'servesFood', value: 'YES' }]);
       await expect(stop).toHaveCount(0);
     });
   });

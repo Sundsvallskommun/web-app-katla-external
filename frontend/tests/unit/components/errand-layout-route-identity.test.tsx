@@ -44,7 +44,6 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('src/hooks/use-media-query', () => ({ useMediaQuery: () => false }));
 // The layout does not render until the current metadata fetch finishes. The fetch itself is not
 // what this test covers, so its status is driven explicitly here.
 vi.mock('src/hooks/use-load-metadata', () => ({
@@ -61,7 +60,6 @@ vi.mock('src/stores/wizard-store', () => ({
 vi.mock('@components/tabs/tabs', () => ({
   visibleTabsFor: () => [{ labelKey: 'common:tabs.basic_information', path: '/grundinformation', visible: true }],
 }));
-vi.mock('@components/wizard/mobile-wizard.component', () => ({ MobileWizard: () => <div>mobile-wizard</div> }));
 vi.mock('@contexts/form-validation-provider', () => ({
   FormValidationProvider: ({ children }: PropsWithChildren) => <>{children}</>,
 }));
@@ -92,15 +90,18 @@ vi.mock('@layouts/base-errand-layout/base-errand-layout.component', async () => 
   };
 });
 
-vi.mock('@layouts/errand-button-group.component', async () => {
+// The wizard holds the save actions for new errands and drafts. Its probe mirrors
+// FormIdentityProbe, which the tab view renders as children.
+vi.mock('@components/wizard/wizard.component', async () => {
   const { useFormContext: useContext } = await import('react-hook-form');
 
   return {
-    ErrandButtonGroup: () => {
-      const { getValues } = useContext<ErrandDTO>();
+    Wizard: () => {
+      const { getValues, watch } = useContext<ErrandDTO>();
 
       return (
         <div>
+          <div data-testid="form-identity">{`${watch('id') ?? 'missing'}:${watch('errandNumber') ?? 'missing'}`}</div>
           <button
             type="button"
             onClick={() => {
@@ -188,21 +189,28 @@ describe('errand layout route identity', () => {
     const view = render(<ErrandLayoutContent>registration-content</ErrandLayoutContent>);
 
     expect(screen.getByLabelText('forms:loading')).toBeInTheDocument();
-    expect(screen.queryByText('registration-content')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('form-identity')).not.toBeInTheDocument();
     expect(screen.queryByTestId('base-header')).not.toBeInTheDocument();
 
     mocks.metadataLoadState.value = 'ready';
     view.rerender(<ErrandLayoutContent>registration-content</ErrandLayoutContent>);
 
     expect(screen.queryByLabelText('forms:loading')).not.toBeInTheDocument();
-    expect(screen.getByText('registration-content')).toBeInTheDocument();
+    expect(screen.getByTestId('form-identity')).toBeInTheDocument();
     expect(screen.getByTestId('base-header')).toHaveTextContent('new-errand');
   });
 
   it('removes A header, status and actions synchronously and never exposes A when B fails', async () => {
     const failedB = createDeferred<ErrandDTO>();
+    // A draft, so the wizard and its save actions are shown.
     getErrandMock
-      .mockResolvedValueOnce({ id: 'id-a', errandNumber: 'ERRAND-A', status: 'NEW', jsonParameters: [] })
+      .mockResolvedValueOnce({
+        id: 'id-a',
+        errandNumber: 'ERRAND-A',
+        status: 'NEW',
+        lifecycle: 'DRAFT',
+        jsonParameters: [],
+      })
       .mockReturnValueOnce(failedB.promise);
 
     const view = render(

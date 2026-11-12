@@ -46,7 +46,9 @@ export async function validateErrandStops(
   values: ErrandFormDTO,
   t: TFunction,
   locale: string | undefined,
-  namespace: string | undefined
+  namespace: string | undefined,
+  // Only stops shown under these fields, for a form filled in one section at a time.
+  fields?: readonly string[]
 ): Promise<string[]> {
   for (const schemaName of schemaNamesForErrand(values.labels, namespace)) {
     let schema: RJSFSchema;
@@ -57,7 +59,9 @@ export async function validateErrandStops(
       return [t('validation:stops.check_failed')];
     }
 
-    const [stop] = activeStops(stopsOfSchema(schema), answersOfErrand(values, schemaName));
+    const [stop] = activeStops(stopsOfSchema(schema), answersOfErrand(values, schemaName)).filter(
+      (candidate) => !fields || fields.includes(stopAnchor(candidate) ?? '')
+    );
     if (stop) return [stop.text];
   }
 
