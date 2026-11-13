@@ -23,11 +23,13 @@ echo "Running as user: $(id)"
 
 # --- Non NEXT_PUBLIC vars (explicit placeholders) ---
 replace_in_next "DOMAIN_NAME_PLACEHOLDER" "${DOMAIN_NAME:-__UNSET__}"
-replace_in_next "BASE_PATH_PLACEHOLDER" "${BASE_PATH:-__UNSET__}"
 replace_in_next "ADMIN_URL_PLACEHOLDER" "${ADMIN_URL:-__UNSET__}"
 replace_in_next "HEALTH_USERNAME_PLACEHOLDER" "${HEALTH_USERNAME:-__UNSET__}"
 replace_in_next "HEALTH_PASSWORD_PLACEHOLDER" "${HEALTH_PASSWORD:-__UNSET__}"
-replace_in_next "API_URL_INTERNAL_PLACEHOLDER" "${API_URL_INTERNAL:-__UNSET__}"
+
+# --- basePath: placeholder carries the leading slash (Next requires it at build), so swap it whole ---
+# Empty NEXT_PUBLIC_BASE_PATH = app served at root.
+replace_in_next "/NEXT_PUBLIC_BASE_PATH_PLACEHOLDER" "${NEXT_PUBLIC_BASE_PATH-__UNSET__}"
 
 # --- All NEXT_PUBLIC_* vars (automatic) ---
 echo "Replacing NEXT_PUBLIC_* placeholders..."
@@ -40,7 +42,8 @@ done
 echo "Preparing server.js..."
 cp /app/server.js /tmp/server.js
 sed -i "s|DOMAIN_NAME_PLACEHOLDER|${DOMAIN_NAME}|g" /tmp/server.js
-sed -i "s|BASE_PATH_PLACEHOLDER|${BASE_PATH}|g" /tmp/server.js
+sed -i "s|API_URL_INTERNAL_PLACEHOLDER|${API_URL_INTERNAL}|g" /tmp/server.js
+sed -i "s|/NEXT_PUBLIC_BASE_PATH_PLACEHOLDER|${NEXT_PUBLIC_BASE_PATH}|g" /tmp/server.js
 env | grep '^NEXT_PUBLIC_' | while IFS='=' read -r name value; do
   sed -i "s|${name}_PLACEHOLDER|${value}|g" /tmp/server.js
 done
