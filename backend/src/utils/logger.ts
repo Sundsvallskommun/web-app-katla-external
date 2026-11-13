@@ -1,4 +1,4 @@
-import { LOG_DIR } from '@config';
+import { LOG_DIR, LOG_LEVEL } from '@config';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import winston from 'winston';
@@ -29,6 +29,7 @@ const logger = winston.createLogger({
     }),
     logFormat,
   ),
+  level: LOG_LEVEL ?? (process.env.NODE_ENV === 'development' ? 'debug' : 'info'),
   transports: [
     // debug log setting
     new winstonDaily({

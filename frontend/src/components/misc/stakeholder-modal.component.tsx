@@ -4,6 +4,7 @@ import { Button, FormControl, FormErrorMessage, FormLabel, Input, Modal, Select 
 import {
   asPersonStakeholder,
   createStakeholderSchema,
+  isOrganizationStakeholder,
   phoneNumberFormatter,
   shouldShowContactDetails,
 } from '@utils/stakeholder';
@@ -77,9 +78,10 @@ export const StakeholderFormModal: React.FC<{
       show={show}
       onClose={onClose}
       label={
-        edit ?
-          t('errand-information:stakeholder.modal.edit_title')
-        : t('errand-information:stakeholder.modal.add_title')
+        !edit ? t('errand-information:stakeholder.modal.add_title')
+        : initialValues && isOrganizationStakeholder(initialValues) ?
+          t('errand-information:stakeholder.modal.edit_organization_title')
+        : t('errand-information:stakeholder.modal.edit_title')
       }
       className="max-sm:!m-8 max-sm:!max-h-[calc(100vh-4rem)] max-sm:!w-[calc(100%-2rem)] max-sm:!max-w-full max-sm:!overflow-y-auto !overflow-x-hidden"
     >

@@ -19,7 +19,8 @@
     "person_number_format": "The personal identity number must be YYYYMMDDXXXX or YYYYMMDD-XXXX",
     "person_number_invalid_date": "Invalid date in the personal identity number",
     "email_invalid": "Invalid email address",
-    "phone_invalid": "Enter a valid mobile number, for example 0731234567, +46731234567 or 0046731234567."
+    "phone_invalid": "Enter a valid mobile number, for example 0731234567, +46731234567 or 0046731234567.",
+    "organization_number_format": "The organisation number must be NNNNNNXXXX or NNNNNN-XXXX"
   },
   "owner": {
     "required": "Select the company or organisation the case concerns, or add yourself as a private person.",

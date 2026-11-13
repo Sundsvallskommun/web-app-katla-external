@@ -4,11 +4,15 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { HttpException } from '@/exceptions/HttpException';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { personLookupRateLimit } from '@/middlewares/rate-limit.middleware';
 import { MyOrganizationsDTO } from '@/responses/legal-entity.response';
 import { StakeholderDTO } from '@/responses/supportmanagement.response';
+import { getOrganizationDetails, getOrganizationPartyId } from '@/services/legal-entity.service';
 import { completePrimaryStakeholders, primaryStakeholderFor } from '@/utils/primary-stakeholder';
 import { requireServiceKey } from '@/utils/service-context';
-import { mapStakeholderToStakeholderDTO } from '@/utils/stakeholder-mapping';
+import { formatOrganizationNumber, mapStakeholderToStakeholderDTO } from '@/utils/stakeholder-mapping';
+
+const ORGANIZATION_NUMBER_PATTERN = /^\d{6}-?\d{4}$/;
 
 @Controller()
 export class LegalEntityController {
@@ -52,5 +56,35 @@ export class LegalEntityController {
     if (!stakeholder) throw new HttpException(500, 'Could not build the stakeholder');
 
     return mapStakeholderToStakeholderDTO(stakeholder);
+  }
+
+  /** Any organisation by number, for adding it as a contact. null (204) when LegalEntity does not know it. */
+  @Get('/organization/:organizationNumber')
+  @OpenAPI({ summary: 'Get an organization as a stakeholder using its organization number' })
+  @UseBefore(authMiddleware, personLookupRateLimit)
+  @ResponseSchema(StakeholderDTO)
+  async organizationStakeholder(
+    @Req() req: RequestWithUser,
+    @Param('organizationNumber') organizationNumber: string,
+  ): Promise<StakeholderDTO | null> {
+    if (!ORGANIZATION_NUMBER_PATTERN.test(organizationNumber)) {
+      throw new HttpException(400, 'Invalid organization number');
+    }
+
+    try {
+      const partyId = await getOrganizationPartyId(organizationNumber.replace('-', ''), req);
+      const { name, address, phone } = await getOrganizationDetails(partyId, req);
+
+      return {
+        externalId: partyId,
+        externalIdType: 'COMPANY',
+        organizationName: name,
+        organizationNumber: formatOrganizationNumber(organizationNumber),
+        ...address,
+        phoneNumbers: phone ? [phone] : undefined,
+      };
+    } catch {
+      return null;
+    }
   }
 }

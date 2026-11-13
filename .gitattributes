@@ -7,7 +7,11 @@
 * text=auto eol=lf
 
 # Shell scripts must stay LF or they break when run on Linux.
-*.sh text eol=lf
+*.sh text eol=lfi
+
+# Bat and cmd files stay crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
 
 # Common binary types — never touch these.
 *.jar   binary

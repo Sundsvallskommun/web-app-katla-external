@@ -4,12 +4,24 @@ import { useMyStakeholder } from '@contexts/my-stakeholder-context';
 import { ErrandDTO, StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getStakeholderUsingPersonNumber } from '@services/citizen/citizen-service';
-import { Button, cx, FormControl, FormErrorMessage, FormLabel, Input, SearchField, Select } from '@sk-web-gui/react';
+import { getStakeholderUsingOrganizationNumber } from '@services/organization-service/organization-service';
+import {
+  Button,
+  cx,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  RadioButton,
+  SearchField,
+  Select,
+} from '@sk-web-gui/react';
 import {
   asPersonStakeholder,
   createStakeholderSchema,
   emptyStakeholder,
   isCitizen,
+  isOrganizationStakeholder,
   phoneNumberFormatter,
   shouldShowContactDetails,
 } from '@utils/stakeholder';
@@ -21,6 +33,13 @@ import { useMetadataStore } from 'src/stores/metadata-store';
 
 import { StakeholderFormModal } from './stakeholder-modal.component';
 
+type SearchMode = 'PERSON' | 'ORGANIZATION';
+
+const searchModeOptions: { value: SearchMode; labelKey: string }[] = [
+  { value: 'PERSON', labelKey: 'errand-information:stakeholder.type_person' },
+  { value: 'ORGANIZATION', labelKey: 'errand-information:stakeholder.type_organization' },
+];
+
 export const StakeholderList: React.FC<{
   roles: string[];
   maxCount?: number;
@@ -30,6 +49,8 @@ export const StakeholderList: React.FC<{
   const [searchResult, setSearchResult] = useState<boolean>(false);
   const [emptyResult, setEmptyResult] = useState<boolean>(false);
   const [manualEntryOpen, setManualEntryOpen] = useState<boolean>(false);
+  const [searchMode, setSearchMode] = useState<SearchMode>('PERSON');
+  const isOrganizationSearch = searchMode === 'ORGANIZATION';
   const { metadata } = useMetadataStore();
   const { t } = useTranslation();
   const isLocked = useIsContentLocked();
@@ -53,7 +74,8 @@ export const StakeholderList: React.FC<{
   });
 
   const { handleSubmit, register, watch, reset, trigger, setValue, formState } = method;
-  const { firstName, lastName, personNumber, address, city, title, department } = watch();
+  const { firstName, lastName, personNumber, organizationName, organizationNumber, address, city, title, department } =
+    watch();
 
   //Used for resetting form when adding multiple stakeholders
   useEffect(() => {
@@ -77,12 +99,14 @@ export const StakeholderList: React.FC<{
   };
 
   const onSearchHandler = async (query: string) => {
-    setValue('personNumber', query);
-    const isValid = await trigger('personNumber');
+    const field = isOrganizationSearch ? 'organizationNumber' : 'personNumber';
+    setValue(field, query);
+    const isValid = await trigger(field);
     if (!isValid) {
       return;
     }
-    getStakeholderUsingPersonNumber(query)
+    const search = isOrganizationSearch ? getStakeholderUsingOrganizationNumber : getStakeholderUsingPersonNumber;
+    search(query)
       .then((res) => {
         if (res.status === 200) {
           reset(res.data);
@@ -101,9 +125,8 @@ export const StakeholderList: React.FC<{
     if (hideRoleSelect && metadata) {
       stakeholder.role = roles[0];
     }
-    append(
-      asPersonStakeholder({ ...stakeholder, phoneNumbers: [phoneNumberFormatter(stakeholder?.phoneNumbers?.[0])] })
-    );
+    const added = { ...stakeholder, phoneNumbers: [phoneNumberFormatter(stakeholder.phoneNumbers?.[0])] };
+    append(isOrganizationStakeholder(added) ? added : asPersonStakeholder(added));
     clearStakeholderForm();
   };
 
@@ -111,10 +134,41 @@ export const StakeholderList: React.FC<{
     <div>
       <FormProvider {...method}>
         {showAddButton && (
+          <div className="flex flex-col gap-8 mb-16">
+            <span id="stakeholder-type-label" className="font-bold">
+              {t('errand-information:stakeholder.type_label')}
+            </span>
+            <RadioButton.Group
+              inline
+              aria-labelledby="stakeholder-type-label"
+              name="stakeholder-type"
+              value={searchMode}
+              data-cy="stakeholder-type-selector"
+            >
+              {searchModeOptions.map(({ value, labelKey }) => (
+                <RadioButton
+                  key={value}
+                  value={value}
+                  data-cy={`stakeholder-type-${value.toLowerCase()}`}
+                  checked={searchMode === value}
+                  onChange={() => {
+                    clearStakeholderForm();
+                    setSearchMode(value);
+                  }}
+                >
+                  {t(labelKey)}
+                </RadioButton>
+              ))}
+            </RadioButton.Group>
+          </div>
+        )}
+
+        {showAddButton && (
           <FormControl className="w-full">
-            <FormLabel>{t('errand-information:search.PERSON')}</FormLabel>
+            <FormLabel>{t(`errand-information:search.${searchMode}`)}</FormLabel>
             <SearchField
-              data-cy="person-number-input"
+              key={searchMode}
+              data-cy={isOrganizationSearch ? 'organization-number-input' : 'person-number-input'}
               size="md"
               className="max-w-[52.5rem]"
               value={query}
@@ -134,9 +188,16 @@ export const StakeholderList: React.FC<{
                 {formState.errors.personNumber?.message}
               </FormErrorMessage>
             )}
+            {formState.errors.organizationNumber && (
+              <FormErrorMessage data-cy="organization-number-error">
+                {formState.errors.organizationNumber.message}
+              </FormErrorMessage>
+            )}
             {emptyResult && (
-              <FormErrorMessage data-cy="empty-person-error">
-                {t('errand-information:stakeholder.no_person_found')}
+              <FormErrorMessage data-cy={isOrganizationSearch ? 'empty-organization-error' : 'empty-person-error'}>
+                {isOrganizationSearch ?
+                  t('errand-information:stakeholder.no_organization_found')
+                : t('errand-information:stakeholder.no_person_found')}
               </FormErrorMessage>
             )}
           </FormControl>
@@ -146,12 +207,14 @@ export const StakeholderList: React.FC<{
           <div data-cy="search-result" className="border-1 rounded-12 bg-background-content w-max-[52.5rem] my-15">
             <div className="px-16 py-8">
               <span className="text-[1.6rem] font-semibold py-10">
-                {firstName} {lastName}
+                {isOrganizationSearch ? organizationName : `${firstName ?? ''} ${lastName ?? ''}`}
               </span>
 
               <div className="flex text-md mb-10">
                 <div className="flex flex-col">
-                  {title ?
+                  {isOrganizationSearch ?
+                    <span>{organizationNumber}</span>
+                  : title ?
                     <span>{title}</span>
                   : <span className={cx(!personNumber && 'italic text-text-secondary')}>
                       {(personNumber ?? '') || t('errand-information:stakeholder.missing_person_number')}
@@ -199,7 +262,11 @@ export const StakeholderList: React.FC<{
 
               {!hideRoleSelect && (
                 <FormControl required className="w-full sm:w-[calc(50%-10px)]">
-                  <FormLabel>{t('errand-information:stakeholder.person_role')}</FormLabel>
+                  <FormLabel>
+                    {isOrganizationSearch ?
+                      t('errand-information:stakeholder.organization_role')
+                    : t('errand-information:stakeholder.person_role')}
+                  </FormLabel>
                   <Select data-cy="stakeholder-role-select" className="w-full" {...register('role')}>
                     {metadata?.roles?.map(
                       (role) =>
@@ -222,7 +289,9 @@ export const StakeholderList: React.FC<{
                   }}
                   className="w-full lg:w-auto"
                 >
-                  {t('errand-information:stakeholder.add_person')}
+                  {isOrganizationSearch ?
+                    t('errand-information:stakeholder.add_organization')
+                  : t('errand-information:stakeholder.add_person')}
                 </Button>
               </div>
             </div>
@@ -239,6 +308,7 @@ export const StakeholderList: React.FC<{
             stakeholder={stakeholder}
             isEditable
             roles={roles}
+            editableFields={isOrganizationStakeholder(stakeholder) ? ['emails', 'phoneNumbers'] : undefined}
             hideRemove={isCitizen(stakeholder, self)}
             onRemove={() => {
               remove(index);
@@ -247,7 +317,7 @@ export const StakeholderList: React.FC<{
         );
       })}
 
-      {showAddButton && (
+      {showAddButton && !isOrganizationSearch && (
         <div className="mt-6">
           <Button
             data-cy="add-manual-person-button"

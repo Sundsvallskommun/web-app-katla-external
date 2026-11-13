@@ -2,12 +2,19 @@ import type { StakeholderDTO } from '@data-contracts/backend/data-contracts';
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-import { mockManualEditStakeholder, mockSelfStakeholder, mockStakeholder } from '../fixtures/mockStakeholder';
+import {
+  mockManualEditStakeholder,
+  mockOrganizationStakeholder,
+  mockSelfStakeholder,
+  mockStakeholder,
+} from '../fixtures/mockStakeholder';
 import {
   MOCK_COUNTRY_CODE_PHONE_NUMBER,
   MOCK_EMAIL,
   MOCK_INVALID_DATE_PERSON_NUMBER,
+  MOCK_NON_EXISTENT_ORGANIZATION_NUMBER,
   MOCK_NON_EXISTENT_PERSON_NUMBER,
+  MOCK_ORGANIZATION_NUMBER,
   MOCK_PERSON_NUMBER,
   MOCK_PHONE_NUMBER,
 } from './constants';
@@ -68,6 +75,42 @@ export const addStakeholder = async (page: Page, scope: Locator, role: string) =
   await expect(scope.getByTestId('phone-number-input-error')).toBeVisible();
   await phoneInput.fill(MOCK_PHONE_NUMBER);
   await syntheticClick(scope.locator('button', { hasText: 'Lägg till person' }));
+};
+
+/** The backend is called without the hyphen. */
+const organizationRoute = (organizationNumber: string) => `**/organization/${organizationNumber.replace('-', '')}`;
+
+export const addOrganizationStakeholder = async (page: Page, scope: Locator) => {
+  await page.route(organizationRoute(MOCK_ORGANIZATION_NUMBER), jsonRoute(mockOrganizationStakeholder));
+  await page.route(organizationRoute(MOCK_NON_EXISTENT_ORGANIZATION_NUMBER), emptyRoute(204));
+
+  await syntheticClick(scope.getByTestId('stakeholder-type-organization'));
+  await expect(scope.getByTestId('add-manual-person-button')).toHaveCount(0);
+
+  const organizationNumberInput = scope.getByTestId('organization-number-input');
+  const searchButton = scope.locator('button', { hasText: 'Sök' });
+
+  await organizationNumberInput.fill('ORGNR');
+  await syntheticClick(searchButton);
+  await expect(scope.getByTestId('organization-number-error')).toBeVisible();
+  await organizationNumberInput.fill(MOCK_NON_EXISTENT_ORGANIZATION_NUMBER);
+  const emptyResponse = page.waitForResponse(organizationRoute(MOCK_NON_EXISTENT_ORGANIZATION_NUMBER));
+  await syntheticClick(searchButton);
+  await emptyResponse;
+  await expect(scope.getByTestId('empty-organization-error')).toBeVisible();
+  await syntheticClick(scope.locator('button[aria-label="Rensa"]'));
+
+  await organizationNumberInput.fill(MOCK_ORGANIZATION_NUMBER);
+  const response = page.waitForResponse(organizationRoute(MOCK_ORGANIZATION_NUMBER));
+  await syntheticClick(searchButton);
+  await response;
+
+  const result = scope.getByTestId('search-result');
+  await expect(result).toContainText(mockOrganizationStakeholder.organizationName ?? '');
+  await expect(result).toContainText(MOCK_ORGANIZATION_NUMBER);
+  await scope.getByTestId('stakeholder-email-input').fill(MOCK_EMAIL);
+  await scope.getByTestId('stakeholder-mobilephone-input').fill(MOCK_PHONE_NUMBER);
+  await syntheticClick(scope.locator('button', { hasText: 'Lägg till organisation' }));
 };
 
 /** The logged in citizen is a contact person from the start and cannot be removed. */

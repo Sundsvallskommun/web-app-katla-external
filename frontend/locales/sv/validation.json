@@ -19,7 +19,8 @@
     "person_number_format": "Personnummer måste vara ÅÅÅÅMMDDXXXX eller ÅÅÅÅMMDD-XXXX",
     "person_number_invalid_date": "Ogiltigt datum i personnummer",
     "email_invalid": "Ogiltig e-postadress",
-    "phone_invalid": "Fyll i ett giltigt mobilnummer, till exempel 0731234567, +46731234567 eller 0046731234567."
+    "phone_invalid": "Fyll i ett giltigt mobilnummer, till exempel 0731234567, +46731234567 eller 0046731234567.",
+    "organization_number_format": "Organisationsnummer måste vara NNNNNNXXXX eller NNNNNN-XXXX"
   },
   "owner": {
     "required": "Välj vilket företag eller vilken organisation ärendet gäller, eller lägg till dig själv som privatperson.",

@@ -84,4 +84,9 @@ describe('stakeholder serveringsstalle mapping', () => {
     expect(mapped).not.toHaveProperty('organizationNumber');
     expect(mapped.parameters).toEqual([]);
   });
+  it('keeps the organisation number of an organisation added as contact', () => {
+    const mapped = mapStakeholderDTOToStakeholder(owner({ role: 'CONTACT', organizationNumber: '1111112222' }));
+
+    expect(mapped.parameters).toEqual([{ key: 'organizationNumber', displayName: 'Organisationsnummer', values: ['111111-2222'] }]);
+  });
 });
