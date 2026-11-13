@@ -1,68 +1,63 @@
-# Install dependencies only when needed
-ARG NODE_VERSION=22.18.0
-ARG YARN_VERSION=1.22.22
-FROM node:${NODE_VERSION}-alpine AS build-base
-ARG YARN_VERSION
-RUN test "$(yarn --version)" = "${YARN_VERSION}"
+# =====================
+# Build
+# =====================
+FROM registry.access.redhat.com/ubi9/nodejs-22 AS builder
 
-FROM build-base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+USER root
+RUN mkdir -p /app && chown -R 1001:0 /app
+USER 1001
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
 
-# Rebuild the source code only when needed
-FROM build-base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY --chown=1001:0 package.json yarn.lock ./
+RUN npm install -g yarn \
+ && yarn install --frozen-lockfile
 
-# These values are needed while Next.js creates its standalone bundle. Runtime
-# values are supplied separately by Compose for server-side request handling.
-ARG NEXT_PUBLIC_APP_NAME=Katla
-ARG NEXT_PUBLIC_API_URL
-ARG API_URL_INTERNAL
-ARG DOMAIN_NAME
-ARG NEXT_PUBLIC_BASE_PATH
-ARG ADMIN_URL
-ARG NEXT_PUBLIC_PROTECTED_ROUTES
-ARG NEXT_PUBLIC_INACTIVITY_WARNING_TIMEOUT=1500000
-ARG NEXT_PUBLIC_INACTIVITY_COUNTDOWN_TIMEOUT=300000
-ARG NEXT_PUBLIC_DRAFT_ERRAND=false
-ARG NEXT_PUBLIC_REDUCED_STAKEHOLDER_INFO=true
-ARG NEXT_PUBLIC_ERRAND_FILTER=true
-ARG NEXT_PUBLIC_DISCLOSURE_DONE_MARK=false
-ARG NEXT_PUBLIC_OTHER_PARTIES_DISCLOSURE=false
-ARG HEALTH_AUTH=false
-ARG HEALTH_USERNAME
-ARG HEALTH_PASSWORD
+COPY --chown=1001:0 . .
+COPY --chown=1001:0 .env-cicd .env.local
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DOCKER_BUILD=true
+
+# Optional deploy info from CI pipeline (Tekton)
+ARG DEPLOY_COMMIT=""
+ARG DEPLOY_BRANCH=""
+
+RUN if [ -n "$DEPLOY_COMMIT" ]; then \
+  printf '{\n  "commit": "%s",\n  "branch": "%s",\n  "updatedAt": "%s"\n}' \
+    "$DEPLOY_COMMIT" "$DEPLOY_BRANCH" "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+  > public/deploy-info.json && echo "Generated deploy-info.json from build args"; \
+fi
+
 RUN yarn build
 
-# Production image, copy all the files and run next
-FROM node:${NODE_VERSION}-alpine AS runner
+# =====================
+# Runtime
+# =====================
+FROM registry.access.redhat.com/ubi9/nodejs-22 AS runner
+
+RUN echo "Runtime step"
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Copy everything as root-owned and read-only
+COPY --from=builder --chown=0:0 --chmod=555 /app/next.config.js ./
+COPY --from=builder --chown=0:0 --chmod=555 /app/public ./public
+COPY --from=builder --chown=0:0 --chmod=444 /app/package.json ./
+COPY --from=builder --chown=0:0 --chmod=555 /app/.next/standalone ./
+COPY --from=builder --chown=0:0 --chmod=555 /app/.next/static ./.next/static
 
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
+# Grant write where entrypoint.sh needs to replace placeholders
+USER root
+RUN chown 1001:0 /app && chown 1001:0 /app/server.js && chmod g+w /app/server.js \
+ && chown -R 1001:0 /app/.next && chmod -R g+w /app/.next
+USER 1001
 
-# Automatically leverage output traces to reduce image size 
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Entrypoint — fix line endings before locking permissions
+COPY --chown=0:0 entrypoint.sh ./
+RUN sed -i 's/\r$//' ./entrypoint.sh && chmod 0555 ./entrypoint.sh
 
-USER nextjs
+USER 1001
 
-EXPOSE 3000
-ENV PORT=3000
-
-CMD ["node", "server.js"]
+ENTRYPOINT ["/app/entrypoint.sh"]
