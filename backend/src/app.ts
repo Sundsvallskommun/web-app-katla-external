@@ -179,6 +179,10 @@ class App {
 
     this.initializeDataFolders();
 
+    this.app.get('/health', (_req, res) => {
+      res.status(200).json({ status: 'OK' });
+    });
+
     const { paths: publicPaths, routes: publicRoutes } = buildPublicPathSet(Controllers);
     this.initializeMiddlewares(publicPaths, publicRoutes);
     this.initializeRoutes(Controllers);
@@ -203,7 +207,7 @@ class App {
 
   private initializeMiddlewares(publicPaths: Set<string>, publicRoutes: PublicRouteInfo[]) {
     this.app.set('trust proxy', 1);
-    this.app.use(morgan(LOG_FORMAT ?? 'default', { stream }));
+    this.app.use(morgan(LOG_FORMAT ?? 'default', { stream, skip: req => req.url?.endsWith('/health/up') ?? false }));
     // Per-client backstop for every route. Tighter limits sit on the SAML routes below and on
     // the costly handlers (see rate-limit.middleware.ts). Keyed on req.ip, hence trust proxy.
     this.app.use(globalRateLimit);

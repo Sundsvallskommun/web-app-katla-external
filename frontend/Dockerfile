@@ -1,7 +1,10 @@
 # =====================
 # Build
 # =====================
+ARG NODE_VERSION=22.18.0
+ARG YARN_VERSION=1.22.22
 FROM registry.access.redhat.com/ubi9/nodejs-22 AS builder
+ARG YARN_VERSION
 
 USER root
 RUN mkdir -p /app && chown -R 1001:0 /app
@@ -9,8 +12,9 @@ USER 1001
 WORKDIR /app
 
 COPY --chown=1001:0 package.json yarn.lock ./
-RUN npm install -g yarn \
- && yarn install --frozen-lockfile
+RUN npm install -g yarn@${YARN_VERSION}
+RUN test "$(yarn --version)" = "${YARN_VERSION}"
+RUN yarn install --frozen-lockfile
 
 COPY --chown=1001:0 . .
 COPY --chown=1001:0 .env-cicd .env.local
