@@ -22,7 +22,6 @@ import {
   SECRET_KEY,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_PATH,
-  SESSION_MEMORY,
   SWAGGER_ENABLED,
 } from '@config';
 import { createDefaultAuthGuard } from '@middlewares/default-auth.middleware';
@@ -40,13 +39,11 @@ import session from 'express-session';
 import { existsSync, mkdirSync } from 'fs';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import createMemoryStore from 'memorystore';
 import morgan from 'morgan';
 import passport from 'passport';
 import { join } from 'path';
 import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
-import createFileStore from 'session-file-store';
 import swaggerUi from 'swagger-ui-express';
 
 import { loadRepresentingOrganizations } from './auth/login-session';
@@ -55,16 +52,11 @@ import { Profile } from './interfaces/profile.interface';
 import { SamlIdentity } from './interfaces/users.interface';
 import { getSafeRedirect, getSamlRedirects } from './utils/isValidOrigin';
 import { buildOpenApiSchemas } from './utils/openapi-spec';
+import { createLocalSessionStore, SESSION_TTL } from './utils/session-store';
 
 type ControllerClass = new () => object;
 
 const corsWhitelist = (ORIGIN ?? '').split(',');
-
-const sessionTTL = 12 * 60 * 60;
-// NOTE: memory uses ms while file uses seconds
-const sessionStore: session.Store = SESSION_MEMORY
-  ? new (createMemoryStore(session))({ checkPeriod: sessionTTL * 1000 })
-  : new (createFileStore(session))({ sessionTTL, path: './data/sessions' });
 
 // An empty string falls through to the next candidate, like a missing one.
 const firstNonEmpty = (...values: (string | undefined)[]): string | undefined => values.find(value => value !== undefined && value !== '');
@@ -91,7 +83,7 @@ export const getSessionCookieOptions = (
   // in production, where Secure is always on.
   secure: environment === 'production' && deployEnvironment !== 'LOCAL',
   sameSite: 'lax',
-  maxAge: sessionTTL * 1000,
+  maxAge: SESSION_TTL * 1000,
   path: getSessionCookiePath(),
 });
 
@@ -170,7 +162,11 @@ class App {
   public port: string | number;
   public swaggerEnabled: boolean;
 
-  constructor(Controllers: ControllerClass[]) {
+  // Tests and other synchronous callers get the local store; server.ts passes the Redis one.
+  constructor(
+    Controllers: ControllerClass[],
+    private readonly sessionStore: session.Store = createLocalSessionStore(),
+  ) {
     this.app = express();
     // An empty string falls back to the default, like a missing value.
     this.env = NODE_ENV !== undefined && NODE_ENV !== '' ? NODE_ENV : 'development';
@@ -226,7 +222,9 @@ class App {
         secret: SECRET_KEY ?? '',
         resave: false,
         saveUninitialized: false,
-        store: sessionStore,
+        // Renews the cookie and store TTL on every response, so SESSION_TTL is an idle timeout.
+        rolling: true,
+        store: this.sessionStore,
         cookie: getSessionCookieOptions(NODE_ENV),
       }),
     );
@@ -447,10 +445,6 @@ class App {
     const logsDir: string = join(__dirname, '../data/logs');
     if (!existsSync(logsDir)) {
       mkdirSync(logsDir, { recursive: true });
-    }
-    const sessionsDir: string = join(__dirname, '../data/sessions');
-    if (!existsSync(sessionsDir)) {
-      mkdirSync(sessionsDir, { recursive: true });
     }
   }
 }

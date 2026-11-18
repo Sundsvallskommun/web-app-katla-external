@@ -425,6 +425,33 @@
   dependencies:
     "@noble/hashes" "^1.1.5"
 
+"@redis/bloom@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@redis/bloom/-/bloom-5.12.4.tgz#07f50e18f969b81b1cb7180126fffd5adfb30da9"
+  integrity sha512-ASe3hQTNFjIr4aFMuUOY89iP9Qu/1aYgMAZreIZDzBu5WDfArF/1r3r8Dd2ZttAlWTFqYYxhfy6o+Mu+Tk40Yw==
+
+"@redis/client@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@redis/client/-/client-5.12.4.tgz#409bda683e4cde3525b057627fa859d6abe9fc41"
+  integrity sha512-FggDHx7cDwHmCpDda2rgtDSTjC73fTwL2ldzBsRkGyRFzbv5U1VbIzJNuNjHmBimOAAxzmlNuUsVr6DyUNK05w==
+  dependencies:
+    cluster-key-slot "1.1.2"
+
+"@redis/json@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@redis/json/-/json-5.12.4.tgz#c2507d76d69248a680a4d35129b26d04144b278a"
+  integrity sha512-UTaOzJ2vGZUJ8rTcs0vgkKIb6FsczM7b4vKOmkBj0Kp5Bz30/9VybM7vJSgzXs0S1ki7U8aLJYnWP8uHUVfWRQ==
+
+"@redis/search@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@redis/search/-/search-5.12.4.tgz#200140cb54062373e3f14dd5c64e5499a7015875"
+  integrity sha512-cSurnSnCM5+q772/SxHfGSomQNu7Nv+j+IbuXd2RFY9WSfjOxDBAiPw3tVHTmDJVKBZVAZ6oA2IbtOjr1xvSyw==
+
+"@redis/time-series@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@redis/time-series/-/time-series-5.12.4.tgz#cb23fd4726b44049ca9fddc82b429859dff8b647"
+  integrity sha512-4n1p8Y9GPwNMOrVcmIekqOt18JJIC153qSzSfKGSTYBVmAxn2562Nedu14CCDsI6IfQQfcFYsM3eIT43np4XNA==
+
 "@rolldown/binding-android-arm64@1.2.3":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.3.tgz#001b8b0b01844701efda1bb6bed84b681c4a488b"
@@ -1662,6 +1689,11 @@ clsx@^2.1.1:
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
   integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
+cluster-key-slot@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz#88ddaa46906e303b5de30d3153b7d9fe0a0c19ac"
+  integrity sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==
+
 co-body@^6.0.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/co-body/-/co-body-6.2.0.tgz#afd776d60e5659f4eee862df83499698eb1aea1b"
@@ -1778,6 +1810,11 @@ confbox@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/confbox/-/confbox-0.2.4.tgz#592e7be71f882a4a874e3c88f0ac1ef6f7da1ce5"
   integrity sha512-ysOGlgTFbN2/Y6Cg3Iye8YKulHw+R2fNXHrgSmXISQdMnomY6eNDprVdW9R5xBguEqI954+S6709UyiO7B+6OQ==
+
+connect-redis@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/connect-redis/-/connect-redis-9.0.0.tgz#d3c68451a466d007c4be9fae8b652e0f60d9b769"
+  integrity sha512-QwzyvUePTMvEzG1hy45gZYw3X3YHrjmEdSkayURlcZft7hqadQ3X39wYkmCqblK2rGlw+XItELYt6GnyG6DEIQ==
 
 consola@^3.4.2:
   version "3.4.2"
@@ -4023,6 +4060,17 @@ readdirp@~3.6.0:
   integrity sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==
   dependencies:
     picomatch "^2.2.1"
+
+redis@^5.12.1:
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-5.12.4.tgz#cba224b45e38ee43315df411f44eeedf0c391a2e"
+  integrity sha512-2xH6L9GwpB96JOcxFjdmDpPigCZ36AmXrr1iGr/j6Skigb08i7oWZIJ8mAba+BdgzV4vjjNl3gaxZpg6+1XAKg==
+  dependencies:
+    "@redis/bloom" "5.12.4"
+    "@redis/client" "5.12.4"
+    "@redis/json" "5.12.4"
+    "@redis/search" "5.12.4"
+    "@redis/time-series" "5.12.4"
 
 reflect-metadata@^0.1.13:
   version "0.1.14"
