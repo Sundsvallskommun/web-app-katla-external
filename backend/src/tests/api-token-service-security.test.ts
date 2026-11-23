@@ -60,7 +60,9 @@ describe('ApiTokenService security boundaries', () => {
     const secondToken = service.getToken();
     const thirdToken = service.getToken();
 
-    expect(axiosMocks.request).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => {
+      expect(axiosMocks.request).toHaveBeenCalledTimes(1);
+    });
     resolveTokenRequest?.({ data: { access_token: 'shared-token', expires_in: 0 } });
 
     await expect(Promise.all([firstToken, secondToken, thirdToken])).resolves.toEqual(['shared-token', 'shared-token', 'shared-token']);

@@ -44,4 +44,7 @@ export const {
   SAML_PUBLIC_KEY,
   MUNICIPALITY_ID,
   SERVICE_NAMESPACES,
+  REDIS_HOST,
+  REDIS_PORT,
+  REDIS_PASSWORD,
 } = process.env;

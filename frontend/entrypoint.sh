@@ -13,8 +13,8 @@ replace_in_next() {
 
   echo "Replacing ${placeholder} with ${value}..."
 
-  # Replace in all text files under .next (js, css, html, json)
-  find /app/.next -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" -o -name "*.json" \) \
+  # Replace in all text files under .next (js, css, html, json, rsc)
+  find /app/.next -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" -o -name "*.json" -o -name "*.rsc" \) \
     -exec sed -i "s|${placeholder}|${value}|g" {} +
 }
 
@@ -29,6 +29,13 @@ replace_in_next "HEALTH_PASSWORD_PLACEHOLDER" "${HEALTH_PASSWORD:-__UNSET__}"
 
 # --- basePath: placeholder carries the leading slash (Next requires it at build), so swap it whole ---
 # Empty NEXT_PUBLIC_BASE_PATH = app served at root.
+# The middleware matcher manifests hold it regex-escaped inside JSON ("^\\/NEXT_..."); swap that
+# form first with the same escaping, or an empty base path leaves a stray backslash in the regex.
+if [ "${NEXT_PUBLIC_BASE_PATH-__UNSET__}" != "__UNSET__" ]; then
+  base_path_regex_json=$(printf '%s' "$NEXT_PUBLIC_BASE_PATH" | sed 's|/|\\\\\\\\/|g')
+  find /app/.next -type f -name "*.json" \
+    -exec sed -i 's|\\\\/NEXT_PUBLIC_BASE_PATH_PLACEHOLDER|'"$base_path_regex_json"'|g' {} +
+fi
 replace_in_next "/NEXT_PUBLIC_BASE_PATH_PLACEHOLDER" "${NEXT_PUBLIC_BASE_PATH-__UNSET__}"
 
 # --- All NEXT_PUBLIC_* vars (automatic) ---

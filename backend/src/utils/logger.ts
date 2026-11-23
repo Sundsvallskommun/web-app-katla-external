@@ -57,6 +57,9 @@ const logger = winston.createLogger({
 
 logger.add(
   new winston.transports.Console({
+    // Without this, fatal startup errors only reach the error file and the pod log stays empty.
+    handleExceptions: true,
+    handleRejections: true,
     format: winston.format.combine(winston.format.splat(), winston.format.colorize()),
   }),
 );
