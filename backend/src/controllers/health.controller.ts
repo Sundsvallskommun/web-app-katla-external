@@ -7,6 +7,7 @@ import { Public } from '@/middlewares/public.decorator';
 import { healthRateLimit } from '@/middlewares/rate-limit.middleware';
 import ApiService, { NO_SESSION_SENDER } from '@/services/api.service';
 import { logger } from '@/utils/logger';
+import { isRedisReady } from '@/utils/redis';
 
 @Controller()
 export class HealthController {
@@ -20,6 +21,10 @@ export class HealthController {
   async up(): Promise<{ status: string } | undefined> {
     if (!this.api) {
       throw new HttpException(500, 'Health check API is not configured');
+    }
+    if (!isRedisReady()) {
+      logger.error('Health check failed: Redis is not ready');
+      throw new HttpException(503, 'Health check failed');
     }
     const url = `${this.api.name}/${this.api.version}/simulations/response?status=200%20OK`;
     const data = {

@@ -49,7 +49,7 @@ done
 echo "Preparing server.js..."
 cp /app/server.js /tmp/server.js
 sed -i "s|DOMAIN_NAME_PLACEHOLDER|${DOMAIN_NAME}|g" /tmp/server.js
-sed -i "s|API_URL_INTERNAL_PLACEHOLDER|${API_URL_INTERNAL}|g" /tmp/server.js
+sed -i "s|INTERNAL_API_URL_PLACEHOLDER|${INTERNAL_API_URL}|g" /tmp/server.js
 sed -i "s|/NEXT_PUBLIC_BASE_PATH_PLACEHOLDER|${NEXT_PUBLIC_BASE_PATH}|g" /tmp/server.js
 env | grep '^NEXT_PUBLIC_' | while IFS='=' read -r name value; do
   sed -i "s|${name}_PLACEHOLDER|${value}|g" /tmp/server.js
