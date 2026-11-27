@@ -2,32 +2,30 @@ import axios from 'axios';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-const requireAuth = process.env.HEALTH_AUTH === 'true';
-const authUsername = process.env.HEALTH_USERNAME;
-const authPassword = process.env.HEALTH_PASSWORD;
-const apiUrl = (process.env.API_URL_INTERNAL ?? '') || process.env.NEXT_PUBLIC_API_URL;
+import { createHealthConfig, isHealthRequestAuthorized } from '../../../../config/health-config';
 
 export const GET = async () => {
-  const headersList = await headers();
-  const authorization = headersList.get('authorization');
-  const userAuth64 = Buffer.from(`${authUsername}:${authPassword}`).toString('base64');
+  let healthConfig: ReturnType<typeof createHealthConfig>;
 
-  if (requireAuth && authorization !== `Basic ${userAuth64}`) {
+  try {
+    healthConfig = createHealthConfig(process.env);
+  } catch {
+    return NextResponse.json({ status: 'MISCONFIGURED' }, { status: 500 });
+  }
+
+  const headersList = await headers();
+
+  if (!isHealthRequestAuthorized(headersList.get('authorization'), healthConfig)) {
     return new NextResponse('NOT_AUTHORIZED', { status: 401 });
   }
 
   try {
-    // TLS certificate validation stays enabled. Internal CAs should be supplied through NODE_EXTRA_CA_CERTS.
-    const health = await axios.get<unknown>(`${apiUrl}/health/up`).then((response) => response.data);
+    const health = await axios
+      .get<unknown>(healthConfig.backendHealthUrl, { timeout: healthConfig.requestTimeoutMs })
+      .then((response) => response.data);
 
-    return new NextResponse(JSON.stringify(health), { status: 200 });
+    return NextResponse.json(health, { status: 200 });
   } catch {
-    return new NextResponse(
-      JSON.stringify({
-        error: 'Upstream health check failed',
-        status: 'ERROR!',
-      }),
-      { status: 500 }
-    );
+    return NextResponse.json({ status: 'UNAVAILABLE' }, { status: 503 });
   }
 };

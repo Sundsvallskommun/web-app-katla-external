@@ -36,3 +36,7 @@ export async function getRedisClient(): Promise<RedisClient | null> {
   redisClient = client;
   return client;
 }
+
+export function isRedisReady(): boolean {
+  return REDIS_HOST === undefined || REDIS_HOST === '' || redisClient?.isReady === true;
+}
