@@ -20,11 +20,10 @@ replace_in_next() {
 
 echo "Replacing runtime environment variables..."
 echo "Running as user: $(id)"
-
 # --- Non NEXT_PUBLIC vars (explicit placeholders) ---
 replace_in_next "DOMAIN_NAME_PLACEHOLDER" "${DOMAIN_NAME:-__UNSET__}"
 replace_in_next "ADMIN_URL_PLACEHOLDER" "${ADMIN_URL:-__UNSET__}"
-replace_in_next "INTERNAL_API_URL _PLACEHOLDER" "${INTERNAL_API_URL:-__UNSET__}"
+replace_in_next "INTERNAL_API_URL_PLACEHOLDER" "${INTERNAL_API_URL:-__UNSET__}"
 replace_in_next "HEALTH_USERNAME_PLACEHOLDER" "${HEALTH_USERNAME:-__UNSET__}"
 replace_in_next "HEALTH_PASSWORD_PLACEHOLDER" "${HEALTH_PASSWORD:-__UNSET__}"
 
